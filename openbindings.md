@@ -38,7 +38,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
 
 The kinds in this document's examples (`example.openapi@1`, `example.mcp@1`, `example.grpc@1`, `my-cli.usage@1`) and the shapes of their `content`, such as `{ "location": … }` on a source and `{ "target": … }` on a binding, are illustrative; only a kind gives `content` meaning ([§6](#6-kinds)).
 
-New readers may prefer the [§4. Overview](#4-overview-informative) walkthrough. The notational conventions below, and the text from [§1. Positioning and scope](#1-positioning-and-scope) on, are normative except where marked informative; conformance is defined by the numbered rules of [§10](#10-conformance).
+New readers may prefer the [§4. Overview](#4-overview-informative) walkthrough. The notational conventions below, and the text from [§1. Positioning and scope](#1-positioning-and-scope) on, are normative except where marked informative. Conformance is defined by the numbered rules of [§10](#10-conformance).
 
 ## Editors
 
@@ -69,9 +69,8 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
 ## Table of contents
 
 - [1. Positioning and scope](#1-positioning-and-scope)
-  - [1.1. Distinguishing features (informative)](#11-distinguishing-features-informative)
-  - [1.2. Out of scope](#12-out-of-scope)
-  - [1.3. Obtaining an OBI](#13-obtaining-an-obi)
+  - [1.1. Out of scope](#11-out-of-scope)
+  - [1.2. Obtaining an OBI](#12-obtaining-an-obi)
 - [2. Core invariants](#2-core-invariants)
 - [3. Terminology](#3-terminology)
 - [4. Overview (informative)](#4-overview-informative)
@@ -103,46 +102,49 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
 
 ## 1. Positioning and scope
 
-This specification defines an interface document model, not a client-server protocol or runtime API: an OBI may be authored and supplied by anyone, independently of the software it describes, whether or not that software publishes, receives, or interprets it.
+This specification defines an interface document model, not a client-server protocol or runtime API. An OBI may be authored and supplied by anyone, independently of the software it describes.
 
-OpenBindings sits one layer above protocol-specific interface specifications such as OpenAPI, AsyncAPI, gRPC, and MCP, which describe how to interact with particular protocols and endpoints. An OBI describes operations (what a service can do rather than how), the realizations bindings declare for them, the operations a described component consumes, and the published names by which operations can be recognized. It relates these across protocols, complementing the artifacts its sources carry or point at.
+OpenBindings sits one layer above protocol-specific interface specifications such as OpenAPI, AsyncAPI, gRPC, and MCP. Those describe how to interact with particular protocols and endpoints. An OBI describes operations (what a service can do rather than how) and the realizations bindings declare for them. It also describes the operations a described component consumes, and the published names by which operations can be recognized. It relates these across protocols, complementing the artifacts its sources carry or point at.
 
-### 1.1. Distinguishing features (informative)
+### 1.1. Out of scope
 
-- **One operation, many bindings.** One operation contract can be realized over multiple protocols at once without duplicating the contract.
-- **One contract, either direction.** Bindings declare realizations of an operation; named dependencies declare where the described component consumes realizations, without a second operation map for what it consumes.
-- **Vendor-independent correspondence.** An operation can adopt the name a shared contract publishes, so readers recognize it by that name rather than by who runs the service ([§5.1](#51-operations)).
-- **Location-independent meaning.** OBI-defined references never depend on where a document was obtained, so its core meaning, and whether it conforms, are the same wherever it came from (invariants 4 and 5).
+The core defines the document envelope and each operation's caller-facing value contracts. How a source and its bindings are read, beginning with what their `content` means, is left to the source's kind (invariant 3; [§6](#6-kinds) lists the matters). Wherever this specification says a matter is read under a source's kind, it marks this boundary. It neither asserts that the kind is defined anywhere nor lets a kind's definition change the document model.
 
-### 1.2. Out of scope
+The core does not say:
 
-The core defines the document envelope and each operation's caller-facing value contracts; how a source and its bindings are read, beginning with what their `content` means, is left to the source's kind ([§6](#6-kinds) lists the matters). Wherever this specification says a matter is read under a source's kind, it marks this boundary: it neither asserts that the kind is defined anywhere nor lets a kind's definition change the document model.
-
-The core does not say whether or when an operation is invoked or how calls are managed (lifecycle, retries, credential flow, rate limiting), which binding carries out a call (`preference` and `deprecated` are only author signals, [§5.3](#53-bindings)), or what realization serves a dependency beyond its `kinds` constraint ([§5.5](#55-dependencies)). It defines no authentication field: a credential is context unless the operation is about it ([§5](#5-document-model)).
+- whether or when an operation is invoked;
+- how calls are managed (lifecycle, retries, credential flow, rate limiting);
+- which binding carries out a call (`preference` and `deprecated` are only author signals, [§5.3](#53-bindings));
+- what realization serves a dependency beyond its `kinds` constraint ([§5.5](#55-dependencies)).
 
 OpenBindings also does not:
 
-- **Serve as an authoring language.** It defines the interchange document; authoring tools and compilation workflows, such as TypeSpec and Smithy, are outside it.
-- **Define acquisition or publication** ([§1.3](#13-obtaining-an-obi)).
-- **Maintain registries.** Kinds and published names are author-assigned; this specification provides no registry or ownership test.
-- **Specify integrity, signing, or attestation.** These compose externally ([Appendix A](#appendix-a-canonical-serialization-informative)).
+- **Serve as an authoring language.** It defines the interchange document. Authoring tools and compilation workflows, such as TypeSpec and Smithy, are outside it.
+- **Define acquisition or publication** ([§1.2](#12-obtaining-an-obi)).
+- **Maintain registries** (invariant 6).
 
-### 1.3. Obtaining an OBI
+### 1.2. Obtaining an OBI
 
-An OBI may be obtained through local files, packages, standard input, resources compiled into a program, network retrieval, or any other mechanism, and its core meaning is the same whichever mechanism delivered it (invariant 4, [§7](#7-reference-resolution)).
+An OBI may be obtained through local files, packages, standard input, resources compiled into a program, network retrieval, or any other mechanism. Its core meaning is the same whichever mechanism delivered it (invariant 4, [§7](#7-reference-resolution)).
 
 ---
 
 ## 2. Core invariants
 
-The model rests on six invariants, cited elsewhere by number; most of their terms are defined in [§3](#3-terminology).
+The model rests on six invariants, cited elsewhere by number. Most of their terms are defined in [§3](#3-terminology).
 
 1. **Value contracts.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary, one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are read, for each binding, under its source's kind.
-2. **Declaration, not availability.** A binding declares a realization of its operation through a source; it does not assert that the realization is available, and the document alone need not suffice to identify or reach its target. A dependency carries no target ([§5.5](#55-dependencies)).
+2. **Declaration, not availability.** A binding declares a realization of its operation through a source. It does not assert that the realization is available, and the document alone need not suffice to identify or reach its target. A dependency carries no target ([§5.5](#55-dependencies)).
 3. **Bounded core meaning.** The operation carries the caller-facing value contracts. This specification defines neither the meaning of source or binding `content` nor how a binding's target is addressed, represented, referenced, adapted to, or interacted with. A kind does not change the meaning of core fields.
-4. **Location-independent references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so a document has the same core meaning however it was obtained. Source and binding `content` are outside the reference resolution of §7 (invariant 3). This specification assigns no document identity; `name` and `version` are labels.
-5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on the document, that release's text, the derived schema published with that release ([OBI-02](#10-conformance)), and the normative references the text's rules cite, the JSON Schema 2020-12 meta-schemas among them ([OBI-10](#10-conformance)); not on where the document was obtained or on any other resource it references. Releases of one line differ about a document only where a later release corrects an earlier one's text ([§8.1](#81-openbindings-field-specification-version)).
-6. **Decentralized naming.** Kinds and published names are author-assigned: this specification assigns no authority over them, the model requires no registry, and a kind is a name, not an address ([§6](#6-kinds)).
+4. **Location-independent references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so a document has the same core meaning however it was obtained. Source and binding `content` are outside the reference resolution of §7 (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
+5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on:
+   - the document;
+   - that release's text;
+   - the derived schema published with that release ([OBI-02](#10-conformance));
+   - the normative references the text's rules cite, the JSON Schema 2020-12 meta-schemas among them ([OBI-10](#10-conformance)).
+
+   Releases of one line differ about a document only where a later release corrects an earlier one's text ([§8.1](#81-openbindings-field-specification-version)).
+6. **Decentralized naming.** Kinds and published names are author-assigned. This specification assigns no authority over them and provides no registry or ownership test. The model requires no registry, and a kind is a name, not an address ([§6](#6-kinds)).
 
 ---
 
@@ -150,37 +152,41 @@ The model rests on six invariants, cited elsewhere by number; most of their term
 
 - **OBI**: an OpenBindings interface document.
 - **Core**: this specification, as distinct from what particular kinds define.
-- **Described component**: the software, such as a service or a program, that an OBI describes; a dependency names a point where it consumes a realization ([§5.5](#55-dependencies)).
-- **Operation**: a named, protocol-independent capability contract under a key in `operations`: what a service can do, the capability its identifiers name and its description conveys, with optional per-value input and output schemas ([§5.1](#51-operations)). Its name and schemas are its signature. Unqualified, *contract* means this whole contract.
-- **Value contract**: the part of an operation's contract that governs each caller-facing value crossing the boundary in one direction, to the operation or from it, stated by a schema: the **input contract**, stated by `input`, or the **output contract**, stated by `output`. An absent field states none ([§5.1](#51-operations)).
-- **Alias**: an additional name under which an operation is recognized, identifying it exactly as its key does ([§5.1](#51-operations)).
-- **Shared contract**: a published set of operations offered for adoption, such as another OBI's, not one operation's contract; its operations' keys and aliases are published names ([§5.1](#51-operations)).
-- **Correspondence**: an operation that carries a published name as its key or an alias **claims correspondence with** the operation that name identifies, read against each shared contract a reader holds that publishes the name; the claim is the author's alone ([§5.1](#51-operations)).
-- **Caller-facing**: said of the values an operation is about, which a caller sends to it and receives from it on the operation's side of a binding, and which its value contracts govern where stated; anything else a realization needs is context ([§5](#5-document-model)).
-- **Context**: what a realization needs that the operation is not about, such as a credential or a target's address; a source's or binding's content may carry it under the source's kind, or it comes from outside the document ([§5](#5-document-model)).
+- **Described component**: the software, such as a service or a program, that an OBI describes. A dependency names a point where it consumes a realization ([§5.5](#55-dependencies)).
+- **Operation**: a named, protocol-independent capability contract under a key in `operations`. The contract is what a service can do, the capability its identifiers name and its description conveys, with optional per-value input and output schemas ([§5.1](#51-operations)). Its name and schemas are its signature. Unqualified, *contract* means this whole contract.
+- **Value contract**: the part of an operation's contract that governs each caller-facing value crossing the boundary in one direction, to the operation or from it, stated by a schema. It is either the **input contract**, stated by `input`, or the **output contract**, stated by `output` ([§5.1](#51-operations)).
+- **Alias**: an additional name under which an operation is recognized. A string equal to it identifies the operation exactly as its key does ([§5.1](#51-operations)).
+- **Shared contract**: any published set of operations offered for adoption, such as another OBI's, not one operation's contract. Its operations' keys and aliases are published names ([§5.1](#51-operations)).
+- **Correspondence**: an operation that carries a published name as its key or an alias **claims correspondence with** the operation that name identifies. The claim is read against each shared contract a reader holds that publishes the name, and it is the author's alone ([§5.1](#51-operations)).
+- **Caller-facing**: said of the values an operation is about. A caller sends them to it and receives them from it on the operation's side of a binding. The operation's value contracts govern them where stated. Anything else a realization needs is context ([§5](#5-document-model)).
+- **Context**: what a realization needs that the operation is not about, such as a credential, a target's address, or a deadline. A source's or binding's content may carry it under the source's kind, or it comes from outside the document ([§5](#5-document-model)).
 - **Author claim**: one of the claims [§5](#5-document-model) lists, which a document makes and whose truth is outside conformance.
 - **Binding**: an author-declared realization of an operation through a source, under a key in `bindings` ([§5.3](#53-bindings)).
 - **Realization**: a concrete way of carrying out an operation's contract through a target. A binding declares one ([§5.3](#53-bindings)) and a dependency consumes one ([§5.5](#55-dependencies)), each as an author claim.
-- **Target**: what a binding claims realizes its operation, identified under its source's kind ([§5.4](#54-sources)): an entry in an artifact, a member of a live surface such as a running service's tool listing, or another form.
-- **Interaction**: the exchange with a target through which a binding's realization is carried out, such as a request and response, a stream, or a subscription; its mechanics are read under the source's kind ([§6](#6-kinds)).
+- **Target**: what a binding claims realizes its operation, identified under its source's kind ([§5.4](#54-sources)). It can be an entry in an artifact, a member of a live surface such as a running service's tool listing, or another form.
+- **Interaction**: the exchange with a target through which a binding's realization is carried out, such as a request and response, a stream, or a subscription. Its mechanics are read under the source's kind ([§6](#6-kinds)).
 - **Source**: an object carrying a kind and optional content read under that kind, under a key in `sources` ([§5.4](#54-sources)).
-- **Source artifact**: a concrete representation a source's kind may draw on, such as an OpenAPI document, a `.proto` source, an operation graph, or an MCP endpoint's tool listing, carried in or referenced from source `content`, or obtained otherwise ([§5.4](#54-sources)).
-- **Kind**: the exact, opaque, non-empty string a source carries in `kind` and a dependency may list in `kinds`; it selects how a source and its bindings are read ([§6](#6-kinds)).
+- **Source artifact**: a concrete representation a source's kind may draw on, such as an OpenAPI document, a `.proto` source, an operation graph, or an MCP endpoint's tool listing. It is carried in or referenced from source `content`, or obtained otherwise ([§5.4](#54-sources)).
+- **Kind**: the exact, opaque, non-empty string a source carries in `kind` and a dependency may list in `kinds`. It selects how a source and its bindings are read ([§6](#6-kinds)).
 - **Dependency**: a named point where the described component consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
-- **OBI position**: a place where the document model puts a schema; the **schemas the document contains** extend these through the resources declared there, nested resources included ([§7](#7-reference-resolution) defines both).
-- **Document resource**: the schema resource every schema at an OBI position that declares no `$id` belongs to; a schema that declares `$id` begins a resource of its own ([§7.2](#72-the-document-as-embedding)).
+- **OBI position**: a place where the document model puts a schema. The **schemas the document contains** extend these through the resources declared there, nested resources included ([§7](#7-reference-resolution) defines both).
+- **Document resource**: the schema resource every schema at an OBI position that declares no `$id` belongs to ([§7.2](#72-the-document-as-embedding)).
 - **Field**: a member of an OBI-defined object (the document root, and operation, dependency, source, binding, and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
 - **Absolute URI**: a URI with a scheme (RFC 3986 §3), fragment permitted; not RFC 3986's `absolute-URI` production, which excludes fragments.
+- **Undefined result**: an evaluation result left undefined, in the cases [§5.2](#52-schemas) defines.
+- **Declares a version**: said of a text that names, in its `openbindings` member, the specification version it is written against. [§8.1](#81-openbindings-field-specification-version) defines exactly when a text does.
+- **OBI-defined references**: the schema references whose form this specification fixes ([§7.1](#71-reference-forms) defines them).
+- **Plain name**: a same-document fragment such as the `task` of `#task`, as distinct from a JSON Pointer. [§7.3](#73-same-document-references) defines which fragments are plain names, and what a same-document reference, a plain name included, identifies.
 
-Other terms are defined where they are used: an operation's identifiers ([§5.1](#51-operations)); satisfying and failing a value contract, and an undefined result ([§5.2](#52-schemas)); an any-of constraint ([§5.5](#55-dependencies)); OBI-defined references ([§7.1](#71-reference-forms)); a plain name ([§7.3](#73-same-document-references)); declaring a version ([§8.1](#81-openbindings-field-specification-version)); and an extension ([§12](#12-extensions)).
+Other terms are defined where they are used: an operation's identifiers ([§5.1](#51-operations)); satisfying and failing a value contract ([§5.2](#52-schemas)); an any-of constraint ([§5.5](#55-dependencies)); published names ([§5.1](#51-operations)); reading under a source's kind ([§1.1](#11-out-of-scope)); and an extension ([§12](#12-extensions)).
 
 ---
 
 ## 4. Overview (informative)
 
-OpenBindings separates capability contracts (operations with per-value schemas) from declared realizations (bindings through sources) and named consumption points (dependencies): a single OBI can bind an operation over multiple protocols, depend on an operation, or do both without redefining the contract. Terms used informally below are defined in [Terminology].
+OpenBindings separates capability contracts (operations with per-value schemas) from declared realizations (bindings through sources) and named consumption points (dependencies). A single OBI can bind an operation over multiple protocols, depend on an operation, or do both without redefining the contract.
 
-Every OBI declares a specification version and an operations map; the minimal conformant document is just those two fields:
+Every OBI declares a specification version and an operations map. The minimal conformant document is just those two fields:
 
 ```json
 {
@@ -189,7 +195,13 @@ Every OBI declares a specification version and an operations map; the minimal co
 }
 ```
 
-An operation is the contract, a source carries the kind under which it and its bindings are read, and a binding links the two; one contract with many bindings is the specification's primary abstraction. This fuller OBI binds `createTask` over two protocols, shares a schema between operations, describes an error shape beside a result, adapts a source's wire shape in binding content, and claims correspondence through a qualified alias (a reader holding a shared contract that publishes `createTask` may read its key the same way):
+An operation is the contract, a source carries the kind under which it and its bindings are read, and a binding links the two. This fuller OBI:
+
+- binds `createTask` over two protocols;
+- shares a schema between operations;
+- describes an error shape beside a result;
+- adapts a source's wire shape in binding content;
+- claims correspondence through a qualified alias (a reader holding a shared contract that publishes `createTask` may read its key the same way).
 
 ```json
 {
@@ -272,9 +284,9 @@ An operation is the contract, a source carries the kind under which it and its b
 }
 ```
 
-Here `target` and `outputTransform` illustrate one possible reading of `example.openapi@1` ([§5.3](#53-bindings)), under which each HTTP binding's transform applies to success responses and an error response's body passes through as a `Problem` value.
+Here `target` and `outputTransform` illustrate one possible reading of `example.openapi@1` ([§5.3](#53-bindings)). Under it, each HTTP binding's transform applies to success responses, and an error response's body passes through as a `Problem` value.
 
-An operation's presence alone declares a contract, not availability: a binding declares a realization of it through a source, and a dependency declares a named consumption point for which a realization can be supplied:
+An operation's presence alone declares a contract, not availability. A binding declares a realization of it through a source, and a dependency declares a named consumption point for which a realization can be supplied:
 
 ```json
 {
@@ -298,7 +310,7 @@ An operation's presence alone declares a contract, not availability: a binding d
 }
 ```
 
-The alias adopts a published name, so this operation claims correspondence with the operation that name identifies in a shared contract, as does any operation, in any document, that carries the same name ([§5.1](#51-operations)).
+The alias adopts a published name, so this operation claims correspondence with the operation that name identifies in a shared contract ([§5.1](#51-operations)).
 
 ---
 
@@ -901,5 +913,3 @@ Take an OBI whose parsed JSON value satisfies the input requirements of [RFC 878
 The facility is JCS over the value exactly as carried. Rounding, coercing, repairing, or otherwise changing a value to manufacture compatible input yields the serialization of some other value. RFC 8785 rejects incompatible input. JCS also serializes each number from its binary64 value. So a number whose exact decimal value differs from the shortest rendering of that value is not carried exactly. For example, `1000000000000000128` is serialized as `1000000000000000100`. Under this specification's reading of numbers ([§5](#5-document-model)), such an OBI has no JCS serialization that carries its value exactly. Yet RFC 8785 itself does not reject it.
 
 Canonical serialization is syntactic: JCS sorts object member names and preserves array order, and performs no semantic normalization. Two OBIs that mean the same thing can have different canonical bytes, and equal bytes establish equal carried JSON data. Naming a serialization defines no integrity system ([§9](#9-security-considerations)). Digest algorithms, signature envelopes, carrier fields, and trust policy belong to downstream specifications. JCS covers only the JSON value carried in the OBI itself, never fetched external resources.
-
-[Terminology]: #3-terminology
