@@ -318,13 +318,13 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 | `sources`      | object | no       | Map of source keys to source objects.                                                                                              |
 | `bindings`     | object | no       | Map of binding keys to binding objects.                                                                                            |
 
-**Names.** The map keys this specification defines (operation, dependency, binding, source, schema, and example keys) and operation aliases are names. They are opaque tokens matching the grammar of OBI-04 as a whole, so a name ending in a newline does not match it ([OBI-04](#10-conformance)). Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name. That is why the grammar admits a leading digit (`2fa.verify`).
+**Names.** The map keys this specification defines (operation, dependency, binding, source, schema, and example keys) and operation aliases are names. They are opaque tokens, each matched as a whole against the grammar of OBI-04, so a name ending in a newline does not match it ([OBI-04](#10-conformance)). Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name. That is why the grammar admits a leading digit (`2fa.verify`).
 
 **Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of UTF-16 code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3). Two numbers are equal exactly when their exact decimal values are.
 
 **Value representation.** Operation inputs and outputs are described in the JSON data model of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259): a caller-facing value is one JSON value crossing the operation boundary (invariant 1). Which interaction data forms one value, and how it corresponds to JSON, is read under the kind of each binding's source. An array returned in one HTTP response can be one value, and the items of a gRPC stream several. A value need not travel as JSON text.
 
-**Context.** Context ([§3](#3-terminology)) may be carried in a source's or binding's content under the source's kind, or come from outside the document. A credential is caller-facing only when the operation is about it, which the author decides by describing it in `input` or `output`. A credential not described there, including where neither field is present, is context.
+**Context.** Context ([§3](#3-terminology)) may be carried in a source's or binding's content under the source's kind, or it comes from outside the document. A credential is caller-facing only when the operation is about it, which the author decides by describing it in `input` or `output`. A credential not described there, including where neither field is present, is context.
 
 **Fields and extensions.** Each OBI-defined object carries only the fields its table lists and extension fields whose names begin with `x-` ([OBI-02](#10-conformance), [§12](#12-extensions)).
 
@@ -341,7 +341,7 @@ This specification defines what each asserts; whether it is true is outside conf
 
 ### 5.1. Operations
 
-An operation's name and its optional schemas for each caller-facing input and output value ([§3](#3-terminology)) are its whole signature. Interaction pattern and cardinality (request/response, streaming, bidirectional, pub/sub; how many values cross) belong to each binding under its source's kind (invariant 1). This keeps the operation binding-independent. Its declaration alone makes no claim that a realization is available (invariant 2).
+An operation's name and its optional schemas for each caller-facing input and output value ([§3](#3-terminology)) are its whole signature. Interaction pattern and cardinality (request/response, streaming, bidirectional, pub/sub; how many values cross) belong to each binding under its source's kind (invariant 1). This keeps the operation binding-independent. An operation's declaration alone makes no claim that a realization is available (invariant 2).
 
 `output` describes every value the operation returns, whatever it means to the caller (several event types, a union of representations, a result or an error). Any JSON Schema construct can express the variation, such as `oneOf`, `anyOf`, or a `type` array. Which results of an interaction a binding returns as output values is read under its source's kind.
 
@@ -352,7 +352,7 @@ An operation object's fields are all optional:
 | `description` | string                | Human-readable description of the capability, which bindings claim to carry out ([§5.3](#53-bindings)). |
 | `deprecated`  | boolean               | Author recommends migration away from the operation.               |
 | `tags`        | array of strings      | Documentation labels for grouping and filtering, in no meaningful order; a repeated tag adds nothing. |
-| `aliases`     | array of strings      | Additional names, in no meaningful order. A string equal to one identifies the operation, as its key does (**Aliases**, below). |
+| `aliases`     | array of strings      | Additional names, in no meaningful order. A string equal to one identifies the operation exactly as its key does (**Aliases**, below). |
 | `input`       | JSON Schema or absent | States the input contract, which governs each caller-facing input value. |
 | `output`      | JSON Schema or absent | States the output contract, which governs each caller-facing output value. |
 | `examples`    | object                | Map of example names to example objects; see below.                |
@@ -368,17 +368,17 @@ An operation object's fields are all optional:
 
 For an operation that takes no meaningful input, a schema that admits only the empty object fits: `{"type": "object", "maxProperties": 0}`. An operation that returns nothing meaningful on any outcome, error or otherwise, uses the same schema for `output`.
 
-**Note.** Kinds differ on whether such a call carries an empty value or no value at all. An MCP tool's `{}` arguments and a gRPC `Empty` message are empty values. This input contract suits both. The empty value satisfies it, and where no value crosses, the input contract has nothing to apply to. Omitting `input` would state no input contract, and `false` leaves a caller that must send `{}` nothing it may send. `output: false` would misdescribe one realized under a kind that surfaces an empty result as `{}`.
+**Note.** Kinds differ on whether a call to an operation that takes no meaningful input carries an empty value or no value at all. This input contract suits both. The empty value satisfies it, and where no value crosses, the input contract has nothing to apply to. An MCP tool's `{}` arguments and a gRPC `Empty` message are empty values. Omitting `input` would state no input contract, and `false` leaves a caller that must send `{}` nothing it may send. For an operation that returns nothing meaningful, `output: false` would misdescribe one realized under a kind that surfaces an empty result as `{}`.
 
 **Signature.** Like a function signature, `input` and `output` describe shape, not behavior. A caller relies on a realization's values satisfying `output` exactly as far as it trusts the binding's author claim ([§5.3](#53-bindings)).
 
 **Aliases.** An operation's **identifiers** are its key and its aliases, one flat, document-unique namespace ([OBI-05](#10-conformance)). A string identifies an operation exactly when it equals the operation's key or one of its aliases ([§5](#5-document-model)). The operation's bindings are those whose `operation` holds its key. The key is the primary name, used for display, logging, and the `operation` references bindings and dependencies carry. Beyond that, choosing a key or an alias carries no meaning. Aliases commonly keep a prior name after a rename, carry a vendor-specific name some readers know it by, or adopt a shared contract's operation name.
 
-**Correspondence.** The keys and aliases of a shared contract's ([§3](#3-terminology)) operations are **published names**. By carrying a published name as its key or an alias, an operation **claims correspondence with** the operation that name identifies. A reader may read the operation as asserting that it is that name's operation in each shared contract the reader holds that publishes the name. The claim is an author claim ([§5](#5-document-model)) made by carrying the name, whatever the author intended.
+**Correspondence.** The keys and aliases of the operations of a shared contract ([§3](#3-terminology)) are **published names**. By carrying a published name as its key or an alias, an operation **claims correspondence with** the operation that name identifies. A reader may read the operation as asserting that it is that name's operation in each shared contract the reader holds that publishes the name. The claim is an author claim ([§5](#5-document-model)) made by carrying the name, whatever the author intended.
 
 **Note.** The claim demonstrates no schema compatibility, behavioral equivalence, substitutability, ownership, or trust.
 
-**Publishing names (informative).** Two adopted names that collide cannot coexist in one document. Publishers of names intended for adoption avoid this, and keep claims intentional, by qualifying them under a namespace they control. The namespace needs enough interface scope: `acme.tasks.createTask` rather than `create`. A published name stays useful for correspondence while it names one continuing semantic operation, so an intentionally incompatible replacement is best given a new name.
+**Publishing names (informative).** Two adopted names that collide cannot coexist in one document. Publishers of names intended for adoption avoid this by qualifying them under a namespace they control with enough interface scope (`acme.tasks.createTask` rather than `create`). Such qualification also keeps claims intentional. A published name stays useful for correspondence while it names one continuing semantic operation, so an intentionally incompatible replacement is best given a new name.
 
 **Examples.** `examples` maps names to author-supplied samples. An example object's fields are all optional:
 
@@ -445,7 +445,7 @@ A binding object has these fields ([OBI-02](#10-conformance)):
 | `description` | string         | no       | Human-readable description.                                               |
 | `deprecated`  | boolean        | no       | Author recommends migration away from this binding.                       |
 
-A binding's `content` might identify the target that realizes the operation, or describe how values are adapted between the operation's value contracts and that target. It might also serve any other purpose its source's kind gives it. A JSON Pointer into an OpenAPI document, a fully qualified gRPC method name with a value mapping, and an MCP tool name are examples. Its presence, absence, type, and members carry no core meaning.
+A binding's `content` might identify the target that realizes the operation, or describe how values are adapted between the operation's value contracts and that target. The `content` might also serve any other purpose its source's kind gives it. A JSON Pointer into an OpenAPI document, a fully qualified gRPC method name with a value mapping, and an MCP tool name are examples. Its presence, absence, type, and members carry no core meaning.
 
 **Realizations.** Multiple bindings MAY reference the same operation, each an author-declared realization of it. Attaching a binding asserts, as an author claim ([§5](#5-document-model)), that its target realizes the operation as the document describes it:
 
@@ -454,11 +454,11 @@ A binding's `content` might identify the target that realizes the operation, or 
 
 The operation's tags, deprecation, and examples are not part of the claim. Each binding claims to realize the operation on its own.
 
-**Idempotency.** `idempotent: true` is the binding author's claim ([§5](#5-document-model)) that repeating the operation through this binding produces no additional intended operation-level effects after the first application. The repetitions it covers use the same input, in [context](#3-terminology) that differs at most in ways the operation's effects do not depend on (a later deadline, say). `idempotent: false` claims that some such repetition through it can produce additional intended effects, and absence claims neither. Bindings of one operation may differ: a binding whose target deduplicates retried requests can claim `true` beside one that does not. The claim does not imply that authorization, billing, or audit effects repeat without consequence. The claim covers only repetitions that all go through this binding.
+**Idempotency.** `idempotent: true` is the binding author's claim ([§5](#5-document-model)) that repeating the operation through this binding produces no additional intended operation-level effects after the first application. The repetitions the claim covers use the same input, in [context](#3-terminology) that differs at most in ways the operation's effects do not depend on (a later deadline, say). `idempotent: false` claims that some such repetition through it can produce additional intended effects, and absence claims neither. Bindings of one operation may differ: a binding whose target deduplicates retried requests can claim `true` beside one that does not. The claim does not imply that authorization, billing, or audit effects repeat without consequence. The claim covers only repetitions that all go through this binding.
 
-**Note.** The claim concerns intended operation-level effects, not returned values, timing, or other per-attempt observations. A read of changing state can be idempotent while returning different values, and so can a deletion whose later attempts report absence. The claim implies neither that the operation, through this binding or any other, is safe, read-only, deterministic, cacheable, or harmless.
+**Note.** The claim concerns intended operation-level effects, not returned values, timing, or other per-attempt observations. A read of changing state can be idempotent while returning different values, and so can a deletion whose later attempts report absence. The claim does not imply that the operation, through this binding or any other, is safe, read-only, deterministic, cacheable, or harmless.
 
-**One contract, several bindings (informative).** Every binding claims the same value contracts, and no core field marks one output value apart from another. Callers that must tell output values apart, such as a result from an error, therefore rely on the schema (a required property, say). Bindings' values may not share a per-value shape: an HTTP binding may return a list as one array value, and a streaming binding its items one at a time. Then `output` admits both shapes, a kind's value adaptation reconciles them, or they realize different operations.
+**One contract, several bindings (informative).** Every binding claims the same value contracts, and no core field marks one output value apart from another. Callers that must tell output values apart, such as a result from an error, therefore rely on the schema (a required property, say). Bindings' values might not share a per-value shape: an HTTP binding might return a list as one array value, and a streaming binding its items one at a time. In that case, `output` admits both shapes, a kind's value adaptation reconciles them, or they realize different operations.
 
 **Preference signals.** `preference` is an optional signed integer from -9007199254740991 through 9007199254740991 (the exactly representable interoperable range). An integer is a number with no fractional part, so `1.0` and `1` are the same preference. Among bindings of the same operation that declare it, a higher value expresses stronger author preference and equal values no order. Omission states no preference, and zero and negative values mean nothing beyond their numeric order. `deprecated: true` states that the author recommends migration away from the binding and ordinarily does not recommend it for new use. The two signals are independent: `deprecated` does not change a binding's `preference`, and `preference` states nothing about deprecation.
 
@@ -494,8 +494,7 @@ A dependency object has these fields ([OBI-02](#10-conformance)):
 
 When present, `kinds` holds one or more unique kinds ([§6](#6-kinds), [OBI-02](#10-conformance)), in no meaningful order. The field is an **any-of constraint**: a binding meets it exactly when its source's kind is the same kind as one listed ([§6](#6-kinds)). Without `kinds`, the dependency places no constraint on kind: it accepts every kind.
 
-Multiple dependencies MAY reference the same operation, including with different `kinds` constraints. An operation MAY have both bindings and dependencies, each dependency a separate consumption point.
-
+Multiple dependencies MAY reference the same operation, including with different `kinds` constraints. An operation MAY have both bindings and dependencies. Each dependency is a separate consumption point.
 
 ---
 
@@ -523,7 +522,7 @@ A kind in turn stands on these core provisions, changes to which are breaking ([
 - **Content values.** `content` is any JSON value, and its presence is distinct from its value ([§5](#5-document-model)).
 - **Content references.** `content` is outside the reference resolution of [§7](#7-reference-resolution).
 - **Caller-facing values.** Caller-facing values are JSON values, and an operation's schemas apply to each value ([§5](#5-document-model), invariant 1).
-- **Binding values.** A binding claims that its target realizes its operation as the document describes it, taking any value that satisfies `input`, without promising success on each. It also claims that the target returns only values that satisfy `output`. Each half applies where the operation states the corresponding value contract ([§5.3](#53-bindings)).
+- **Binding value claims.** A binding claims that its target realizes its operation as the document describes it, taking any value that satisfies `input`, without promising success on each. It also claims that the target returns only values that satisfy `output`. The claims about the values taken and the values returned each apply where the operation states the corresponding value contract ([§5.3](#53-bindings)).
 
 **Sharing a kind (informative).** A kind is portable as far as its meaning is shared. Authors who want a kind read alike everywhere describe it in writing. They give an incompatible meaning a new kind, since nothing in a document distinguishes two meanings of one kind. A kind meant to circulate widely can be qualified under a name its publisher controls. The kind definitions this project drafts ([§14](#14-see-also-informative)) have no special standing here.
 
