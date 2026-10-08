@@ -2746,6 +2746,63 @@
           "supplied-resources"
         ]
       }
+    },
+    {
+      "id": "VALUES-75",
+      "description": "An embedded resource without $schema takes its enclosing resource's dialect, as JSON Schema defines (Core section 9.3.2); only where JSON Schema leaves the dialect to the implementation is it read as 2020-12 (section 5.2). Here the supplied root declares draft-07, so the embedded resource's dependencies asserts and a value with a but not b fails.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://ext.example.test/inner.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": 1
+          },
+          {
+            "a": 1,
+            "b": 2
+          }
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/outer.json",
+            "document": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "definitions": {
+                "inner": {
+                  "$id": "https://ext.example.test/inner.json",
+                  "type": "object",
+                  "dependencies": {
+                    "a": [
+                      "b"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "satisfies"
+        ],
+        "dependsOn": [
+          "supplied-resources",
+          "draft-07-dialect"
+        ]
+      }
     }
   ]
 }
