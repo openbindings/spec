@@ -501,30 +501,33 @@ Multiple dependencies MAY reference the same operation, including with different
 
 ## 6. Kinds
 
-A source's `kind` ([§3](#3-terminology)) names how the source and its bindings are read; a dependency may list the kinds it accepts in `kinds` ([§5.5](#55-dependencies)).
+A source's `kind` ([§3](#3-terminology)) names how the source and its bindings are read.
 
-**Comparison.** A kind is identified by its exact string: two kinds are the same kind exactly when their strings are equal ([§5](#5-document-model)), and two different strings are two unrelated kinds. Strings that differ only in case or Unicode normalization are different kinds, no part of a kind's spelling implies compatibility or order, and a kind is not an address, even when it resembles a URI (invariant 6).
+**Comparison.** A kind is identified by its exact string: two kinds are the same kind exactly when their strings are equal ([§5](#5-document-model)), and two different strings are two unrelated kinds.
+
+**Note.** Strings that differ only in case or Unicode normalization are different kinds. No part of a kind's spelling implies compatibility or order. A kind is not an address, even when it resembles a URI (invariant 6).
 
 **What a kind decides.** The core leaves to a source's kind:
 
 - what a source's `content` and its bindings' `content` may contain, and what they mean ([§5.3](#53-bindings), [§5.4](#54-sources));
 - how a binding's target is identified ([§5.4](#54-sources));
-- how caller-facing values correspond to interaction data: value adaptation, which data forms one value, and which results of an interaction are returned as output values ([§5](#5-document-model), [§5.1](#51-operations));
+- how caller-facing values correspond to interaction data: value adaptation and which data forms one value ([§5](#5-document-model));
+- which results of an interaction are returned as output values ([§5.1](#51-operations));
 - interaction mechanics: pattern, cardinality, framing, completion, and lifecycle (invariant 1);
 - how a binary artifact is encoded in `content` ([§5.4](#54-sources));
 - what context a realization requires, such as credentials ([§5](#5-document-model)).
 
 A kind in turn stands on these core provisions, changes to which are breaking ([§8.1](#81-openbindings-field-specification-version)):
 
-- a kind is an exact, opaque string, compared whole (above);
-- `content` is any JSON value, and its presence is distinct from its value ([§5](#5-document-model));
-- `content` is outside the reference resolution of [§7](#7-reference-resolution);
-- caller-facing values are JSON values, and an operation's schemas apply to each value ([§5](#5-document-model), invariant 1);
-- a binding claims that its target realizes its operation as the document describes it, taking any value that satisfies `input`, without promising success on each, and returning only values that satisfy `output`, each where the operation states the corresponding value contract ([§5.3](#53-bindings)).
+- **Kind strings.** A kind is an exact, opaque string, compared whole (above).
+- **Content values.** `content` is any JSON value, and its presence is distinct from its value ([§5](#5-document-model)).
+- **Content references.** `content` is outside the reference resolution of [§7](#7-reference-resolution).
+- **Caller-facing values.** Caller-facing values are JSON values, and an operation's schemas apply to each value ([§5](#5-document-model), invariant 1).
+- **Binding values.** A binding claims that its target realizes its operation as the document describes it, taking any value that satisfies `input`, without promising success on each. It also claims that the target returns only values that satisfy `output`. Each half applies where the operation states the corresponding value contract ([§5.3](#53-bindings)).
 
-**Sharing a kind (informative).** A kind is portable as far as its meaning is shared. Authors who want a kind read alike everywhere describe it in writing and give an incompatible meaning a new kind, since nothing in a document distinguishes two meanings of one kind. A kind meant to circulate widely can be qualified under a name its publisher controls. The kind definitions this project drafts ([§14](#14-see-also-informative)) have no special standing here, and matching a kind establishes neither provenance nor authorization ([§9](#9-security-considerations)).
+**Sharing a kind (informative).** A kind is portable as far as its meaning is shared. Authors who want a kind read alike everywhere describe it in writing. They give an incompatible meaning a new kind, since nothing in a document distinguishes two meanings of one kind. A kind meant to circulate widely can be qualified under a name its publisher controls. The kind definitions this project drafts ([§14](#14-see-also-informative)) have no special standing here.
 
-A kind used only privately needs no qualification; a source for a locally built CLI, described by a private `usage.kdl` file, might be:
+A kind used only privately needs no qualification. A source for a locally built CLI, described by a private `usage.kdl` file, might be:
 
 ```json
 {
