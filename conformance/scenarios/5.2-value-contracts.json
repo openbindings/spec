@@ -1806,7 +1806,7 @@
     },
     {
       "id": "VALUES-51",
-      "description": "multipleOf is decided on exact decimal values (section 5).",
+      "description": "multipleOf is decided on exact decimal values, the arbitrary-precision numbers of JSON Schema's data model (section 5.2; JSON Schema Core section 4.2.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2300,6 +2300,101 @@
         "results": [
           "satisfies",
           "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-65",
+      "description": "A 2020-12 $schema at an input that declares no $id, where JSON Schema does not permit $schema, names the dialect the schema is already read in and has no other effect (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "s",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-66",
+      "description": "Validity can depend on an undefined result through annotations: unevaluatedProperties counts b as evaluated only if the branch holding the invalid pattern is valid, so an object with a and b has an undefined result. Without b, or with a property no branch evaluates, every way the pattern could come out gives the same validity (section 5.2). Software that evaluates the whole schema may decline those.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "anyOf": [
+                  {
+                    "properties": {
+                      "a": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "a"
+                    ]
+                  },
+                  {
+                    "properties": {
+                      "b": {
+                        "type": "string",
+                        "pattern": "(?i)x"
+                      }
+                    }
+                  }
+                ],
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": "s",
+            "b": "y"
+          },
+          {
+            "a": "s"
+          },
+          {
+            "a": "s",
+            "c": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined",
+          {
+            "result": "satisfies",
+            "orNoVerdict": true
+          },
+          {
+            "result": "fails",
+            "orNoVerdict": true
+          }
         ]
       }
     }

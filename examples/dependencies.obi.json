@@ -48,15 +48,15 @@
     "completedExportDelivery": {
       "operation": "exports.deliver",
       "kinds": [
-        "openbindings.openapi-3.1@1",
-        "openbindings.grpc@1"
+        "example.openapi@1",
+        "example.grpc@1"
       ],
       "description": "Where completed exports are sent for delivery."
     }
   },
   "sources": {
     "exportsApi": {
-      "kind": "openbindings.openapi-3.1@1",
+      "kind": "example.openapi@1",
       "content": { "location": "https://exports.example.com/openapi.json" }
     }
   },

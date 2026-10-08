@@ -2,7 +2,7 @@
   "openbindings": "0.2.0",
   "name": "User Service",
   "version": "2.0.0",
-  "description": "A user service available through two OpenAPI sources — a public API and an internal admin API — unified under one interface.",
+  "description": "A user service available through two OpenAPI sources, a public API and an internal admin API, unified under one interface.",
   "schemas": {
     "User": {
       "type": "object",
@@ -103,6 +103,10 @@
     },
     "listUsers": {
       "description": "List all users. Only available through the admin API.",
+      "input": {
+        "type": "object",
+        "maxProperties": 0
+      },
       "output": {
         "$ref": "#/schemas/ListUsersOutput"
       }
@@ -110,12 +114,12 @@
   },
   "sources": {
     "publicApi": {
-      "kind": "openbindings.openapi-3.1@1",
+      "kind": "example.openapi@1",
       "content": { "location": "https://api.example.com/openapi.json" },
       "description": "Public-facing REST API"
     },
     "adminApi": {
-      "kind": "openbindings.openapi-3.1@1",
+      "kind": "example.openapi@1",
       "content": { "location": "https://admin.example.com/openapi.json" },
       "description": "Internal admin REST API"
     }
@@ -124,13 +128,13 @@
     "getUser.publicApi": {
       "operation": "getUser",
       "source": "publicApi",
-      "content": { "target": "#/paths/~1users~1{userId}/get" },
+      "content": { "target": "#/paths/~1users~1%7BuserId%7D/get" },
       "idempotent": true
     },
     "getUser.adminApi": {
       "operation": "getUser",
       "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users~1{userId}/get" },
+      "content": { "target": "#/paths/~1admin~1users~1%7BuserId%7D/get" },
       "idempotent": true
     },
     "createUser.publicApi": {

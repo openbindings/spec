@@ -128,14 +128,17 @@ entry states the result.
 | Tested rules | Not met. No deliberately wrong implementation is published or run in CI. |
 | Two implementations | Not met: the Go SDK passes the corpus. The TypeScript SDK's runner reads the retired scenario format, and spec CI runs no TypeScript implementation on the core corpus. |
 | Implementable from the text | Not met: no blind implementation run since the kind, pruning, and value-contract changes, and the restructure into a document model only. |
-| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
-| One vocabulary | Not met: "described component" is used without definition, and §3 does not index terms defined in place. |
+| No open defects | Not met: not yet triaged, each raised by one reviewer of the 2026-10-07 ranking: what "the same input" is for objects and arrays in §5.3's idempotency; which bindings a dependency's `kinds` test applies to (§5.5); whether the order of `aliases` and `tags` carries meaning; "an operation's name" in §5.1 beside its several identifiers; what OBI-12 says of a reference to a plain name declared twice; whether an operation's description is part of its contract. |
+| One vocabulary | Met: §3 defines the described component, the text says reader where it said consumer and no longer says provider, §5.4 uses Source artifact, and §3 points to the terms defined in place; the Go SDK and the corpus use none of the replaced words. |
 
-Peer ranking (2026-10-06, core text at 581382f, one reviewer): 3rd of 8,
-unchanged, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, Protocol
-Buffers with gRPC, AsyncAPI 3.1, WSDL 2.0, and TypeSpec. First on scope
-discipline and the conformance model, second on precision, seventh on
-economy and readability.
+Peer ranking (2026-10-07, core text at 349e67b, three independent
+reviewers): 2nd of 8 in all three, behind GraphQL and ahead of Smithy 2.0
+(3rd in all three), OpenAPI 3.2, Protocol Buffers with gRPC, WSDL 2.0,
+AsyncAPI 3.1, and TypeSpec. First on scope discipline, precision, and the
+conformance model; second on implementability; third on evolution; fifth on
+economy; seventh on readability. Up from 3rd on 2026-10-06 (one reviewer,
+text at 581382f), when it was second on precision, fourth on
+implementability, fifth on evolution, and seventh on economy.
 
 ## Errata
 

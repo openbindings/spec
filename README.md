@@ -13,8 +13,7 @@
 
 <p align="center">
   <a href="https://openbindings.com">Website</a> &middot;
-  <a href="openbindings.md">Read the spec</a> &middot;
-  <a href="agent-primer.md">AI agent primer</a>
+  <a href="openbindings.md">Read the spec</a>
 </p>
 
 ---
@@ -76,7 +75,7 @@ core test corpus, and worked examples. The core specification is
 self-contained; the separately scoped specifications and informative material
 listed below do not add core requirements.
 
-Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version. The informative [`agent-primer.md`](agent-primer.md) is kept beside the working specification; it is pending revision for the kind pass, so the core specification governs any disagreement. The website renders that same file rather than maintaining another copy.
+Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version.
 
 ## In this repository
 
@@ -85,11 +84,10 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`http-discovery.md`](http-discovery.md) | Optional, independently versioned HTTP Discovery specification |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
-| [`agent-primer.md`](agent-primer.md) | Informative orientation for AI agents; pending revision for the kind pass |
 | [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
 | [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
 | [`binding-specs/`](binding-specs/) | Unreleased first-`@1` binding-specification candidates and authoring guidance |
-| [`examples/`](examples/) | Worked example OBI documents |
+| [`examples/`](examples/) | Example OBI documents, with illustrative kinds and `content` |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |
 | [`versions/`](versions/) | Immutable released snapshots |
 | [`history/`](history/) | Archived, non-normative design records; not current requirements or issue lists |

@@ -19,6 +19,18 @@
       "valid": true
     },
     {
+      "description": "a 2020-12 $schema on an input that declares no $id, where JSON Schema does not permit $schema, meets the rule (section 5.2)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": { "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "string" }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
       "description": "schema without $schema (omission permitted)",
       "document": {
         "openbindings": "0.2.0",

@@ -9,9 +9,9 @@
     "files": 20,
     "fixtureFiles": 15,
     "scenarioFiles": 5,
-    "tests": 302,
-    "scenarios": 115,
-    "positives": 117,
+    "tests": 303,
+    "scenarios": 117,
+    "positives": 118,
     "negatives": 185,
     "rulesCoveredDocument": 13,
     "rulesPartialDocument": 0,
@@ -29,8 +29,8 @@
     "check-examples": 7,
     "resolve-operation": 21,
     "validate-document": 6,
-    "validate-operation-values": 64,
-    "validity fixture": 302
+    "validate-operation-values": 66,
+    "validity fixture": 303
   },
   "files": [
     {
@@ -101,8 +101,8 @@
       "path": "document/OBI-09.json",
       "rule": "OBI-09",
       "section": "10",
-      "tests": 11,
-      "positives": 4,
+      "tests": 12,
+      "positives": 5,
       "negatives": 7
     },
     {
@@ -184,9 +184,9 @@
       "path": "scenarios/5.2-value-contracts.json",
       "section": "5.2",
       "format": "openbindings.core-scenarios@3",
-      "scenarios": 64,
+      "scenarios": 66,
       "actions": {
-        "validate-operation-values": 64
+        "validate-operation-values": 66
       }
     },
     {
