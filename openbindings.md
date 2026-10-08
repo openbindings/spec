@@ -318,19 +318,26 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 | `sources`      | object | no       | Map of source keys to source objects.                                                                                              |
 | `bindings`     | object | no       | Map of binding keys to binding objects.                                                                                            |
 
-**Names.** The map keys this specification defines (operation, dependency, binding, source, schema, and example keys) and operation aliases are names: opaque ASCII tokens matching `^[A-Za-z0-9_][A-Za-z0-9_.-]*$`, an [ECMA-262](#131-normative-references) pattern matched against the whole name, so a name ending in a newline does not match it ([OBI-04](#10-conformance)). Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name, which is why the grammar admits a leading digit (`2fa.verify`). Keys within one map are distinct ([OBI-01](#10-conformance)).
+**Names.** The map keys this specification defines (operation, dependency, binding, source, schema, and example keys) and operation aliases are names. They are opaque tokens matching the grammar of OBI-04 as a whole, so a name ending in a newline does not match it ([OBI-04](#10-conformance)). Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name. That is why the grammar admits a leading digit (`2fa.verify`).
 
-**Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of UTF-16 code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3), and two numbers when their exact decimal values are.
+**Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of UTF-16 code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3). Two numbers are equal exactly when their exact decimal values are.
 
-**Value representation.** Operation inputs and outputs are described in the JSON data model of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259): a caller-facing value is one JSON value crossing the operation boundary (invariant 1). Which interaction data forms one value, and how it corresponds to JSON, is read under the kind of each binding's source: an array returned in one HTTP response can be one value, the items of a gRPC stream several. A value need not travel as JSON text.
+**Value representation.** Operation inputs and outputs are described in the JSON data model of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259): a caller-facing value is one JSON value crossing the operation boundary (invariant 1). Which interaction data forms one value, and how it corresponds to JSON, is read under the kind of each binding's source. An array returned in one HTTP response can be one value, and the items of a gRPC stream several. A value need not travel as JSON text.
 
-**Context.** Caller-facing values are the ones the operation is about. Anything else a realization needs, such as a credential, the address of a target, or a deadline, is **context**, which a source's or binding's content may carry under the source's kind, or which comes from outside the document. A credential is caller-facing only when the operation is about it, which the author decides by describing it in `input` or `output`; a credential not described there, including where neither field is present, is context.
+**Context.** Context ([§3](#3-terminology)) may be carried in a source's or binding's content under the source's kind, or come from outside the document. A credential is caller-facing only when the operation is about it, which the author decides by describing it in `input` or `output`. A credential not described there, including where neither field is present, is context.
 
 **Fields and extensions.** Each OBI-defined object carries only the fields its table lists and extension fields whose names begin with `x-` ([OBI-02](#10-conformance), [§12](#12-extensions)).
 
 **Presence.** For every optional field, presence is distinct from value: a field present with the JSON value `null` is present, and a field is absent only when omitted.
 
-**Author claims.** Some of what a document says is its author's claim: an operation's `examples` ([§5.1](#51-operations)), a binding's claim to realize its operation and its `idempotent` claim ([§5.3](#53-bindings)), a dependency's claim to consume its operation within its value contracts ([§5.5](#55-dependencies)), and correspondence ([§5.1](#51-operations)). This specification defines what each asserts; whether it is true is outside conformance.
+**Author claims.** Some of what a document says is its author's claim, namely:
+
+- an operation's `examples` ([§5.1](#51-operations));
+- a binding's claim to realize its operation, and its `idempotent` claim ([§5.3](#53-bindings));
+- a dependency's claim to consume its operation within its value contracts ([§5.5](#55-dependencies));
+- correspondence ([§5.1](#51-operations)).
+
+This specification defines what each asserts; whether it is true is outside conformance.
 
 ### 5.1. Operations
 
@@ -467,13 +474,13 @@ A source object has these fields ([OBI-02](#10-conformance)):
 | `content`     | any JSON value | no       | Content read under the source's kind. |
 | `description` | string         | no       | Human-readable description.           |
 
-The content can embed a [source artifact](#3-terminology), address one or a live service, name something supplied from outside the document, or combine these; since JSON has no binary primitive, how a binary artifact is encoded there is read under the kind ([§6](#6-kinds)).
+The content can embed a [source artifact](#3-terminology), address one or a live service, name something supplied from outside the document, or combine these. Since JSON has no binary primitive, how a binary artifact is encoded there is read under the kind ([§6](#6-kinds)).
 
 **Target identity.** How a binding's target is identified is read under the source's kind: from the binding and source alone, or with information from outside the document.
 
 ### 5.5. Dependencies
 
-A dependency's map key identifies its consumption point ([§3](#3-terminology)) for configuration, wiring, and diagnostics; the dependency names no realization to serve it, not even one of this document's own bindings, creates no operation, and does not enter the operation-identifier namespace.
+A dependency's map key identifies its consumption point ([§3](#3-terminology)) for configuration, wiring, and diagnostics. The dependency names no realization to serve it, not even one of this document's own bindings.
 
 A dependency object has these fields ([OBI-02](#10-conformance)):
 
@@ -483,13 +490,12 @@ A dependency object has these fields ([OBI-02](#10-conformance)):
 | `kinds`       | array of strings | no       | Kinds acceptable at this consumption point. |
 | `description` | string           | no       | Human-readable description.                 |
 
-**Consumption.** Declaring a dependency asserts, as an author claim ([§5](#5-document-model)), that the described component, as a caller of the operation, sends only values that satisfy `input` and takes any value that satisfies `output`, error-shaped values included, as the operation's output. Each half applies where the operation states the corresponding value contract.
+**Consumption.** Declaring a dependency asserts, as an author claim ([§5](#5-document-model)), that the described component, as a caller of the operation, sends only values that satisfy `input`. The claim also asserts that the component takes any value that satisfies `output`, error-shaped values included, as the operation's output. Each half applies where the operation states the corresponding value contract.
 
-When present, `kinds` holds one or more unique kinds ([§6](#6-kinds), [OBI-02](#10-conformance)), in no meaningful order, as an **any-of constraint**: a binding meets it exactly when its source's kind is the same kind as one listed ([§6](#6-kinds)). Without `kinds`, the dependency places no constraint on kind: it accepts every kind.
+When present, `kinds` holds one or more unique kinds ([§6](#6-kinds), [OBI-02](#10-conformance)), in no meaningful order. The field is an **any-of constraint**: a binding meets it exactly when its source's kind is the same kind as one listed ([§6](#6-kinds)). Without `kinds`, the dependency places no constraint on kind: it accepts every kind.
 
-Multiple dependencies MAY reference the same operation, including with different `kinds` constraints, and an operation MAY have both bindings and dependencies, each dependency a separate consumption point.
+Multiple dependencies MAY reference the same operation, including with different `kinds` constraints. An operation MAY have both bindings and dependencies, each dependency a separate consumption point.
 
-A dependency says nothing about when the consuming behavior runs or what happens when no realization is supplied.
 
 ---
 
