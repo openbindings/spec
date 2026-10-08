@@ -140,7 +140,7 @@ Each scenario carries `id` (its file's prefix and a number, such as `VALUES-07`,
 
 **Value results.** A value result is one of:
 - `satisfies` or `fails`: the value satisfies or fails the contract (§5.2);
-- `undefined`: whether the value satisfies the contract is undefined, because its validity depends on an undefined result (§5.2, §7.4);
+- `undefined`: whether the value satisfies the contract is undefined, because its validity depends on an undefined result (§5.2, §7.4); where it also rests on a resource the case does not supply, only if it would be undefined whatever that resource holds;
 - `external`: the result rests on a resource the document does not contain and the case does not supply, so the document alone does not settle it (§5.2);
 - `no-contract`: `input` or `output` is absent, so no contract is stated, and the value neither satisfies nor fails one (§5.2);
 - `{"result": ..., "orNoVerdict": true}`: that result, which software may also decline, because the schema holds an undefined or external part that this value's result does not depend on, and software that evaluates the whole schema may decline;
@@ -148,7 +148,7 @@ Each scenario carries `id` (its file's prefix and a number, such as `VALUES-07`,
 
 **Example results.** `true` and `false` state the example's claim for a value (§5.1); `undefined` and `external` follow the value's result, as above; `no-claim` marks a value where no contract is stated.
 
-**Resources.** `resources` supplies schema documents for external references, each at its absolute URI; the expected results are what JSON Schema gives with them (§5.2), including the dialect JSON Schema assigns an external schema.
+**Resources.** `resources` supplies schema documents for external references, each at its absolute URI; the expected results are what JSON Schema gives with them (§5.2), including the dialect JSON Schema assigns an external schema, and 2020-12 for a schema document whose root declares no `$schema`.
 
 ### Judging
 

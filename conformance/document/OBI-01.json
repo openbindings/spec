@@ -1,7 +1,7 @@
 {
   "rule": "OBI-01",
   "section": "10",
-  "description": "Is valid UTF-8 (RFC 3629) encoded JSON per RFC 8259, with no leading byte-order mark and no object holding two members whose names are equal (§5). Note: parsers differ on repeated names and on a leading byte-order mark, so the same bytes could yield different values; excluding both follows RFC 8259 §8.1, which forbids adding a byte-order mark, and interoperable-JSON practice (RFC 7493 §2.3).",
+  "description": "Is valid UTF-8 (RFC 3629) encoded JSON per RFC 8259, with no leading byte-order mark and no object holding two members whose names are equal (§5). Note: parsers differ on repeated names and on a leading byte-order mark, so the same bytes could yield different values. Excluding both follows RFC 8259 §8.1, which forbids adding a byte-order mark, and interoperable-JSON practice (RFC 7493 §2.3).",
   "notes": "Inline documents cover ordinary parsed values; documentText preserves duplicate keys and malformed JSON; documentBase64 carries exact bytes for invalid UTF-8 and a forbidden leading byte-order mark. Runners must hand the selected carriage to the strict document parser without pre-normalizing it.",
   "tests": [
     {
