@@ -2397,6 +2397,306 @@
           }
         ]
       }
+    },
+    {
+      "id": "VALUES-67",
+      "description": "Annotations from a supplied resource count: the resource's properties evaluate a, so unevaluatedProperties holds for an object with a alone and fails for one that adds b (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "allOf": [
+                  {
+                    "$ref": "https://ext.example.test/props.json"
+                  }
+                ],
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": "s"
+          },
+          {
+            "a": "s",
+            "b": 1
+          }
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/props.json",
+            "document": {
+              "properties": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-68",
+      "description": "Without the resource, whether its annotations evaluate a is unknown, so the result rests on the resource (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "allOf": [
+                  {
+                    "$ref": "https://ext.example.test/props.json"
+                  }
+                ],
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": "s"
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-69",
+      "description": "The value-contract provisions hold inside a supplied resource: format is an annotation, a pattern is read with Unicode semantics, so the dot matches one code point outside the Basic Multilingual Plane, and the resource's own reference resolves as JSON Schema defines (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://ext.example.test/s.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\ud83d\ude00",
+          "ab",
+          5
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/s.json",
+            "document": {
+              "$defs": {
+                "s": {
+                  "type": "string",
+                  "format": "email",
+                  "pattern": "^.$"
+                }
+              },
+              "$ref": "#/$defs/s"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails",
+          "fails"
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-70",
+      "description": "Under oneOf, a string's validity depends on the invalid pattern whatever the absent resource holds, so its result is undefined; a number, which the pattern ignores, depends on the resource alone, so its result rests on it (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "oneOf": [
+                  {
+                    "pattern": "(?i)x"
+                  },
+                  {
+                    "$ref": "https://absent.example.test/r.json"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "y",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined",
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-71",
+      "description": "Under allOf, the absent resource could reject the string whatever the invalid pattern gives, so the result is not undefined for every resource and rests on the resource (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "allOf": [
+                  {
+                    "pattern": "(?i)x"
+                  },
+                  {
+                    "$ref": "https://absent.example.test/r.json"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "y"
+        ]
+      },
+      "expected": {
+        "results": [
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-72",
+      "description": "With the resource supplied and rejecting the string, the invalid pattern no longer matters, so the string fails (section 5.2). Software that evaluates the whole schema may decline.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "allOf": [
+                  {
+                    "pattern": "(?i)x"
+                  },
+                  {
+                    "$ref": "https://absent.example.test/r.json"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "y"
+        ],
+        "resources": [
+          {
+            "uri": "https://absent.example.test/r.json",
+            "document": {
+              "type": "number"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "result": "fails",
+            "orNoVerdict": true
+          }
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-73",
+      "description": "With the resource supplied and accepting the string, validity depends on the invalid pattern, so the result is undefined (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "allOf": [
+                  {
+                    "pattern": "(?i)x"
+                  },
+                  {
+                    "$ref": "https://absent.example.test/r.json"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "y"
+        ],
+        "resources": [
+          {
+            "uri": "https://absent.example.test/r.json",
+            "document": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
     }
   ]
 }

@@ -39,7 +39,10 @@ arrive. The specification specifies the document model only.
 - **Context and author claims.** [§5](openbindings.md#5-document-model)
   defines context: what a realization needs that the operation is not about,
   such as a credential, a target's address, or a deadline, carried in content
-  under the source's kind or coming from outside the document. It lists the
+  under the source's kind or coming from outside the document. A credential
+  is caller-facing only when the author describes it in `input` or `output`.
+  An operation's contract is the capability its identifiers name and its
+  description conveys, with its value contracts. It lists the
   document's author claims (examples, a binding's realization claim and its
   `idempotent`, a dependency's consumption claim, and correspondence); their
   truth is outside conformance.
@@ -51,7 +54,9 @@ arrive. The specification specifies the document model only.
   undefined, satisfaction is undefined; where it depends on a resource the
   document does not contain, it depends on that resource. Validity depends on
   such a part only when the part's outcome, with the annotations that follow
-  it, would change it. An absent schema states no contract.
+  it, would change it; a value that depends on both is undefined only if it
+  would be undefined whatever the resource holds. An absent schema states no
+  contract.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
@@ -115,7 +120,8 @@ arrive. The specification specifies the document model only.
   operation's bindings are those whose `operation` holds its key
   ([§5.1](openbindings.md#51-operations)). Carrying a shared
   contract's published name as a key or alias claims correspondence with that
-  contract's operation, as a reader holding the contract reads it
+  contract's operation, as a reader holding the contract reads it, and with
+  the operation of that name in every other held contract that publishes it
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
