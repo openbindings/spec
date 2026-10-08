@@ -755,18 +755,26 @@ The optional `version` field is the author's label for the described interface. 
 
 ## 9. Security considerations
 
-Processing OBI documents involves parsing untrusted JSON, optionally obtaining external artifacts and schemas, resolving references, and acting on `content` that may include author-supplied expressions. The threat surface is comparable to that of JSON Schema processors and artifact-consuming tools generally (SSRF, resource exhaustion, untrusted code evaluation, content confusion); the document format creates the following exposure:
+Processing OBI documents involves parsing untrusted JSON, optionally obtaining external artifacts and schemas, resolving references, and acting on `content` that may include author-supplied expressions. The threat surface is comparable to that of JSON Schema processors and artifact-consuming tools generally (SSRF, resource exhaustion, untrusted code evaluation, content confusion). The document format creates the following exposure:
 
-- **URIs as attack vectors.** Addresses a tool reads from a source's or binding's `content`, and schema `$ref` values, may resolve to arbitrary endpoints, network or local, including internal or link-local addresses such as `http://169.254.169.254/...` and local files such as `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure. Because no OBI-defined reference resolves against the URI a document was fetched from (invariant 4), moving a document does not change what its OBI-defined references resolve to.
-- **Unbounded size.** The specification caps the size of neither OBI documents nor the artifacts and schemas they reference; untrusted input creates memory and processing-time exhaustion exposure.
-- **Regular-expression cost.** Schema `pattern` and `patternProperties` values run on the evaluating tool's regular-expression engine; a backtracking engine can take exponential time on crafted input.
+- **URIs as attack vectors.** Addresses a tool reads from a source's or binding's `content`, and schema `$ref` values, may resolve to arbitrary endpoints, network or local. Such endpoints include internal or link-local addresses such as `http://169.254.169.254/...` and local files such as `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure. Moving a document does not change what its OBI-defined references resolve to (invariant 4).
+- **Unbounded size.** The specification caps the size of neither OBI documents nor the artifacts and schemas they reference. Untrusted input creates memory and processing-time exhaustion exposure.
+- **Regular-expression cost.** Schema `pattern` and `patternProperties` values run on the evaluating tool's regular-expression engine. A backtracking engine can take exponential time on crafted input.
 - **Schema `$ref` cycles.** Permitted by [§7](#7-reference-resolution); naive resolvers can exhaust the stack or loop indefinitely.
-- **Identifier shadowing.** An `$id` can claim any URI, including a meta-schema's or one another document declares; a tool that registers the schema resources of every document it reads in one shared registry lets one document change how another's references, or its meta-schema lookups, resolve (JSON Schema Core §13).
-- **Executable content.** `content` may carry expressions or other executable material; untrusted documents can embed expressions designed to run without bound or to reach host state.
-- **Dependencies are not trust claims.** A matching operation name or kind establishes neither the authenticity nor the authorization of whatever supplies a realization: a realization found that way, and the values it supplies, stay untrusted until other means establish trust in them.
-- **Integrity is out of scope.** Authenticity and integrity are established by external means (transport security, content signing, out-of-band attestation) or not at all, and [Appendix A](#appendix-a-canonical-serialization-informative) names a deterministic serialization such systems can build on.
+- **Identifier shadowing.** An `$id` can claim any URI, including a meta-schema's or one another document declares. A tool might register the schema resources of every document it reads in one shared registry. One document can then change how another's references, or its meta-schema lookups, resolve (JSON Schema Core §13).
+- **Executable content.** `content` may carry expressions or other executable material. Untrusted documents can embed expressions designed to run without bound or to reach host state.
+- **Dependencies are not trust claims.** A matching operation name or kind establishes neither the authenticity nor the authorization of whatever supplies a realization. A realization found that way, and the values it supplies, stay untrusted until other means establish trust in them.
+- **Integrity is out of scope.** Authenticity and integrity are established by external means (transport security, content signing, out-of-band attestation) or not at all. [Appendix A](#appendix-a-canonical-serialization-informative) names a deterministic serialization such systems can build on.
 
-Common measures against these exposures, where documents come from untrusted origins: allowing only expected URI schemes and network ranges to be dereferenced, checked after DNS resolution and at each redirect; capping the size of fetched documents, schemas, and source artifacts; bounding the cost of regular-expression matching; isolating and bounding the evaluation of any expressions `content` carries; enforcing transport security; keeping each document's schema resources apart from other documents' and from the meta-schemas; and bounding traversal through recursive schemas and through references followed in `content`.
+Common measures against these exposures, where documents come from untrusted origins:
+
+- allowing only expected URI schemes and network ranges to be dereferenced, checked after DNS resolution and at each redirect;
+- capping the size of fetched documents, schemas, and source artifacts;
+- bounding the cost of regular-expression matching;
+- isolating and bounding the evaluation of any expressions `content` carries;
+- enforcing transport security;
+- keeping each document's schema resources apart from other documents' and from the meta-schemas;
+- bounding traversal through recursive schemas and through references followed in `content`.
 
 ---
 
