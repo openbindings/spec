@@ -511,6 +511,28 @@
       "violates": [
         "OBI-11"
       ]
+    },
+    {
+      "description": "two schemas at OBI positions declaring the same relative $id violate OBI-11 only: a relative $id at an OBI position has no enclosing $id to resolve against, so OBI-13 leaves it out of the comparison (section 10)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "a.json"
+          },
+          "B": {
+            "$id": "a.json"
+          }
+        },
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-11"
+      ],
+      "notViolated": [
+        "OBI-13"
+      ]
     }
   ]
 }
