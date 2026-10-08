@@ -38,15 +38,15 @@ arrive. The specification specifies the document model only.
   operation that takes, or returns, nothing meaningful. An operation's
   contract is the capability its identifiers name and its description
   conveys, with its value contracts ([§3](openbindings.md#3-terminology)).
-- **Context and author claims.** [§5](openbindings.md#5-document-model)
+- **Context and author claims.** [§3](openbindings.md#3-terminology)
   defines context: what a realization needs that the operation is not about,
   such as a credential, a target's address, or a deadline, carried in content
   under the source's kind or coming from outside the document. A credential
   is caller-facing only when the author describes it in `input` or `output`.
-  It lists the
-  document's author claims (examples, a binding's realization claim and its
-  `idempotent`, a dependency's consumption claim, and correspondence); their
-  truth is outside conformance.
+  [§5](openbindings.md#5-document-model) lists the document's author claims
+  (examples, a binding's realization claim and its `idempotent`, a
+  dependency's consumption claim, and correspondence); their truth is outside
+  conformance.
 - **Satisfying a value contract.** [§5.2](openbindings.md#52-schemas)
   defines when a value satisfies or fails a contract: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
@@ -187,7 +187,8 @@ arrive. The specification specifies the document model only.
   the line (0.1: `openbindings-0.1.0.json`), and a title naming the patch
   release. Where it and the prose disagree, it governs OBI-02 until a patch
   release corrects it under the same `$id`. In 0.1 the schema was descriptive
-  and the prose governed.
+  and the prose governed. Its descriptions are short labels that cite the
+  section defining each member.
 - **Examples are author claims.** Each example `input` and `output` is one
   caller-facing value the author claims satisfies the corresponding contract;
   a value that fails it makes the claim false, and the schema alone states
@@ -209,7 +210,7 @@ arrive. The specification specifies the document model only.
 - **Compatibility checking**: the schema-comparison profile, normalization,
   the operation-matching algorithm, interface conformance, and compatibility
   reports. The core fixes only when two kinds are the same and which operation
-  a string identifies ([§1.2](openbindings.md#12-out-of-scope)).
+  a string identifies ([§6](openbindings.md#6-kinds), [§5.1](openbindings.md#51-operations)).
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
   Credentials and other prerequisites are context.

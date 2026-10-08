@@ -4,7 +4,7 @@
 
 This companion specification defines configuration-free discovery of an OpenBindings interface document (OBI) over HTTP: a service publishes its OBI at the well-known URI path `/.well-known/openbindings`, and unconfigured clients retrieve it from there. It normatively defines the server and client obligations at that endpoint.
 
-This document is a **companion** to the OpenBindings core specification (`openbindings.md`). It is normative for implementations that claim conformance to it, and optional for everyone else: software that produces or consumes OBI documents is not required to implement HTTP discovery, an OBI may be obtained through any mechanism without changing its meaning (core §1.3), and other discovery mechanisms (registries, configuration, service meshes) remain valid. Conformance to this specification is claimed and versioned separately from core conformance.
+This document is a **companion** to the OpenBindings core specification (`openbindings.md`). It is normative for implementations that claim conformance to it, and optional for everyone else: software that produces or consumes OBI documents is not required to implement HTTP discovery, an OBI may be obtained through any mechanism without changing its meaning (core §1.2), and other discovery mechanisms (registries, configuration, service meshes) remain valid. Conformance to this specification is claimed and versioned separately from core conformance.
 
 Retrieving an OBI through this endpoint retrieves the complete document, including any Core `dependencies` declarations. Discovery does not register, wire, select, or satisfy those dependencies; those composition behaviors remain outside both this companion and the Core specification.
 

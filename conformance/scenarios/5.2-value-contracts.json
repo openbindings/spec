@@ -1,7 +1,7 @@
 {
   "format": "openbindings.core-scenarios@3",
   "section": "5.2",
-  "description": "Whether a value satisfies or fails the contract an operation's input or output schema states, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, and references resolved as section 7 defines; or whether the result is undefined, rests on a resource the document does not contain, or meets no contract because none is stated (section 5.2, Value contracts).",
+  "description": "Whether a value satisfies or fails the contract an operation's input or output schema states, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, references resolved as section 7 defines, and a schema document whose root declares no $schema read as 2020-12; or whether the result is undefined, rests on a resource the document does not contain, or meets no contract because none is stated (section 5.2, Value contracts).",
   "scenarios": [
     {
       "id": "VALUES-01",
