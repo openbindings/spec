@@ -136,7 +136,7 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 1. **Value contracts.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary, one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are read, for each binding, under its source's kind.
 2. **Declaration, not availability.** A binding declares a realization of its operation through a source. It does not assert that the realization is available, and the document alone need not suffice to identify or reach its target. A dependency carries no target ([§5.5](#55-dependencies)).
 3. **Bounded core meaning.** The operation carries the caller-facing value contracts. This specification defines neither the meaning of source or binding `content` nor how a binding's target is addressed, represented, referenced, adapted to, or interacted with. A kind does not change the meaning of core fields.
-4. **Location-independent references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so a document has the same core meaning however it was obtained. Source and binding `content` are outside the reference resolution of §7 (invariant 3). This specification assigns no document identity. The `name` and `version` fields are labels.
+4. **Location-independent references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so a document has the same core meaning however it was obtained. Source and binding `content` are outside the reference resolution of §7 (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
 5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on:
    - the document;
    - that release's text;
@@ -195,7 +195,7 @@ Every OBI declares a specification version and an operations map. The minimal co
 }
 ```
 
-An operation is the contract, a source carries the kind under which it and its bindings are read, and a binding links the two. This fuller OBI does five things:
+An operation is the contract, a source carries the kind under which it and its bindings are read, and a binding links the two. This fuller OBI:
 
 - binds `createTask` over two protocols;
 - shares a schema between operations;
@@ -572,7 +572,7 @@ Nothing else in the document is a schema it contains. Wherever this specificatio
 
 ### 7.1. Reference forms
 
-The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference (RFC 3986 §4.1) is not a reference of any form.
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
 
 ### 7.2. The document as embedding
 
@@ -586,7 +586,7 @@ JSON Schema lets the format that embeds a schema determine its initial base URI 
 
 In the document resource, a same-document reference identifies as follows:
 
-1. **Decoding.** Its fragment, if any, is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
+1. **Decoding.** Its fragment is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
 2. **Empty reference or fragment.** An empty reference or an empty fragment, such as `#`, identifies the OBI document itself, not the schema that contains it.
 3. **JSON Pointer.** A decoded fragment that begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer evaluated per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §4 from the document root. A valid pointer identifies the location it reaches. One that is not valid, or reaches no location, identifies nothing.
 4. **Plain name.** Any other fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)).
