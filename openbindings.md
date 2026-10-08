@@ -435,7 +435,7 @@ An **undefined result** is any of these:
 
 A value's validity depends on an undefined result exactly when that validity would differ between two ways the result could come out. Such ways include a keyword valid or invalid, and a property name matching a pattern or not. A value's validity depends on a resource the document does not contain exactly when that validity would differ between two contents the resource could have. In both tests, the annotations JSON Schema collects follow each way.
 
-Where a value's validity depends on an undefined result, whether the value satisfies its value contract is undefined. But where its validity also depends on a resource the document does not contain, whether it satisfies that contract is undefined only if it would be undefined whatever that resource holds. Where its validity depends on such a resource and whether it satisfies is not undefined, the document alone does not settle it: it is what JSON Schema, read with the four provisions, gives with that resource. With that resource, whether the value satisfies its value contract follows these same rules, so it can still be undefined.
+Where a value's validity depends on an undefined result, whether the value satisfies its value contract is undefined. But where its validity also depends on a resource the document does not contain, from the document alone whether it satisfies that contract is undefined only if it would be undefined whatever that resource holds. Where its validity depends on such a resource and whether it satisfies is not undefined, the document alone does not settle it: it is what JSON Schema, read with the four provisions, gives with that resource. With that resource, whether the value satisfies its value contract follows these same rules, so it can still be undefined.
 
 Where every way gives the same validity, that validity stands: a value that satisfies one branch of an `anyOf` satisfies it whatever another branch's undefined result would be.
 
@@ -605,7 +605,7 @@ Beyond what [§7.2](#72-the-document-as-embedding) and [§7.3](#73-same-document
 - references within a schema resource that declares `$id` (its plain names included);
 - references to external schemas.
 
-[OBI-13](#10-conformance) compares `$id`s only after the resolution and empty-fragment removal it names, and that resolution removes dot segments. So spellings that RFC 3986 §6 normalization would equate stay distinct for that rule. Whether they name one resource is for JSON Schema to say.
+[OBI-13](#10-conformance) compares `$id`s only after the resolution and empty-fragment removal it names, and that resolution removes dot segments. So spellings that RFC 3986 §6 normalization would equate but those steps leave different stay distinct for that rule. Examples are a host in another case and a percent-encoded unreserved character. Whether they name one resource is for JSON Schema to say.
 
 Within a schema resource that declares `$id`, each of the following has an undefined result ([§5.2](#52-schemas)):
 
