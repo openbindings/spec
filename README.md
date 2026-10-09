@@ -121,3 +121,12 @@ OpenBindings is a community-driven project. Sponsorship helps fund development, 
 ## License
 
 This specification is released under the [Apache 2.0 License](LICENSE).
+
+## Component CI
+
+Ordinary CI validates this branch's schemas, examples, deterministic corpus,
+publication records and immutable snapshots. `historical-compatibility.yml`
+is an explicitly manual replay of the legacy reference runners and the larger
+adversarial run. Its implementation jobs retain historical commands and can
+require unavailable sibling packages; they are not a passing release claim.
+The reference commits are fixed, and do not follow development branches.
