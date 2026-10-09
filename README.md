@@ -133,3 +133,11 @@ OpenBindings is a community-driven project. Sponsorship helps fund development, 
 ## License
 
 This specification is released under the [Apache 2.0 License](LICENSE).
+
+## CI ownership
+
+Ordinary CI validates this repository’s schemas, examples, deterministic corpus
+and publication integrity with locked validators (`npm ci --prefix .github`).
+Implementation compatibility, network authority corroboration and the existing
+512-trial adversarial replay are manual in `historical-compatibility.yml`. They
+do not define normative expectations. The central project caller is retired.
