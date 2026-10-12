@@ -68,9 +68,7 @@ is read once for each (OAS §4.3.1, §4.3.2).
 
 `[convention]` The entry document's representation, its root type and its
 `openapi` value are the only source-wide checks; failing one makes the source
-invalid. Any other defect affects only the declarations that need it. A source
-that declares operations under `paths`, none of which can be a target, is
-invalid; one that declares none is valid and has no targets.
+invalid. Any other defect affects only the declarations that need it.
 
 ## 3. Binding content and target
 
