@@ -87,15 +87,15 @@
     },
     {
       "id": "CONFORMANCE-06",
-      "description": "A string holding an escaped lone surrogate is a sequence of code units (section 5; RFC 8259 section 8.2), so the text conforms.",
+      "description": "A string holding an escape that denotes an unpaired surrogate violates OBI-01 (section 10), so the text does not conform.",
       "action": "validate-document",
       "given": {
         "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud800\",\"operations\":{}}"
       },
       "expected": {
-        "outcome": "conformant",
-        "dependsOn": [
-          "exact-lone-surrogate-strings"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-01"
         ]
       }
     }

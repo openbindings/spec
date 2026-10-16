@@ -35,10 +35,10 @@ const (
 	// futureOp is future with an operation that has an example.
 	futureOp = `{"openbindings": "9.9.9", "operations": {"op": {"input": {"type": "string"}, "examples": {"e": {"input": "a"}}}}}`
 	// The Go core concludes nothing about a text holding a string that
-	// escapes a lone surrogate: a decline, on a conforming text and on a
-	// violating one.
-	loneConforming = `{"openbindings":"0.2.0","description":"\ud800","operations":{}}`
-	loneViolating  = `{"openbindings":"0.2.0","description":"\ud800","operations":{},"dependencies":{"d":{"operation":"missing"}}}`
+	// escapes a lone surrogate, so these texts exercise the decline path.
+	// Each control states the outcome its case expects.
+	escapedSurrogate          = `{"openbindings":"0.2.0","description":"\ud800","operations":{}}`
+	escapedSurrogateViolating = `{"openbindings":"0.2.0","description":"\ud800","operations":{},"dependencies":{"d":{"operation":"missing"}}}`
 
 	twoBindings = `{"openbindings": "0.2.0", "operations": {"createTask": {"aliases": ["tasks.create"]}, "other": {}},
 		"sources": {"s": {"kind": "example.test@1"}},
@@ -112,10 +112,10 @@ func controls(violated, kept string) []judgeControl {
 			`{"document": ` + violating + `, "valid": false, "violates": ` + q(violated) + `, "notViolated": ` + q(violated) + `}`, Fail, "notViolated"},
 		{"fixture: violates and notViolated (their correct twin)", fixtureAction,
 			`{"document": ` + violating + `, "valid": false, "violates": ` + q(violated) + `, "notViolated": ` + q(kept) + `}`, Pass, "non-conformant"},
-		{"fixture: a decline on a conforming text falls short", fixtureAction, `{` + text(loneConforming) + `, "valid": true}`, Shortfall, "declined on a conforming text"},
+		{"fixture: a decline on a conforming text falls short", fixtureAction, `{` + text(escapedSurrogate) + `, "valid": true}`, Shortfall, "declined on a conforming text"},
 		{"fixture: fixtures carry no dependsOn, so none admits a decline", fixtureAction,
-			`{` + text(loneConforming) + `, "valid": true, "dependsOn": ["exact-lone-surrogate-strings"]}`, Shortfall, "declined on a conforming text"},
-		{"fixture: a decline on a non-conforming text", fixtureAction, `{` + text(loneViolating) + `, "valid": false}`, Fail, "declined on a non-conforming text"},
+			`{` + text(escapedSurrogate) + `, "valid": true, "dependsOn": ["draft-07-dialect"]}`, Shortfall, "declined on a conforming text"},
+		{"fixture: a decline on a non-conforming text", fixtureAction, `{` + text(escapedSurrogateViolating) + `, "valid": false}`, Fail, "declined on a non-conforming text"},
 		{"fixture: a version refusal is a decline (non-conforming)", fixtureAction, `{"document": ` + future + `, "valid": false}`, Fail, "declined on a non-conforming text"},
 		{"fixture: a version refusal is a decline (conforming)", fixtureAction, `{"document": ` + future + `, "valid": true}`, Shortfall, "declined on a conforming text"},
 		{"fixture: no valid", fixtureAction, `{"document": ` + conforming + `}`, Fail, "no valid"},
@@ -135,15 +135,15 @@ func controls(violated, kept string) []judgeControl {
 		{"validate-document: violates (its correct twin)", "validate-document",
 			`{"given": {"document": ` + violating + `}, "expected": {"outcome": "non-conformant", "violates": ` + q(violated) + `}}`, Pass, "non-conformant"},
 		{"validate-document: a decline under a feature declared unsupported", "validate-document",
-			`{"given": {` + text(loneConforming) + `}, "expected": {"outcome": "conformant", "dependsOn": ["exact-lone-surrogate-strings"]}}`, Pass, "declined under exact-lone-surrogate-strings"},
+			`{"given": {` + text(escapedSurrogate) + `}, "expected": {"outcome": "conformant", "dependsOn": ["draft-07-dialect"]}}`, Pass, "declined under draft-07-dialect"},
 		{"validate-document: a decline where every feature is declared supported", "validate-document",
-			`{"given": {` + text(loneConforming) + `}, "expected": {"outcome": "conformant", "dependsOn": ["exact-numbers"]}}`, Shortfall, "declined on a conforming text"},
+			`{"given": {` + text(escapedSurrogate) + `}, "expected": {"outcome": "conformant", "dependsOn": ["exact-numbers"]}}`, Shortfall, "declined on a conforming text"},
 		{"validate-document: a decline with no dependsOn", "validate-document",
-			`{"given": {` + text(loneConforming) + `}, "expected": {"outcome": "conformant"}}`, Shortfall, "declined on a conforming text"},
+			`{"given": {` + text(escapedSurrogate) + `}, "expected": {"outcome": "conformant"}}`, Shortfall, "declined on a conforming text"},
 		{"validate-document: a decline on a non-conforming text, whatever it depends on", "validate-document",
-			`{"given": {` + text(loneViolating) + `}, "expected": {"outcome": "non-conformant", "dependsOn": ["exact-lone-surrogate-strings"]}}`, Fail, "declined on a non-conforming text"},
+			`{"given": {` + text(escapedSurrogateViolating) + `}, "expected": {"outcome": "non-conformant", "dependsOn": ["draft-07-dialect"]}}`, Fail, "declined on a non-conforming text"},
 		{"validate-document: an unsupported feature does not admit a wrong conclusion", "validate-document",
-			`{"given": {"document": ` + conforming + `}, "expected": {"outcome": "non-conformant", "dependsOn": ["exact-lone-surrogate-strings"]}}`, Fail, "concluded conformant"},
+			`{"given": {"document": ` + conforming + `}, "expected": {"outcome": "non-conformant", "dependsOn": ["draft-07-dialect"]}}`, Fail, "concluded conformant"},
 		{"validate-document: a feature the profile does not declare", "validate-document",
 			`{"given": {"document": ` + conforming + `}, "expected": {"outcome": "conformant", "dependsOn": ["no-such-feature"]}}`, Fail, "does not declare"},
 		{"validate-document: a retired outcome", "validate-document", `{"given": {"document": ` + conforming + `}, "expected": {"outcome": "interpreted"}}`, Fail, "unknown outcome"},

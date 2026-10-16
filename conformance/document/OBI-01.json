@@ -1,7 +1,7 @@
 {
   "rule": "OBI-01",
   "section": "10",
-  "description": "Is valid UTF-8 (RFC 3629) encoded JSON per RFC 8259, with no leading byte-order mark and no object holding two members whose names are equal (§5). Note: parsers differ on repeated names and on a leading byte-order mark, so the same bytes could yield different values. Excluding both follows RFC 8259 §8.1, which forbids adding a byte-order mark, and interoperable-JSON practice (RFC 7493 §2.3).",
+  "description": "Is valid UTF-8 (RFC 3629) encoded JSON per RFC 8259, with no leading byte-order mark, no member name or string value holding an escape that denotes an unpaired surrogate (RFC 8259 §8.2), and no object holding two members whose names are equal (§5). Note: parsers differ on all three, so the same bytes could yield different values, or none. In \"\\ud800\" the escape denotes a code point UTF-8 cannot encode (RFC 3629 §3), so excluding it applies the UTF-8 requirement to escaped text too. A surrogate pair such as \"\\ud83d\\ude00\" denotes one character, and noncharacters such as U+FFFF are read alike by parsers; both are permitted. The exclusions follow RFC 8259 §8.1, which forbids adding a byte-order mark, and interoperable-JSON practice (RFC 7493 §2.1, §2.3).",
   "notes": "Inline documents cover ordinary parsed values; documentText preserves duplicate keys and malformed JSON; documentBase64 carries exact bytes for invalid UTF-8 and a forbidden leading byte-order mark. Runners must hand the selected carriage to the strict document parser without pre-normalizing it.",
   "tests": [
     {
@@ -332,6 +332,82 @@
       "violates": [
         "OBI-01"
       ]
+    },
+    {
+      "description": "an escape denoting an unpaired high surrogate in a string value violates OBI-01",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud800\",\"operations\":{}}",
+      "valid": false,
+      "violates": [
+        "OBI-01"
+      ],
+      "notViolated": [
+        "OBI-02",
+        "OBI-03",
+        "OBI-04",
+        "OBI-05",
+        "OBI-06",
+        "OBI-07",
+        "OBI-08",
+        "OBI-09",
+        "OBI-10",
+        "OBI-11",
+        "OBI-12",
+        "OBI-13"
+      ]
+    },
+    {
+      "description": "an escape denoting an unpaired low surrogate in a member name violates OBI-01, inside an embedded schema as anywhere else",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{\"op\":{\"input\":{\"type\":\"object\",\"properties\":{\"\\udc00\":{}}}}}}",
+      "valid": false,
+      "violates": [
+        "OBI-01"
+      ],
+      "notViolated": [
+        "OBI-02",
+        "OBI-03",
+        "OBI-04",
+        "OBI-05",
+        "OBI-06",
+        "OBI-07",
+        "OBI-08",
+        "OBI-09",
+        "OBI-10",
+        "OBI-11",
+        "OBI-12",
+        "OBI-13"
+      ]
+    },
+    {
+      "description": "a low surrogate escape followed by a high surrogate escape is two unpaired surrogates, not a pair",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ude00\\ud83d\",\"operations\":{}}",
+      "valid": false,
+      "violates": [
+        "OBI-01"
+      ],
+      "notViolated": [
+        "OBI-02",
+        "OBI-03",
+        "OBI-04",
+        "OBI-05",
+        "OBI-06",
+        "OBI-07",
+        "OBI-08",
+        "OBI-09",
+        "OBI-10",
+        "OBI-11",
+        "OBI-12",
+        "OBI-13"
+      ]
+    },
+    {
+      "description": "a surrogate-pair escape denotes one character and is permitted",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud83d\\ude00\",\"operations\":{}}",
+      "valid": true
+    },
+    {
+      "description": "an escaped noncharacter is a Unicode scalar value and is permitted",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\uffff\",\"operations\":{}}",
+      "valid": true
     }
   ]
 }
