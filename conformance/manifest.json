@@ -9,10 +9,10 @@
     "files": 20,
     "fixtureFiles": 15,
     "scenarioFiles": 5,
-    "tests": 308,
+    "tests": 313,
     "scenarios": 127,
-    "positives": 120,
-    "negatives": 188,
+    "positives": 122,
+    "negatives": 191,
     "rulesCoveredDocument": 13,
     "rulesPartialDocument": 0,
     "sectionsCited": [
@@ -30,16 +30,16 @@
     "resolve-operation": 21,
     "validate-document": 6,
     "validate-operation-values": 76,
-    "validity fixture": 308
+    "validity fixture": 313
   },
   "files": [
     {
       "path": "document/OBI-01.json",
       "rule": "OBI-01",
       "section": "10",
-      "tests": 22,
-      "positives": 2,
-      "negatives": 20
+      "tests": 27,
+      "positives": 4,
+      "negatives": 23
     },
     {
       "path": "document/OBI-02.json",

@@ -55,7 +55,6 @@ The profile (`profile` in `actions.go`) is what the SDK with `schemaeval` declar
 | `repeated-member-detection` | supported |
 | `draft-07-dialect` | unsupported |
 | `exact-numbers` | supported |
-| `exact-lone-surrogate-strings` | unsupported: the Go core does not carry a string escaping a lone surrogate, so it concludes nothing about a text holding one |
 
 A SHORTFALL, a decline where the profile supports every feature the case depends on, fails the run: the profile is the SDK's own declaration.
 

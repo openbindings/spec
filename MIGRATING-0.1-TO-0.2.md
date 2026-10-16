@@ -134,7 +134,8 @@ caller-facing values.
 Before considering a document migrated:
 
 1. Parse it with a 0.2 parser that rejects malformed JSON, duplicate keys, a
-   byte-order mark, and invalid UTF-8.
+   byte-order mark, invalid UTF-8, and escapes that denote unpaired
+   surrogates.
 2. Validate it against [`openbindings.schema.json`](openbindings.schema.json)
    and the rules in
    [`openbindings.md` §10](openbindings.md#10-conformance).

@@ -33,9 +33,6 @@ var profile = map[string]bool{
 	"repeated-member-detection":        true,
 	"draft-07-dialect":                 false,
 	"exact-numbers":                    true,
-	// The Go core does not carry a string escaping a lone UTF-16 surrogate,
-	// so it concludes nothing about a text holding one.
-	"exact-lone-surrogate-strings": false,
 }
 
 // unimplemented maps each action this SDK does not implement to the reason,
