@@ -50,12 +50,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   operation that takes, or returns, nothing meaningful. An operation's
   contract is the capability its identifiers name and its description
   conveys, with its value contracts ([§3](openbindings.md#3-terminology)).
-- **Context and author claims.** [§3](openbindings.md#3-terminology)
-  defines context: what a realization needs that the operation is not about,
-  such as a credential, a target's address, or a deadline, carried in content
-  under the binding's kind or coming from outside the document. A credential
-  is caller-facing only when the author describes it in `input` or `output`.
-  [§5](openbindings.md#5-document-model) lists the document's author claims
+- **Author claims.** [§5](openbindings.md#5-document-model) lists the document's
+  author claims
   (examples, a binding's realization claim and its `idempotent`, a
   dependency's consumption claim, and correspondence); their truth is outside
   conformance.
@@ -93,8 +89,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   opaque, non-empty names, with no normalization, version algebra, or address
   meaning (§6). `operation` and `kind` are required; `content` is optional and
   can be any JSON value. Source objects and the binding `source` member leave
-  the document model. Target identification, value adaptation, interaction
-  mechanics, and context are interpreted under each binding's kind (§5.3).
+  the document model. Target identification, value adaptation, and interaction
+  mechanics are interpreted under each binding's kind (§5.3).
 - **Shared values use `resources`.** A name-to-value map replaces the dedicated
   schema map and optional source-content factoring. A schema-use pointer
   establishes a schema entry point; identifiers in otherwise opaque data are
@@ -219,7 +215,6 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   a string identifies ([§6](openbindings.md#6-kinds), [§5.1](openbindings.md#51-operations)).
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
-  Credentials and other prerequisites are context.
 - **Transforms**: transform objects, named transforms, and the JSONata
   requirement. Value adaptation is read under the binding's kind, typically
   from binding `content`; OpenBindings defines no transform or expression

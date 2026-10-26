@@ -83,8 +83,7 @@ OpenAPI document for two bindings. The
 
 OpenBindings defines document meaning and conformance. Kind-specific
 interpretation, invocation APIs, binding selection, dependency wiring, and
-credential handling are outside it. Context can be carried in kind content or
-supplied externally.
+credential handling are outside it.
 [HTTP Discovery](http-discovery.md) is separately scoped and optional.
 
 | Path | Purpose |

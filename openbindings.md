@@ -156,8 +156,7 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 - **Alias**: an additional name under which an operation is recognized. A string equal to it identifies the operation exactly as its key does ([§5.1](#51-operations)).
 - **Shared contract**: any published set of operations offered for adoption, such as another OBI's, not one operation's contract. Its operations' keys and aliases are published names ([§5.1](#51-operations)).
 - **Correspondence**: an operation that carries a published name as its key or an alias **claims correspondence with** the operation that name identifies. The claim is read against each shared contract a reader holds that publishes the name. The claim is the author's alone ([§5.1](#51-operations)).
-- **Caller-facing**: said of the values an operation is about. A caller sends them to it and receives them from it on the operation's side of a binding. The operation's value contracts govern them where stated. Anything a realization needs beyond these values is context ([§5](#5-document-model)).
-- **Context**: what a realization needs that the operation is not about, such as a credential, a target's address, or a deadline. A binding's content may carry it under the binding's kind, or it comes from outside the document ([§5](#5-document-model)).
+- **Caller-facing**: said of the values an operation is about. A caller sends them to it and receives them from it on the operation's side of a binding. The operation's value contracts govern them where stated.
 - **Author claim**: one of the claims [§5](#5-document-model) lists, which a document makes and whose truth is outside conformance.
 - **Binding**: an author-declared realization of an operation under a kind, under a key in `bindings` ([§5.3](#53-bindings)).
 - **Realization**: a concrete way of carrying out an operation's contract through a target. A binding declares one ([§5.3](#53-bindings)) and a dependency consumes one ([§5.5](#55-dependencies)), each as an author claim.
@@ -336,8 +335,6 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 
 **Value representation.** Operation inputs and outputs are described in the JSON data model of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259): a caller-facing value is one JSON value crossing the operation boundary (invariant 1). Which interaction data forms one value, and how it corresponds to JSON, is read under each binding's kind. An array returned in one HTTP response can be one value, and the items of a gRPC stream several. A value need not travel as JSON text.
 
-**Context.** Context ([§3](#3-terminology)) may be carried in a binding's content under the binding's kind, or it comes from outside the document. A credential is caller-facing only when the operation is about it, which the author decides by describing it in `input` or `output`. A credential not described there, including where neither field is present, is context.
-
 **Fields and extensions.** Each OBI-defined object carries only the fields its table lists and extension fields whose names begin with `x-` ([OBI-02](#10-conformance), [§12](#12-extensions)).
 
 **Presence.** For every optional field, presence is distinct from value: a field present with the JSON value `null` is present, and a field is absent only when omitted.
@@ -466,7 +463,7 @@ A binding's `content` might carry a complete realization description, identify t
 
 The operation's tags, deprecation, and examples are not part of the claim. Each binding claims to realize the operation on its own.
 
-**Idempotency.** `idempotent: true` is the binding author's claim ([§5](#5-document-model)) that repeating the operation through this binding produces no additional intended operation-level effects after the first application. The repetitions the claim covers use the same input, in [context](#3-terminology) that differs at most in ways the operation's effects do not depend on (a later deadline, say). `idempotent: false` claims that some such repetition through it can produce additional intended effects, and absence claims neither. Bindings of one operation may differ: a binding whose target deduplicates retried requests can claim `true` beside one that does not. The claim does not imply that authorization, billing, or audit effects repeat without consequence. The claim covers only repetitions that all go through this binding.
+**Idempotency.** `idempotent: true` is the binding author's claim ([§5](#5-document-model)) that repeating the operation through this binding produces no additional intended operation-level effects after the first application. The repetitions the claim covers use the same input; any other supplied information differs only in ways that do not affect the operation's intended effects. `idempotent: false` claims that some such repetition through it can produce additional intended effects, and absence claims neither. Bindings of one operation may differ: a binding whose target deduplicates retried requests can claim `true` beside one that does not. The claim does not imply that authorization, billing, or audit effects repeat without consequence. The claim covers only repetitions that all go through this binding.
 
 **Note.** The claim concerns intended operation-level effects, not returned values, timing, or other per-attempt observations. A read of changing state can be idempotent while returning different values, and so can a deletion whose later attempts report absence. The claim does not imply that the operation, through this binding or any other, is safe, read-only, deterministic, cacheable, or harmless.
 
@@ -523,7 +520,7 @@ A binding's `kind` ([§3](#3-terminology)) names how its `content` and realizati
 - how caller-facing values correspond to interaction data, including adaptation and which data forms one value;
 - which interaction results become output values;
 - interaction pattern, cardinality, framing, completion, and lifecycle;
-- encoding of binary artifacts and required context, such as credentials;
+- encoding of binary artifacts;
 - which content positions, if any, adopt the shared-value reference mechanism of §7.6, and how an artifact's own reference root and base are established.
 
 A kind in turn relies on these provisions of this specification, changes to which are breaking ([§8.1](#81-openbindings-field-specification-version)):

@@ -60,7 +60,7 @@ separate question.
 | Operation-level `idempotent` | Binding-level repetition claim |
 | `input: null` / `output: null` for no contract | Omit the schema field |
 | Root `roles`, operation `satisfies` | Qualified aliases for correspondence where intended |
-| Transforms and security fields | Kind-defined content/context; OpenBindings supplies neither transform language nor invocation API |
+| Transforms and security fields | Kind-defined content; OpenBindings supplies neither transform language nor invocation API |
 | Retrieval-relative schema references | Document-local or absolute references under §7 |
 
 Removed unprefixed fields cause structural nonconformance. `x-` fields remain
