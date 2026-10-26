@@ -410,4 +410,4 @@ if (errors.length > 0) {
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log(`\nOK`);
+console.log(`\nHistorical source/schema corpus internal consistency: OK (not binding/resources draft conformance)`);

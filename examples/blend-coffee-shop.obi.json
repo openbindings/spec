@@ -3,441 +3,343 @@
   "name": "OpenBlendings",
   "version": "1.0.0",
   "description": "A coffee shop with bindings across six families: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six kinds.",
-  "schemas": {
+  "operations": {
+    "getMenu": {
+      "description": "Returns the full menu with drinks, sizes, and prices.",
+      "input": {"type": "object", "maxProperties": 0},
+      "output": {"$ref": "#/resources/Menu"}
+    },
+    "placeOrder": {
+      "description": "Place a new order. Returns the order with its ID and initial status.",
+      "input": {"$ref": "#/resources/PlaceOrderInput"},
+      "output": {"$ref": "#/resources/Order"}
+    },
+    "getOrderStatus": {
+      "description": "Check the current status of an order by ID.",
+      "input": {"$ref": "#/resources/OrderStatusInput"},
+      "output": {"$ref": "#/resources/Order"}
+    },
+    "cancelOrder": {
+      "description": "Cancel a pending order. Only works if the order has not started preparation.",
+      "input": {"$ref": "#/resources/CancelOrderInput"},
+      "output": {"$ref": "#/resources/CancelOrderOutput"}
+    },
+    "orderUpdates": {
+      "description": "Reports each change in an order's status.",
+      "input": {"type": "object", "maxProperties": 0},
+      "output": {"$ref": "#/resources/OrderUpdate"}
+    }
+  },
+  "bindings": {
+    "getMenu.rest": {
+      "operation": "getMenu",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/rest"},
+        "target": "#/paths/~1api~1menu/get"
+      },
+      "idempotent": true,
+      "description": "REST API for the ordering app"
+    },
+    "getMenu.mcp": {
+      "operation": "getMenu",
+      "kind": "example.mcp@1",
+      "content": {
+        "document": {"$ref": "#/resources/mcp"},
+        "target": "tools/getMenu"
+      },
+      "idempotent": true,
+      "description": "MCP tools for AI assistants"
+    },
+    "getMenu.grpc": {
+      "operation": "getMenu",
+      "kind": "example.grpc@1",
+      "content": {
+        "document": {"$ref": "#/resources/grpc"},
+        "target": "blend.CoffeeShop/GetMenu"
+      },
+      "idempotent": true,
+      "description": "gRPC service for backend microservices"
+    },
+    "getMenu.connect": {
+      "operation": "getMenu",
+      "kind": "example.connect@1",
+      "content": {
+        "document": {"$ref": "#/resources/connect"},
+        "target": "blend.CoffeeShop/GetMenu"
+      },
+      "idempotent": true,
+      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
+    },
+    "placeOrder.rest": {
+      "operation": "placeOrder",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/rest"},
+        "target": "#/paths/~1api~1orders/post"
+      },
+      "description": "REST API for the ordering app"
+    },
+    "placeOrder.mcp": {
+      "operation": "placeOrder",
+      "kind": "example.mcp@1",
+      "content": {
+        "document": {"$ref": "#/resources/mcp"},
+        "target": "tools/placeOrder"
+      },
+      "description": "MCP tools for AI assistants"
+    },
+    "placeOrder.grpc": {
+      "operation": "placeOrder",
+      "kind": "example.grpc@1",
+      "content": {
+        "document": {"$ref": "#/resources/grpc"},
+        "target": "blend.CoffeeShop/PlaceOrder"
+      },
+      "description": "gRPC service for backend microservices"
+    },
+    "placeOrder.connect": {
+      "operation": "placeOrder",
+      "kind": "example.connect@1",
+      "content": {
+        "document": {"$ref": "#/resources/connect"},
+        "target": "blend.CoffeeShop/PlaceOrder"
+      },
+      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
+    },
+    "getOrderStatus.rest": {
+      "operation": "getOrderStatus",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/rest"},
+        "target": "#/paths/~1api~1orders~1%7BorderId%7D/get"
+      },
+      "idempotent": true,
+      "description": "REST API for the ordering app"
+    },
+    "getOrderStatus.mcp": {
+      "operation": "getOrderStatus",
+      "kind": "example.mcp@1",
+      "content": {
+        "document": {"$ref": "#/resources/mcp"},
+        "target": "tools/getOrderStatus"
+      },
+      "idempotent": true,
+      "description": "MCP tools for AI assistants"
+    },
+    "getOrderStatus.grpc": {
+      "operation": "getOrderStatus",
+      "kind": "example.grpc@1",
+      "content": {
+        "document": {"$ref": "#/resources/grpc"},
+        "target": "blend.CoffeeShop/GetOrderStatus"
+      },
+      "idempotent": true,
+      "description": "gRPC service for backend microservices"
+    },
+    "getOrderStatus.connect": {
+      "operation": "getOrderStatus",
+      "kind": "example.connect@1",
+      "content": {
+        "document": {"$ref": "#/resources/connect"},
+        "target": "blend.CoffeeShop/GetOrderStatus"
+      },
+      "idempotent": true,
+      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
+    },
+    "cancelOrder.rest": {
+      "operation": "cancelOrder",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/rest"},
+        "target": "#/paths/~1api~1orders~1%7BorderId%7D~1cancel/post"
+      },
+      "description": "REST API for the ordering app"
+    },
+    "cancelOrder.mcp": {
+      "operation": "cancelOrder",
+      "kind": "example.mcp@1",
+      "content": {
+        "document": {"$ref": "#/resources/mcp"},
+        "target": "tools/cancelOrder"
+      },
+      "description": "MCP tools for AI assistants"
+    },
+    "cancelOrder.grpc": {
+      "operation": "cancelOrder",
+      "kind": "example.grpc@1",
+      "content": {
+        "document": {"$ref": "#/resources/grpc"},
+        "target": "blend.CoffeeShop/CancelOrder"
+      },
+      "description": "gRPC service for backend microservices"
+    },
+    "cancelOrder.connect": {
+      "operation": "cancelOrder",
+      "kind": "example.connect@1",
+      "content": {
+        "document": {"$ref": "#/resources/connect"},
+        "target": "blend.CoffeeShop/CancelOrder"
+      },
+      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
+    },
+    "orderUpdates.events": {
+      "operation": "orderUpdates",
+      "kind": "example.asyncapi@1",
+      "content": {
+        "document": {"location": "https://blend.openbindings.com/asyncapi.json"},
+        "target": "#/operations/onOrderUpdate"
+      },
+      "description": "SSE event stream for the barista dashboard"
+    },
+    "orderUpdates.grpc": {
+      "operation": "orderUpdates",
+      "kind": "example.grpc@1",
+      "content": {
+        "document": {"$ref": "#/resources/grpc"},
+        "target": "blend.CoffeeShop/OrderUpdates"
+      },
+      "description": "gRPC service for backend microservices"
+    },
+    "getMenu.graphql": {
+      "operation": "getMenu",
+      "kind": "example.graphql@1",
+      "content": {
+        "document": {"$ref": "#/resources/graphql"},
+        "target": "Query/getMenu"
+      },
+      "idempotent": true,
+      "description": "GraphQL API with queries and subscriptions"
+    },
+    "placeOrder.graphql": {
+      "operation": "placeOrder",
+      "kind": "example.graphql@1",
+      "content": {
+        "document": {"$ref": "#/resources/graphql"},
+        "target": "Mutation/placeOrder"
+      },
+      "description": "GraphQL API with queries and subscriptions"
+    },
+    "getOrderStatus.graphql": {
+      "operation": "getOrderStatus",
+      "kind": "example.graphql@1",
+      "content": {
+        "document": {"$ref": "#/resources/graphql"},
+        "target": "Query/getOrderStatus"
+      },
+      "idempotent": true,
+      "description": "GraphQL API with queries and subscriptions"
+    },
+    "cancelOrder.graphql": {
+      "operation": "cancelOrder",
+      "kind": "example.graphql@1",
+      "content": {
+        "document": {"$ref": "#/resources/graphql"},
+        "target": "Mutation/cancelOrder"
+      },
+      "description": "GraphQL API with queries and subscriptions"
+    },
+    "orderUpdates.graphql": {
+      "operation": "orderUpdates",
+      "kind": "example.graphql@1",
+      "content": {
+        "document": {"$ref": "#/resources/graphql"},
+        "target": "Subscription/orderUpdates"
+      },
+      "description": "GraphQL API with queries and subscriptions"
+    }
+  },
+  "resources": {
     "MenuItem": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "description": {"type": "string"},
         "sizes": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "label": {
-                "type": "string"
-              },
-              "price": {
-                "type": "number"
-              }
+              "label": {"type": "string"},
+              "price": {"type": "number"}
             },
-            "required": [
-              "label",
-              "price"
-            ]
+            "required": ["label", "price"]
           }
         }
       },
-      "required": [
-        "id",
-        "name",
-        "sizes"
-      ]
+      "required": ["id", "name", "sizes"]
     },
     "Menu": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
-          "items": {
-            "$ref": "#/schemas/MenuItem"
-          }
+          "items": {"$ref": "#/resources/MenuItem"}
         }
       }
     },
     "PlaceOrderInput": {
       "type": "object",
       "properties": {
-        "drink": {
-          "type": "string",
-          "description": "Menu item ID"
-        },
-        "size": {
-          "type": "string",
-          "description": "Size label (v1, v2, or v3)"
-        },
-        "customer": {
-          "type": "string",
-          "description": "Customer name"
-        }
+        "drink": {"type": "string", "description": "Menu item ID"},
+        "size": {"type": "string", "description": "Size label (v1, v2, or v3)"},
+        "customer": {"type": "string", "description": "Customer name"}
       },
-      "required": [
-        "drink",
-        "size",
-        "customer"
-      ]
+      "required": ["drink", "size", "customer"]
     },
     "Order": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "drink": {
-          "type": "string"
-        },
-        "size": {
-          "type": "string"
-        },
-        "customer": {
-          "type": "string"
-        },
+        "id": {"type": "string"},
+        "drink": {"type": "string"},
+        "size": {"type": "string"},
+        "customer": {"type": "string"},
         "status": {
           "type": "string",
-          "enum": [
-            "received",
-            "preparing",
-            "ready",
-            "picked_up",
-            "cancelled"
-          ]
+          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "createdAt": {"type": "string", "format": "date-time"}
       },
-      "required": [
-        "id",
-        "drink",
-        "size",
-        "customer",
-        "status",
-        "createdAt"
-      ]
+      "required": ["id", "drink", "size", "customer", "status", "createdAt"]
     },
     "OrderStatusInput": {
       "type": "object",
       "properties": {
-        "orderId": {
-          "type": "string"
-        }
+        "orderId": {"type": "string"}
       },
-      "required": [
-        "orderId"
-      ]
+      "required": ["orderId"]
     },
     "CancelOrderInput": {
       "type": "object",
       "properties": {
-        "orderId": {
-          "type": "string"
-        }
+        "orderId": {"type": "string"}
       },
-      "required": [
-        "orderId"
-      ]
+      "required": ["orderId"]
     },
     "CancelOrderOutput": {
       "type": "object",
       "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "message": {
-          "type": "string"
-        }
+        "success": {"type": "boolean"},
+        "message": {"type": "string"}
       }
     },
     "OrderUpdate": {
       "type": "object",
       "properties": {
-        "orderId": {
-          "type": "string"
-        },
+        "orderId": {"type": "string"},
         "status": {
           "type": "string",
-          "enum": [
-            "received",
-            "preparing",
-            "ready",
-            "picked_up",
-            "cancelled"
-          ]
+          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
         },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "updatedAt": {"type": "string", "format": "date-time"}
       },
-      "required": [
-        "orderId",
-        "status",
-        "updatedAt"
-      ]
-    }
-  },
-  "operations": {
-    "getMenu": {
-      "description": "Returns the full menu with drinks, sizes, and prices.",
-      "input": {
-        "type": "object",
-        "maxProperties": 0
-      },
-      "output": {
-        "$ref": "#/schemas/Menu"
-      }
+      "required": ["orderId", "status", "updatedAt"]
     },
-    "placeOrder": {
-      "description": "Place a new order. Returns the order with its ID and initial status.",
-      "input": {
-        "$ref": "#/schemas/PlaceOrderInput"
-      },
-      "output": {
-        "$ref": "#/schemas/Order"
-      }
-    },
-    "getOrderStatus": {
-      "description": "Check the current status of an order by ID.",
-      "input": {
-        "$ref": "#/schemas/OrderStatusInput"
-      },
-      "output": {
-        "$ref": "#/schemas/Order"
-      }
-    },
-    "cancelOrder": {
-      "description": "Cancel a pending order. Only works if the order has not started preparation.",
-      "input": {
-        "$ref": "#/schemas/CancelOrderInput"
-      },
-      "output": {
-        "$ref": "#/schemas/CancelOrderOutput"
-      }
-    },
-    "orderUpdates": {
-      "description": "Reports each change in an order's status.",
-      "input": {
-        "type": "object",
-        "maxProperties": 0
-      },
-      "output": {
-        "$ref": "#/schemas/OrderUpdate"
-      }
-    }
-  },
-  "sources": {
-    "rest": {
-      "kind": "example.openapi@1",
-      "content": {
-        "location": "https://blend.openbindings.com/openapi.json"
-      },
-      "description": "REST API for the ordering app"
-    },
-    "events": {
-      "kind": "example.asyncapi@1",
-      "content": {
-        "location": "https://blend.openbindings.com/asyncapi.json"
-      },
-      "description": "SSE event stream for the barista dashboard"
-    },
-    "mcp": {
-      "kind": "example.mcp@1",
-      "content": {
-        "location": "https://blend.openbindings.com/mcp"
-      },
-      "description": "MCP tools for AI assistants"
-    },
-    "grpc": {
-      "kind": "example.grpc@1",
-      "content": {
-        "location": "blend.openbindings.com:9090"
-      },
-      "description": "gRPC service for backend microservices"
-    },
-    "connect": {
-      "kind": "example.connect@1",
-      "content": {
-        "location": "https://blend.openbindings.com"
-      },
-      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
-    },
-    "graphql": {
-      "kind": "example.graphql@1",
-      "content": {
-        "location": "https://blend.openbindings.com/graphql"
-      },
-      "description": "GraphQL API with queries and subscriptions"
-    }
-  },
-  "bindings": {
-    "getMenu.rest": {
-      "operation": "getMenu",
-      "source": "rest",
-      "content": {
-        "target": "#/paths/~1api~1menu/get"
-      },
-      "idempotent": true
-    },
-    "getMenu.mcp": {
-      "operation": "getMenu",
-      "source": "mcp",
-      "content": {
-        "target": "tools/getMenu"
-      },
-      "idempotent": true
-    },
-    "getMenu.grpc": {
-      "operation": "getMenu",
-      "source": "grpc",
-      "content": {
-        "target": "blend.CoffeeShop/GetMenu"
-      },
-      "idempotent": true
-    },
-    "getMenu.connect": {
-      "operation": "getMenu",
-      "source": "connect",
-      "content": {
-        "target": "blend.CoffeeShop/GetMenu"
-      },
-      "idempotent": true
-    },
-    "placeOrder.rest": {
-      "operation": "placeOrder",
-      "source": "rest",
-      "content": {
-        "target": "#/paths/~1api~1orders/post"
-      }
-    },
-    "placeOrder.mcp": {
-      "operation": "placeOrder",
-      "source": "mcp",
-      "content": {
-        "target": "tools/placeOrder"
-      }
-    },
-    "placeOrder.grpc": {
-      "operation": "placeOrder",
-      "source": "grpc",
-      "content": {
-        "target": "blend.CoffeeShop/PlaceOrder"
-      }
-    },
-    "placeOrder.connect": {
-      "operation": "placeOrder",
-      "source": "connect",
-      "content": {
-        "target": "blend.CoffeeShop/PlaceOrder"
-      }
-    },
-    "getOrderStatus.rest": {
-      "operation": "getOrderStatus",
-      "source": "rest",
-      "content": {
-        "target": "#/paths/~1api~1orders~1%7BorderId%7D/get"
-      },
-      "idempotent": true
-    },
-    "getOrderStatus.mcp": {
-      "operation": "getOrderStatus",
-      "source": "mcp",
-      "content": {
-        "target": "tools/getOrderStatus"
-      },
-      "idempotent": true
-    },
-    "getOrderStatus.grpc": {
-      "operation": "getOrderStatus",
-      "source": "grpc",
-      "content": {
-        "target": "blend.CoffeeShop/GetOrderStatus"
-      },
-      "idempotent": true
-    },
-    "getOrderStatus.connect": {
-      "operation": "getOrderStatus",
-      "source": "connect",
-      "content": {
-        "target": "blend.CoffeeShop/GetOrderStatus"
-      },
-      "idempotent": true
-    },
-    "cancelOrder.rest": {
-      "operation": "cancelOrder",
-      "source": "rest",
-      "content": {
-        "target": "#/paths/~1api~1orders~1%7BorderId%7D~1cancel/post"
-      }
-    },
-    "cancelOrder.mcp": {
-      "operation": "cancelOrder",
-      "source": "mcp",
-      "content": {
-        "target": "tools/cancelOrder"
-      }
-    },
-    "cancelOrder.grpc": {
-      "operation": "cancelOrder",
-      "source": "grpc",
-      "content": {
-        "target": "blend.CoffeeShop/CancelOrder"
-      }
-    },
-    "cancelOrder.connect": {
-      "operation": "cancelOrder",
-      "source": "connect",
-      "content": {
-        "target": "blend.CoffeeShop/CancelOrder"
-      }
-    },
-    "orderUpdates.events": {
-      "operation": "orderUpdates",
-      "source": "events",
-      "content": {
-        "target": "#/operations/onOrderUpdate"
-      }
-    },
-    "orderUpdates.grpc": {
-      "operation": "orderUpdates",
-      "source": "grpc",
-      "content": {
-        "target": "blend.CoffeeShop/OrderUpdates"
-      }
-    },
-    "getMenu.graphql": {
-      "operation": "getMenu",
-      "source": "graphql",
-      "content": {
-        "target": "Query/getMenu"
-      },
-      "idempotent": true
-    },
-    "placeOrder.graphql": {
-      "operation": "placeOrder",
-      "source": "graphql",
-      "content": {
-        "target": "Mutation/placeOrder"
-      }
-    },
-    "getOrderStatus.graphql": {
-      "operation": "getOrderStatus",
-      "source": "graphql",
-      "content": {
-        "target": "Query/getOrderStatus"
-      },
-      "idempotent": true
-    },
-    "cancelOrder.graphql": {
-      "operation": "cancelOrder",
-      "source": "graphql",
-      "content": {
-        "target": "Mutation/cancelOrder"
-      }
-    },
-    "orderUpdates.graphql": {
-      "operation": "orderUpdates",
-      "source": "graphql",
-      "content": {
-        "target": "Subscription/orderUpdates"
-      }
-    }
+    "rest": {"location": "https://blend.openbindings.com/openapi.json"},
+    "mcp": {"location": "https://blend.openbindings.com/mcp"},
+    "grpc": {"location": "blend.openbindings.com:9090"},
+    "connect": {"location": "https://blend.openbindings.com"},
+    "graphql": {"location": "https://blend.openbindings.com/graphql"}
   }
 }

@@ -9,36 +9,26 @@
       "input": {
         "type": "object",
         "properties": {
-          "message": {
-            "type": "string",
-            "description": "The message to echo back"
-          }
+          "message": {"type": "string", "description": "The message to echo back"}
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "output": {
         "type": "object",
         "properties": {
-          "message": {
-            "type": "string"
-          }
+          "message": {"type": "string"}
         }
       }
-    }
-  },
-  "sources": {
-    "restApi": {
-      "kind": "example.openapi@1",
-      "content": { "location": "https://api.example.com/openapi.json" }
     }
   },
   "bindings": {
     "echo.restApi": {
       "operation": "echo",
-      "source": "restApi",
-      "content": { "target": "#/paths/~1echo/post" },
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"location": "https://api.example.com/openapi.json"},
+        "target": "#/paths/~1echo/post"
+      },
       "idempotent": true
     }
   }

@@ -15,6 +15,18 @@ transforms, and HTTP discovery leave the core; kinds, dependencies, value
 contracts, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
 
+### Binding/resources revision (2026-10-26)
+
+This unreleased revision replaces the preceding 0.2 source/schema model. Bindings
+carry their own required `kind`; `sources` and `bindings[*].source` are removed.
+Optional `resources` replaces the dedicated `schemas` map and stores any JSON
+value without a wrapper. Schemas are recognized from operation schemas and
+explicit local resource pointers; unused resources stay opaque. Core §7.6
+provides opt-in shared-value lookup for kinds without scanning or expanding
+arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revised
+schema inventory. No released snapshot is changed. Earlier corpus and kind
+migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
+
 ### Added
 
 - **Core invariants.** [§2](openbindings.md#2-core-invariants) states the six
@@ -26,7 +38,7 @@ arrive. The specification specifies the document model only.
   described component consumes a realization of an operation. An entry has a
   required `operation` (an operation key, not an alias; OBI-08), optional
   `kinds`, and `description`. `kinds` is a non-empty, unique, unordered any-of
-  constraint: a binding meets it exactly when its source's kind is the same
+  constraint: a binding meets it exactly when its kind is the same
   kind as a listed one ([§6](openbindings.md#6-kinds)). The document does not
   say which realization serves a dependency.
 - **Value contracts.** `input` and `output` each state a value contract that
@@ -41,7 +53,7 @@ arrive. The specification specifies the document model only.
 - **Context and author claims.** [§3](openbindings.md#3-terminology)
   defines context: what a realization needs that the operation is not about,
   such as a credential, a target's address, or a deadline, carried in content
-  under the source's kind or coming from outside the document. A credential
+  under the binding's kind or coming from outside the document. A credential
   is caller-facing only when the author describes it in `input` or `output`.
   [§5](openbindings.md#5-document-model) lists the document's author claims
   (examples, a binding's realization claim and its `idempotent`, a
@@ -77,32 +89,25 @@ arrive. The specification specifies the document model only.
 
 ### Changed
 
-- **Sources carry a `kind` and kind-read `content`.** The required `format`
-  token (name compared case-insensitively, trailing `.0` version segments
-  ignored) is replaced by `kind`: an exact, opaque, non-empty string compared
-  whole, never normalized or read for compatibility or version order, and
-  never an address ([§6](openbindings.md#6-kinds)). A source is `kind` with optional
-  `content` (any JSON value) and `description`
-  ([§5.4](openbindings.md#54-sources)). The core gives `content` no meaning:
-  what it holds, how a binding's target is identified, value adaptation,
-  interaction mechanics, binary encoding, and required context are read under
-  the kind ([§6](openbindings.md#6-kinds)). Whether a definition of a kind
-  exists does not affect conformance. Changes to
-  the core provisions a kind stands on are recorded as breaking
-  ([§8.1](openbindings.md#81-openbindings-field-specification-version)).
-- **Bindings carry `content`.** The binding member `ref` is replaced by
-  optional `content`, any JSON value read under the source's kind
-  ([§5.3](openbindings.md#53-bindings)). It may identify the target and
-  describe how values are adapted between the operation's value contracts and
-  that target, which 0.1 expressed with transforms. A binding is an author
-  claim that its target realizes the operation as the document describes it.
-  The document need not suffice to identify or reach the target (invariant 2),
-  and the core defines no invocation behavior.
+- **Bindings carry their own `kind` and `content`.** Kind strings are exact,
+  opaque, non-empty names, with no normalization, version algebra, or address
+  meaning (§6). `operation` and `kind` are required; `content` is optional and
+  can be any JSON value. Source objects and the binding `source` member leave
+  the core. Target identification, value adaptation, interaction mechanics,
+  and context are interpreted under each binding's kind (§5.3).
+- **Shared values use `resources`.** A name-to-value map replaces the dedicated
+  schema map and optional source-content factoring. A schema-use pointer
+  establishes a schema entry point; identifiers in otherwise opaque data are
+  not discovered by scanning. Repeated use of one location does not duplicate
+  its schema declarations. Conflicting schema-resource membership violates
+  OBI-12. Kinds may adopt shared-value lookup at explicit content positions
+  (§§5.4, 7.1, 7.6); internal artifact references retain their own context.
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
-  stronger author preference and omission states no preference. Sources carry
-  none. `preference` and `deprecated` are independent author signals; neither
+  stronger author preference and omission states no preference. There is no
+  source-level default. `preference` and `deprecated` are independent author
+  signals; neither
   takes precedence over the other.
 - **`idempotent` moves from operations to bindings.** It is each binding's
   author claim that repeating the operation through that binding with the
@@ -114,7 +119,7 @@ arrive. The specification specifies the document model only.
 - **An operation is a signature.** Its name and optional per-value `input`
   and `output` schemas are its whole signature
   ([§5.1](openbindings.md#51-operations)). Interaction pattern and
-  cardinality belong to each binding under its source's kind, replacing 0.1's
+  cardinality belong to each binding under its kind, replacing 0.1's
   model of every operation as a stream of events. `output` describes every
   value the operation returns, error-shaped values included, not only
   successful results. Declaring an operation does not by itself claim that a
@@ -130,7 +135,7 @@ arrive. The specification specifies the document model only.
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
-- **Names have a grammar.** Operation, dependency, binding, source, schema,
+- **Names have a grammar.** Operation, dependency, binding, resource,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
   compare as exact strings (OBI-04); strings are equal when their UTF-16 code
   units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.
@@ -159,8 +164,9 @@ arrive. The specification specifies the document model only.
   the document resource are absolute URIs or same-document references, and an
   `$id` at an OBI position is absolute (OBI-11). A same-document reference
   there identifies what [§7.3](openbindings.md#73-same-document-references)
-  defines (`#` the document itself), and each must identify a schema at an
-  OBI position (OBI-12). No plain name is declared twice in the document
+  defines (`#` the document itself), and each must identify a recognized schema at an
+  OBI position without conflicting resource membership (OBI-12). No plain name
+  is declared twice in the document
   resource, and no `$id` by two schemas (OBI-13). A schema that declares `$id`
   begins its own resource, resolved as JSON Schema defines. Reference cycles
   are permitted, and external resources never affect conformance. In 0.1, relative
@@ -215,7 +221,7 @@ arrive. The specification specifies the document model only.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
   Credentials and other prerequisites are context.
 - **Transforms**: transform objects, named transforms, and the JSONata
-  requirement. Value adaptation is read under the source's kind, typically
+  requirement. Value adaptation is read under the binding's kind, typically
   from binding `content`; the core defines no transform or expression
   language.
 - **Source addressing rules**: the requirement of exactly one of `location`

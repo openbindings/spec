@@ -8,7 +8,18 @@ A document given as a JSON value (`document`) stands for its serialization as UT
 
 ## Status
 
-**Every rule of §10, OBI-01 to OBI-13, has a complete fixture file. Section-cited fixtures cover author claims (§5) and extensions (§12), and portable scenarios cover the meaning §5.1, §5.2, §6, and §10 define: which operation a string identifies, what examples claim, whether a value satisfies a value contract, whether a binding meets a kinds constraint, and whether a text conforms. See `manifest.json` for current counts, per file and per action.**
+**Binding/resources draft migration pending.** The files in `document/` and
+`scenarios/`, their manifest, and the reference SDK adapters were authored for the
+source/schema model at specification commit `63e27e1`. The coverage table below
+records that preceding draft; it does not claim coverage of the revised working
+text. In particular, the old OBI-07 source-reference cases do not cover the new
+binding-kind rule, and schema fixtures assume explicit `schemas` declarations.
+
+[resource-model-draft/](resource-model-draft/README.md) contains focused cases for
+the new structure, schema recognition, and shared-value lookup. Those checks
+are intentionally narrower than a full core conformance runner. Existing corpus
+verifiers continue to check historical case consistency and are not implementation
+support claims. [RESOURCE-MODEL-DRAFT.md](../RESOURCE-MODEL-DRAFT.md) records scope.
 
 ## Coverage
 
@@ -49,7 +60,7 @@ guesswork.
 
 ## Subcorpora
 
-Two pre-kind candidate subcorpora live alongside the current core corpus, each with its own fixture format. Their verifiers check consistency against unpublished family candidates, not conformance of embedded or generated OBIs to the current core `kind` model. The core tooling below scans `document/` and `scenarios/`; the subcorpora have separate repository verifiers and execution harnesses:
+Two pre-kind candidate subcorpora live alongside the historical core corpus, each with its own fixture format. Their verifiers check consistency against unpublished family candidates, not conformance of embedded or generated OBIs to the current core `kind` model. The core tooling below scans `document/` and `scenarios/`; the subcorpora have separate repository verifiers and execution harnesses:
 
 | Subcorpus | Covers | Verifier |
 |---|---|---|

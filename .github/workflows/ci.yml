@@ -44,6 +44,9 @@ jobs:
         run: |
           node scripts/check-canonical-order.mjs examples/*.obi.json
 
+      - name: Check binding/resources draft semantics
+        run: node scripts/test-resource-model-draft.mjs
+
       - name: Validate authority pin manifest JSON
         run: python3 -m json.tool binding-specs/AUTHORITY-PINS.json > /dev/null
 
@@ -88,7 +91,7 @@ jobs:
       - name: Exercise binding-specification publication lifecycle
         run: node scripts/test-binding-spec-publication-lifecycle.mjs
 
-      - name: Verify conformance corpus consistency
+      - name: Verify historical core corpus consistency
         run: node scripts/verify-corpus.mjs
 
       - name: Exercise the corpus verifier's controls
@@ -97,7 +100,7 @@ jobs:
       - name: Exercise the runner-results comparator's controls
         run: node scripts/test-check-runner-results.mjs
 
-      - name: Check conformance manifest is up-to-date
+      - name: Check historical conformance manifest is up-to-date
         run: |
           node scripts/generate-conformance-manifest.mjs
           git diff --exit-code conformance/manifest.json

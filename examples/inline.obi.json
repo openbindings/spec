@@ -1,0 +1,13 @@
+{
+  "openbindings": "0.2.0",
+  "operations": {
+    "echo": {}
+  },
+  "bindings": {
+    "echo.local": {
+      "operation": "echo",
+      "kind": "example.echo@1",
+      "content": {}
+    }
+  }
+}
