@@ -24,7 +24,7 @@ const shape = (document, expected, name) => assert.equal(structure(document), ex
 
 const base = () => ({ openbindings: "0.2.0", operations: { run: {} }, bindings: { local: { operation: "run", kind: "example.local@1" } } });
 shape(base(), true, "inline-only binding");
-shape({ openbindings: "0.2.0", operations: {} }, true, "contract-only document");
+shape({ openbindings: "0.2.0", operations: {} }, true, "document containing only operations");
 for (const content of [null, false, 3, "text", [], {}, { operation: "kind-owned", kind: "kind-owned", source: "kind-owned" }]) {
   const document = base();
   document.bindings.local.content = content;

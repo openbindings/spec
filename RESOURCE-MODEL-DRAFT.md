@@ -24,8 +24,8 @@ implementation work still needed. It is not a new released version.
 - Dependencies compare their `kinds` constraints directly with `binding.kind`.
 
 [inline.obi.json](examples/inline.obi.json) demonstrates the three-field shape:
-`openbindings`, `operations`, and `bindings`. A contract-only document can still
-omit bindings. [shared-resources.obi.json](examples/shared-resources.obi.json)
+`openbindings`, `operations`, and `bindings`. An OBI publishing a set of operations
+can omit bindings. [shared-resources.obi.json](examples/shared-resources.obi.json)
 shows two bindings sharing an embedded OpenAPI artifact and operation schemas
 explicitly using shared schema values.
 

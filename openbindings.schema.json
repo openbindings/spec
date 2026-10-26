@@ -115,11 +115,11 @@
         },
         "input": {
           "$ref": "#/$defs/JSONSchema",
-          "description": "States the input contract (§5.1)."
+          "description": "Schema governing each caller-facing input value (§5.1)."
         },
         "output": {
           "$ref": "#/$defs/JSONSchema",
-          "description": "States the output contract (§5.1)."
+          "description": "Schema governing each caller-facing output value (§5.1)."
         },
         "examples": {
           "type": "object",

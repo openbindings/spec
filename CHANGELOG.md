@@ -12,7 +12,7 @@ Version 0.2.0 has not been released. The latest release is 0.1.0, and details
 below may continue to change until the 0.2 release is cut. Entries describe
 the difference from 0.1.0. Compatibility checking, security declarations,
 transforms, and HTTP discovery leave this specification; kinds, dependencies,
-value contracts, location-independent references, and numbered conformance rules
+per-value schemas, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
 
 ### Binding/resources revision (2026-10-26)
@@ -30,7 +30,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
 ### Added
 
 - **Invariants.** [§2](openbindings.md#2-invariants) states the six
-  invariants the model rests on: value contracts, declaration not
+  invariants the model rests on: per-value schemas, declaration not
   availability, bounded interpretation, location-independent references,
   self-contained conformance, and decentralized naming.
 - **Named operation dependencies.** The optional `dependencies` map
@@ -41,22 +41,22 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   constraint: a binding meets it exactly when its kind is the same
   kind as a listed one ([§6](openbindings.md#6-kinds)). The document does not
   say which realization serves a dependency.
-- **Value contracts.** `input` and `output` each state a value contract that
-  governs every caller-facing value crossing the operation boundary in that
-  direction, one value at a time (invariant 1,
+- **Input and output schemas.** `input` and `output`, when present, each hold
+  a schema governing every caller-facing value crossing the operation boundary
+  in that direction, one value at a time (invariant 1,
   [§5.1](openbindings.md#51-operations)). Absent, `{}` or `true`, `false`,
   and `{"type": "null"}` are four distinct states, and boolean schemas are
   valid. §5.1 recommends `{"type": "object", "maxProperties": 0}` for an
-  operation that takes, or returns, nothing meaningful. An operation's
-  contract is the capability its identifiers name and its description
-  conveys, with its value contracts ([§3](openbindings.md#3-terminology)).
+  operation that takes, or returns, nothing meaningful. An operation is the
+  capability its identifiers name and its description conveys, with optional
+  input and output schemas ([§3](openbindings.md#3-terminology)).
 - **Author claims.** [§5](openbindings.md#5-document-model) lists the document's
   author claims
   (examples, a binding's realization claim and its `idempotent`, a
   dependency's consumption claim, and correspondence); their truth is outside
   conformance.
-- **Satisfying a value contract.** [§5.2](openbindings.md#52-schemas)
-  defines when a value satisfies or fails a contract: under JSON Schema
+- **Evaluating a value against a schema.** [§5.2](openbindings.md#52-schemas)
+  defines when a value satisfies or fails an operation schema: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
   expressions with Unicode semantics, references resolved as §7 defines, and
   a schema document whose root declares no `$schema` read as 2020-12, one
@@ -66,8 +66,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   such a part only when the part's outcome, with the annotations that follow
   it, would change it; a value that depends on both is, from the document
   alone, undefined only if it would be undefined whatever the resource holds,
-  and with the resource the same rules decide. An absent schema states no
-  contract.
+  and with the resource the same rules decide. When a schema is absent, there is
+  no schema to evaluate for that direction.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
@@ -112,8 +112,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   ([§5.3](openbindings.md#53-bindings)). It no longer means safe to retry with
   the same result, and alone it establishes neither retry safety nor
   cacheability.
-- **An operation is a signature.** Its name and optional per-value `input`
-  and `output` schemas are its whole signature
+- **Operations are protocol-independent.** Each operation names a capability
+  with optional per-value `input` and `output` schemas
   ([§5.1](openbindings.md#51-operations)). Interaction pattern and
   cardinality belong to each binding under its kind, replacing 0.1's
   model of every operation as a stream of events. `output` describes every
@@ -124,10 +124,10 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   form one flat, document-unique namespace (OBI-05). A string identifies an
   operation exactly when it equals its key or one of its aliases, and the
   operation's bindings are those whose `operation` holds its key
-  ([§5.1](openbindings.md#51-operations)). Carrying a shared
-  contract's published name as a key or alias claims correspondence with that
-  contract's operation, as a reader holding the contract reads it, and with
-  the operation of that name in every other held contract that publishes it
+  ([§5.1](openbindings.md#51-operations)). Authors may publish sets of
+  operations for adoption, including as interfaces described by OBIs. Carrying
+  a published name as a key or alias claims correspondence with the operation
+  that name identifies in each published set the reader holds that includes it
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
@@ -192,9 +192,9 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   and the prose governed. Its descriptions are short labels that cite the
   section defining each member.
 - **Examples are author claims.** Each example `input` and `output` is one
-  caller-facing value the author claims satisfies the corresponding contract;
-  a value that fails it makes the claim false, and the schema alone states
-  the contract ([§5.1](openbindings.md#51-operations)). An
+  caller-facing value the author claims satisfies the corresponding schema,
+  where present. A value that fails it makes the claim false, and examples
+  never change the schema ([§5.1](openbindings.md#51-operations)). An
   explicit `null` member is the JSON value `null`. In 0.1, examples were
   documentation that SHOULD validate.
 - **Security considerations describe exposure.**
@@ -223,7 +223,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   or `content`, and resolution of a relative `location` against the
   document's location.
 - **Literal `null` for an unspecified `input` or `output`.** Omission is the
-  only way to state no value contract.
+  only way to leave the schema unstated.
 - **Binding coverage, actionability, and location-based interface identity.**
   OBI assigns no document identity; `name` and `version` are labels.
 - **YAML** as an alternate serialization.
@@ -247,7 +247,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   `notViolated` rule lists. `scenarios/` holds scenarios in format
   `openbindings.core-scenarios@3` (`scenario.schema.json`), grouped by the
   section that answers them: which operation a string identifies, whether
-  values satisfy a contract, whether a binding meets a dependency's `kinds`,
+  values satisfy a schema, whether a binding meets a dependency's `kinds`,
   what examples claim, and whether a document conforms. `runners/go` is a
   reference runner. The corpus is reference material; the prose governs.
 - **Binding-specification candidates.** [`binding-specs/`](binding-specs/)

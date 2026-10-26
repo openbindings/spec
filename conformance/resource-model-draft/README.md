@@ -37,6 +37,6 @@ both operation orders to check that discovery order does not resolve them.
 [The helper](../../scripts/resource-model-draft.mjs) is informative draft code.
 It is not a general JSON Schema implementation or a full OBI validator. These
 checks do not cover all URI/identifier equality rules, anchor uniqueness,
-dynamic evaluation, value-contract evaluation, exact JSON numbers, duplicate
+dynamic evaluation, validation of operation values, exact JSON numbers, duplicate
 JSON members, or kind execution. Those remain work for the revised corpus and
 SDKs described in [the draft status](../../RESOURCE-MODEL-DRAFT.md).

@@ -58,7 +58,7 @@ separate question.
 | Root `schemas` | Optional `resources`; schemas are recognized through use |
 | Source/binding `priority`, lower preferred | Binding-only `preference`, higher preferred; no selection algorithm |
 | Operation-level `idempotent` | Binding-level repetition claim |
-| `input: null` / `output: null` for no contract | Omit the schema field |
+| `input: null` / `output: null` to state no schema | Omit the schema field |
 | Root `roles`, operation `satisfies` | Qualified aliases for correspondence where intended |
 | Transforms and security fields | Kind-defined content; OpenBindings supplies neither transform language nor invocation API |
 | Retrieval-relative schema references | Document-local or absolute references under §7 |
@@ -68,14 +68,15 @@ extensions, but moving old data there does not preserve its old meaning.
 `dependencies` declare consumption points and do not replace old correspondence
 fields. Their `kinds` constraints now compare directly with each binding's kind.
 
-## Recheck value contracts
+## Recheck input and output schemas
 
 Schemas govern individual caller-facing values. Interaction cardinality and
-lifecycle belong to the kind. An absent schema states no contract; `true` and
-`{}` admit every value; `false` admits none; a null-only schema admits `null`.
-The output contract covers every caller-facing output, including error-shaped
-values when the kind exposes them. Other dialects require meaning-preserving
-translation before becoming OpenBindings operation schemas.
+lifecycle belong to the kind. Omitting a schema leaves nothing to evaluate for
+that direction; `true` and `{}` admit every value; `false` admits none; a null-only
+schema admits `null`. The output schema, when present, covers every caller-facing
+output, including error-shaped values when the kind exposes them. Other dialects
+require meaning-preserving translation before becoming OpenBindings operation
+schemas.
 
 Aliases share one namespace with operation keys. Correspondence, realization,
 consumption, examples, and binding idempotency remain author claims. Neither

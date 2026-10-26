@@ -20,15 +20,15 @@
 
 ## What is OpenBindings?
 
-OpenBindings describes capability contracts, their author-declared realizations,
+OpenBindings describes operations, their author-declared realizations,
 and named consumption points independently of protocols. Operations state what
 a component does. Each binding carries the kind that interprets its content.
 Dependencies state which operations the described component consumes.
 
-An OBI can be as small as `openbindings`, `operations`, and `bindings`. A
-contract-only document needs only `openbindings` and `operations`. Schemas and
-binding content can be inline; an optional `resources` map stores shared JSON
-values when useful.
+An OBI can be as small as `openbindings`, `operations`, and `bindings`. A document
+that only declares operations needs only `openbindings` and `operations`.
+Schemas and binding content can be inline; an optional `resources` map stores
+shared JSON values when useful.
 
 ```json
 {
@@ -49,9 +49,9 @@ behavior.
 
 ### Document concepts
 
-- **Operations** are named capability contracts with optional per-value JSON
-  Schema 2020-12 inputs and outputs. An operation's presence does not assert
-  availability.
+- **Operations** are named capabilities with optional JSON Schema 2020-12
+  input and output schemas, each applying to one value at a time. An operation's
+  presence does not assert availability.
 - **Bindings** declare realizations. Each requires `operation` and `kind`, with
   optional kind-interpreted `content`. The kind can describe a live surface, an
   artifact and target, a complete graph, or another realization.
@@ -60,9 +60,9 @@ behavior.
 - **Resources** are optional named JSON values. Schemas, embedded artifacts,
   graphs, and configuration can share one map. Their uses establish meaning;
   unreferenced values remain ordinary JSON.
-- **Aliases** give an operation additional names, including published
-  shared-contract names. Correspondence is an author claim, with no trust or
-  compatibility proof attached.
+- **Aliases** give an operation additional names, including names adopted
+  from published sets of operations. Correspondence is an author claim, with no
+  trust or compatibility proof attached.
 
 ### Sharing and references
 

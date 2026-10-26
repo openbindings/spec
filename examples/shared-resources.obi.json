@@ -1,7 +1,7 @@
 {
   "openbindings": "0.2.0",
   "name": "Task Service",
-  "description": "One embedded artifact shared by two bindings; its nested Task schema is explicitly used by the operation contracts.",
+  "description": "One embedded artifact shared by two bindings; its nested Task schema is explicitly used by the operation schemas.",
   "operations": {
     "createTask": {
       "input": {
