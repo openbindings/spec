@@ -44,9 +44,10 @@ values when useful.
 }
 ```
 
-The example kind is illustrative. Core supplies no built-in invocation behavior.
+The example kind is illustrative. OpenBindings supplies no built-in invocation
+behavior.
 
-### Core concepts
+### Document concepts
 
 - **Operations** are named capability contracts with optional per-value JSON
   Schema 2020-12 inputs and outputs. An operation's presence does not assert
@@ -68,8 +69,9 @@ The example kind is illustrative. Core supplies no built-in invocation behavior.
 An operation schema can use `{"$ref":"#/resources/Task"}`. This explicit use
 recognizes the target as a schema; merely storing an object with `$id` or
 `$schema` does not. A kind may adopt the same-document shared-value reference
-form at designated content positions, without making the target a core schema.
-The core never recursively expands arbitrary `$ref` objects in stored artifacts.
+form at designated content positions, without adding the target to the
+document's schema inventory. OpenBindings never recursively expands arbitrary
+`$ref` objects in stored artifacts.
 
 The [reference chapter](openbindings.md#7-reference-resolution) defines schema
 recognition, resource boundaries, and shared-value lookup. The
@@ -79,9 +81,10 @@ OpenAPI document for two bindings. The
 
 ## The specification
 
-Core defines document meaning and conformance. Kind-specific interpretation,
-invocation APIs, binding selection, dependency wiring, and credential handling
-are outside it. Context can be carried in kind content or supplied externally.
+OpenBindings defines document meaning and conformance. Kind-specific
+interpretation, invocation APIs, binding selection, dependency wiring, and
+credential handling are outside it. Context can be carried in kind content or
+supplied externally.
 [HTTP Discovery](http-discovery.md) is separately scoped and optional.
 
 | Path | Purpose |
@@ -101,10 +104,10 @@ The current specification is the **unreleased 0.2.0 binding/resources draft**;
 0.1.0 remains the latest release. This revision replaces the preceding draft's
 `sources` and `schemas` maps and moves `kind` onto bindings.
 
-The historical core corpus, reference SDK adapters, and family candidates still
-use preceding document models. Their existing checks are not evidence of
-support for this revision. The focused draft checks do not claim full core
-conformance or executable support for the illustrative kinds. See
+The historical document conformance corpus, reference SDK adapters, and family
+candidates still use preceding document models. Their existing checks are not
+evidence of support for this revision. The focused draft checks do not claim
+full OpenBindings conformance or executable support for the illustrative kinds. See
 [the draft status](RESOURCE-MODEL-DRAFT.md) before using implementation claims.
 
 ## Contributing

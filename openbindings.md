@@ -73,7 +73,7 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
 
 - [1. Positioning and scope](#1-positioning-and-scope)
   - [1.1. Out of scope](#11-out-of-scope)
-- [2. Core invariants](#2-core-invariants)
+- [2. Invariants](#2-invariants)
 - [3. Terminology](#3-terminology)
 - [4. Overview (informative)](#4-overview-informative)
 - [5. Document model](#5-document-model)
@@ -111,9 +111,9 @@ OpenBindings sits one layer above protocol-specific interface specifications suc
 
 ### 1.1. Out of scope
 
-The core defines the document envelope and each operation's caller-facing value contracts. How a binding is read, beginning with what its `content` means, is left to its kind (invariant 3; [§6](#6-kinds) lists the matters). Wherever this specification says a matter is read under a binding's kind, it marks this boundary. It neither asserts that the kind is defined anywhere nor lets a kind's definition change the document model.
+This specification defines the document envelope and each operation's caller-facing value contracts. How a binding is read, beginning with what its `content` means, is left to its kind (invariant 3; [§6](#6-kinds) lists the matters). Wherever this specification says a matter is read under a binding's kind, it marks this boundary. It neither asserts that the kind is defined anywhere nor lets a kind's definition change the document model.
 
-The core does not say:
+This specification does not say:
 
 - whether or when an operation is invoked;
 - how calls are managed (lifecycle, retries, credential flow, rate limiting);
@@ -128,14 +128,14 @@ OpenBindings also does not:
 
 ---
 
-## 2. Core invariants
+## 2. Invariants
 
 The model rests on six invariants, cited elsewhere by number. Most of their terms are defined in [§3](#3-terminology).
 
 1. **Value contracts.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary, one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are interpreted according to each binding's kind.
 2. **Declaration, not availability.** A binding declares a realization of its operation under its own kind. It does not assert that the realization is available, and the document alone need not suffice to identify or reach its target. A dependency carries no target ([§5.5](#55-dependencies)).
-3. **Bounded core meaning.** The operation carries the caller-facing value contracts. This specification defines neither the meaning of binding `content` nor how a binding's target is addressed, represented, referenced, adapted to, or interacted with. A kind does not change the meaning of core fields.
-4. **Location-independent references.** No OBI-defined schema reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so a document has the same core meaning however it was obtained. The core does not scan binding `content` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside core resolution (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
+3. **Bounded interpretation.** The operation carries the caller-facing value contracts. This specification defines neither the meaning of binding `content` nor how a binding's target is addressed, represented, referenced, adapted to, or interacted with. A kind does not change the meaning this specification assigns to fields.
+4. **Location-independent references.** No OBI-defined schema reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the meaning this specification assigns to a document is the same however it was obtained. This specification does not scan binding `content` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside the resolution rules defined here (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
 5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on:
    - the document;
    - that release's text;
@@ -150,7 +150,6 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 ## 3. Terminology
 
 - **OBI**: an OpenBindings interface document.
-- **Core**: this specification, as distinct from what particular kinds define.
 - **Described component**: the software, such as a service or a program, that an OBI describes. A dependency names a point where the described component consumes a realization ([§5.5](#55-dependencies)).
 - **Operation**: a named, protocol-independent capability contract under a key in `operations`. The contract is what a service can do, the capability its identifiers name and its description conveys, with optional per-value input and output schemas ([§5.1](#51-operations)). Its name and schemas are its signature. Unqualified, *contract* means this whole contract.
 - **Value contract**: the part of an operation's contract that governs each caller-facing value crossing the boundary in one direction, to the operation or from it, stated by a schema. It is either the **input contract**, stated by `input`, or the **output contract**, stated by `output` ([§5.1](#51-operations)).
@@ -458,7 +457,7 @@ A binding object has these fields ([OBI-02](#10-conformance)):
 | `description` | string         | no       | Human-readable description.                                               |
 | `deprecated`  | boolean        | no       | Author recommends migration away from this binding.                       |
 
-A binding's `content` might carry a complete realization description, identify the target that realizes the operation, or describe how values are adapted between the operation's value contracts and that target. The `content` might also serve any other purpose its kind gives it. A JSON Pointer into an OpenAPI document, a fully qualified gRPC method name with a value mapping, and an MCP tool name are examples. Its presence, absence, type, and members carry no core meaning.
+A binding's `content` might carry a complete realization description, identify the target that realizes the operation, or describe how values are adapted between the operation's value contracts and that target. The `content` might also serve any other purpose its kind gives it. A JSON Pointer into an OpenAPI document, a fully qualified gRPC method name with a value mapping, and an MCP tool name are examples. This specification assigns no meaning to its presence, absence, type, or members.
 
 **Realizations.** Multiple bindings MAY reference the same operation, each an author-declared realization of it. Attaching a binding asserts, as an author claim ([§5](#5-document-model)), that its target realizes the operation as the document describes it:
 
@@ -471,7 +470,7 @@ The operation's tags, deprecation, and examples are not part of the claim. Each 
 
 **Note.** The claim concerns intended operation-level effects, not returned values, timing, or other per-attempt observations. A read of changing state can be idempotent while returning different values, and so can a deletion whose later attempts report absence. The claim does not imply that the operation, through this binding or any other, is safe, read-only, deterministic, cacheable, or harmless.
 
-**One contract, several bindings (informative).** Every binding claims the same value contracts, and no core field marks one output value apart from another. Callers that must tell output values apart, such as a result from an error, therefore rely on the schema (a required property, say). Bindings' values might not share a per-value shape: an HTTP binding might return a list as one array value, and a streaming binding its items one at a time. In that case, `output` admits both shapes, a kind's value adaptation reconciles them, or they realize different operations.
+**One contract, several bindings (informative).** Every binding claims the same value contracts, and no field defined by this specification marks one output value apart from another. Callers that must tell output values apart, such as a result from an error, therefore rely on the schema (a required property, say). Bindings' values might not share a per-value shape: an HTTP binding might return a list as one array value, and a streaming binding its items one at a time. In that case, `output` admits both shapes, a kind's value adaptation reconciles them, or they realize different operations.
 
 **Preference signals.** `preference` is an optional signed integer from -9007199254740991 through 9007199254740991 (the exactly representable interoperable range). An integer is a number with no fractional part, so `1.0` and `1` are the same preference. Among bindings of the same operation that declare it, a higher value expresses stronger author preference and equal values no order. Omission states no preference, and zero and negative values mean nothing beyond their numeric order. `deprecated: true` states that the author recommends migration away from the binding and ordinarily does not recommend it for new use. The two signals are independent: `deprecated` does not change a binding's `preference`, and `preference` states nothing about deprecation.
 
@@ -481,11 +480,11 @@ The operation's tags, deprecation, and examples are not part of the claim. Each 
 
 The optional `resources` map stores named JSON values for reference from elsewhere in the document. Each entry MAY be any JSON value. An entry has no required wrapper, `kind`, or type declaration. Its name follows OBI-04; names and object member names within the stored value are ordinary data and are not constrained by that rule.
 
-A shared value can be an embedded artifact, a schema, a graph, configuration, an array, a scalar, or `null`. Presence in `resources` declares no operation, realization, consumption point, schema, or availability. The context of each use determines interpretation. The same value can be used under more than one kind and, separately, as a schema. Schema use is recognized by §7.1; a kind's use does not enter a value into the core's schema inventory.
+A shared value can be an embedded artifact, a schema, a graph, configuration, an array, a scalar, or `null`. Presence in `resources` declares no operation, realization, consumption point, schema, or availability. The context of each use determines interpretation. The same value can be used under more than one kind and, separately, as a schema. Schema use is recognized by §7.1; a kind's use does not enter a value into the document's schema inventory.
 
-Sharing is optional. Operations can state schemas inline and bindings can carry all their content inline. A document with no shared values omits `resources`. A resource can exist before any use; its unreferenced contents have no schema or kind meaning under the core.
+Sharing is optional. Operations can state schemas inline and bindings can carry all their content inline. A document with no shared values omits `resources`. A resource can exist before any use; this specification assigns no schema or kind meaning to its unreferenced contents.
 
-A schema reaches shared values through its schema references (§7). A kind can designate content positions that use the common shared-value reference form (§7.6). The core neither searches arbitrary values for reference-looking objects nor expands, merges, or rewrites them. References within an embedded artifact retain the interpretation its kind assigns them.
+A schema reaches shared values through its schema references (§7). A kind can designate content positions that use the common shared-value reference form (§7.6). No search, expansion, merging, or rewriting of arbitrary values is defined here. References within an embedded artifact retain the interpretation its kind assigns them.
 
 **Note.** A resource's map key gives a storage location, not a globally meaningful identity. A resource need not be used twice, and absence of a known reference does not establish that an unfamiliar kind cannot use it.
 
@@ -517,7 +516,7 @@ A binding's `kind` ([§3](#3-terminology)) names how its `content` and realizati
 
 **Note.** Case, Unicode normalization, punctuation, and apparent version segments carry no compatibility or ordering semantics. A kind is not an address, even when it resembles a URI (invariant 6).
 
-**What a kind decides.** The core leaves to a binding's kind:
+**What a kind decides.** This specification leaves to a binding's kind:
 
 - what `content` may contain and what it means, including whether any artifact or separately selected target is needed;
 - how the realization's target is identified, possibly with information outside the document;
@@ -527,16 +526,16 @@ A binding's `kind` ([§3](#3-terminology)) names how its `content` and realizati
 - encoding of binary artifacts and required context, such as credentials;
 - which content positions, if any, adopt the shared-value reference mechanism of §7.6, and how an artifact's own reference root and base are established.
 
-A kind in turn stands on these core provisions, changes to which are breaking ([§8.1](#81-openbindings-field-specification-version)):
+A kind in turn relies on these provisions of this specification, changes to which are breaking ([§8.1](#81-openbindings-field-specification-version)):
 
 - **Kind strings.** A kind is compared as a whole, exactly (above).
 - **Content values.** `content` is any JSON value; its presence is distinct from its value (§5).
 - **Shared values.** Resources carry ordinary JSON. A shared-value lookup returns the identified value without modifying it, interpreting its members, or establishing an artifact base (§7.6).
-- **Content references.** A kind chooses where it adopts shared-value references. Other content references remain its responsibility; schema-looking data in content does not enter core schema recognition.
+- **Content references.** A kind chooses where it adopts shared-value references. Other content references remain its responsibility; schema-looking data in content does not enter the document's schema inventory.
 - **Caller-facing values.** They are JSON values, and operation schemas apply to each separately (§5, invariant 1).
 - **Binding claims.** Each binding claims to realize its operation, accepting any input that satisfies its stated contract without promising success on each, and returning only values that satisfy its stated output contract (§5.3).
 
-**Sharing a kind (informative).** Portability extends as far as a kind's meaning is shared. Authors can describe that meaning in writing, qualify public names under a namespace they control, and give an incompatible interpretation a new name. Core requires neither publication nor registration. The project's candidate definitions (§14) have no special standing here.
+**Sharing a kind (informative).** Portability extends as far as a kind's meaning is shared. Authors can describe that meaning in writing, qualify public names under a namespace they control, and give an incompatible interpretation a new name. This specification requires neither publication nor registration. The project's candidate definitions (§14) have no special standing here.
 
 A private kind can describe a local command directly:
 
@@ -560,11 +559,11 @@ A private kind can describe a local command directly:
 
 ## 7. Reference resolution
 
-An OBI has a document-local schema embedding base drawn from nowhere else (§7.2). Obtaining the same document at another location changes no core reference meaning. Schema references (§7.1–§7.5) and kind-adopted shared-value references (§7.6) are distinct uses of addressing. Neither mechanism searches all stored JSON for `$id`, anchors, or `$ref`.
+An OBI has a document-local schema embedding base drawn from nowhere else (§7.2). Obtaining the same document at another location changes no reference meaning defined by this specification. Schema references (§7.1–§7.5) and kind-adopted shared-value references (§7.6) are distinct uses of addressing. Neither mechanism searches all stored JSON for `$id`, anchors, or `$ref`.
 
 ### 7.1. Schema recognition
 
-Core schema recognition depends only on the document. It performs no instance evaluation, network retrieval, kind interpretation, or dynamic-reference evaluation. The following procedure defines the **schema entry points**, **schemas the document contains**, and their schema-resource membership. Locations are compared by their resolved JSON locations, so differently escaped pointers reaching one location do not create two declarations.
+Schema recognition depends only on the document. It performs no instance evaluation, network retrieval, kind interpretation, or dynamic-reference evaluation. The following procedure defines the **schema entry points**, **schemas the document contains**, and their schema-resource membership. Locations are compared by their resolved JSON locations, so differently escaped pointers reaching one location do not create two declarations.
 
 1. **Start.** Each object or boolean at an operation's `input` or `output` is a schema entry point. Every entry point begins in the document resource, unless it declares `$id`, in which case it begins its own resource. A present value of any other type violates OBI-02.
 2. **Traverse schemas.** From each entry point, visit subschemas through the keywords listed below. Visiting an object or boolean recognizes it as a schema, even when it fails the meta-schemas. Resource membership is inherited, except that a schema with an `$id` member begins its own resource, identified for this procedure by that schema's location. A schema in the document resource, or a schema declaring `$id` reached directly from that resource, is at an **OBI position**. Traversal continues inside identified resources, although their contents are not OBI positions by that traversal.
@@ -578,7 +577,7 @@ Only schemas reached by this procedure are **schemas the document contains**. Da
 
 **Identifiers do not discover schemas.** Plain-name and absolute-URI references resolve using the completed inventory. A `$id` stored only in an unrecognized resource is not registered merely because an operation references that URI. To make that schema locally known, an operation schema or a schema already in the document resource uses a local pointer to it. After recognition, its `$id` is available to all schema references that JSON Schema resolves to it. No installed kind or processing order can change this inventory.
 
-**Note.** An unused resource such as `{"type": 42}` is ordinary data and does not violate OBI-10. Adding a schema reference to it makes it a schema entry point and exposes that violation. A resource consumed only by a binding kind remains outside core schema recognition, even if that kind interprets it as a schema of another dialect.
+**Note.** An unused resource such as `{"type": 42}` is ordinary data and does not violate OBI-10. Adding a schema reference to it makes it a schema entry point and exposes that violation. A resource consumed only by a binding kind remains outside this schema recognition procedure, even if that kind interprets it as a schema of another dialect.
 
 ### 7.2. The document as embedding
 
@@ -647,10 +646,10 @@ The reference inside `Tree` resolves to Tree's identified resource. An additiona
 
 Without `$id`, a shared schema belongs to the document resource. Its `#` would identify the OBI root. Recursive references in that form name their actual location, such as `#/resources/Tree`. Copying a standalone schema into resources therefore preserves its reference meaning only when its base and pointers are preserved, for example by retaining an absolute `$id`.
 
-| Case | Core result |
+| Case | Result under this specification |
 | --- | --- |
 | A schema-use pointer to `#/resources/Task` holding an object or boolean | Recognizes that value, then applies the schema rules |
-| The same pointer from an adopted kind content position | Looks up a shared value; does not recognize a core schema |
+| The same pointer from an adopted kind content position | Looks up a shared value; does not add a schema to the document's inventory |
 | A resource contains `$schema`, `$id`, or `$anchor` but has no schema use | Those members remain ordinary data |
 | An operation schema points to `#/resources/Task/properties/id` | Recognizes the selected object/boolean; uninterpreted ancestors supply no base |
 | Both a parent schema with `$id` and its no-ID subschema are selected as entry points | Conflicting membership violates OBI-12 |
@@ -673,7 +672,7 @@ Decode and evaluate the pointer by §7.3 steps 1–3. Its decoded first token mu
 
 Lookup returns the JSON value at that location unchanged. It neither follows a `$ref` contained in that value nor merges siblings, substitutes strings, or performs a recursive expansion. Sharing does not create mutable shared runtime state.
 
-The kind defines which positions use this form, any inline alternative and literal/reference disambiguation, and how a failed lookup affects use of the binding. The core does not inspect kind content to discover such references; their failure does not by itself violate document conformance. Schema `$ref` keywords instead follow §7.1–§7.5, including their JSON Schema sibling and resource rules.
+The kind defines which positions use this form, any inline alternative and literal/reference disambiguation, and how a failed lookup affects use of the binding. This specification does not inspect kind content to discover such references; their failure does not by itself violate document conformance. Schema `$ref` keywords instead follow §7.1–§7.5, including their JSON Schema sibling and resource rules.
 
 A storage pointer supplies no artifact base URI. In a kind that accepts either inline or shared material for the same input, that material has the same interpretation in both forms, with the same artifact root and kind-specified base. A kind must carry or obtain any needed base separately; moving an OpenAPI document into `resources`, for example, does not make its internal `#/components/...` refer to the OBI root. The kind interprets the value in its artifact context, not as text pasted into the binding. A kind that needs a location-dependent interpretation defines that distinction explicitly rather than treating the two forms as interchangeable.
 
@@ -831,7 +830,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 ## 12. Extensions
 
-A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**. OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning of a core field. Its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
+A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**. OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning this specification assigns to a field. Its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
 
 Keys inside the document's maps (`operations`, `dependencies`, `bindings`, `resources`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` such a key enters the identifier namespace (OBI-05).
 

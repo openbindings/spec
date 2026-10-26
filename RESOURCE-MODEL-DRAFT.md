@@ -8,12 +8,12 @@ implementation work still needed. It is not a new released version.
 
 - Each binding carries `operation`, `kind`, and optional `content`. Keeping
   content nested gives the kind its own namespace and preserves room for future
-  core binding fields. Content can be any JSON value, including `null`.
+  fields on the binding. Content can be any JSON value, including `null`.
 - `sources` and `bindings[*].source` are removed. A kind decides whether its
   binding needs an artifact, a target selector, both, or neither.
 - Optional `resources` replaces both shared source storage and `schemas`.
   Entries are arbitrary JSON values with no required wrapper or type tag.
-  The core assigns meaning through use, not storage.
+  The specification assigns meaning through use, not storage.
 - A kind can adopt the shared-value reference form
   `{"$ref":"#/resources/name"}` at specified content positions. Lookup returns
   the selected value unchanged. There is no global reference expansion,
@@ -38,9 +38,9 @@ value evaluation. Repeated references to one location do not duplicate its
 declarations; reference cycles terminate during inventory construction.
 
 An unused resource is opaque. Its `$id`, `$schema`, anchors, and reference-looking
-data have no core schema meaning. Kind use alone does not change that. This lets
-resources hold artifacts of different dialects without making the entire OBI
-subject to those artifacts' validation rules.
+data declare no schemas under OpenBindings. Kind use alone does not change that.
+This lets resources hold artifacts of different dialects without making the
+entire OBI subject to those artifacts' validation rules.
 
 The cost is explicit discovery: an absolute-URI or anchor reference cannot find
 an otherwise unrecognized stored schema by searching its contents. A local
@@ -62,10 +62,10 @@ it does not remove the need to specify schema boundaries.
 
 | Area | Status |
 | --- | --- |
-| Core prose and derived structural schema | Updated |
+| Specification text and derived structural schema | Updated |
 | Top-level examples, overview, changelog, migration guide | Updated |
 | Focused structural, recognition, and shared-value lookup checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
-| Historical core corpus and its manifest | Still describe preceding 0.2 source/schema semantics |
+| Historical document corpus and its manifest | Still describe preceding 0.2 source/schema semantics |
 | Binding family candidates and their corpora | Still require individual content, reference, and base-preservation designs |
 | SDKs and conformance runner adapters | Not migrated or claimed compatible |
 | Released snapshots and published binding bundles | Unchanged |
@@ -76,7 +76,7 @@ OBI-13 through schema recognition. Existing corpus results do not prove these
 revised rules. The focused checks are an executable design aid, not a complete
 conformance validator or proof that the illustrative kinds can execute.
 
-Before releasing this revision, migrate the core corpus and implementations,
+Before releasing this revision, migrate the document corpus and implementations,
 resolve each candidate kind's new content shape, test inline/shared artifact
 equivalence, and run independent implementations against the revised corpus.
 Do not mechanically merge old source content with binding content: both can

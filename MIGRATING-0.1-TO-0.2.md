@@ -10,7 +10,7 @@ An OBI requires `openbindings` and `operations`. Each binding requires an
 `operation` key and its own non-empty `kind`. Kind-specific content remains
 nested in optional `content`, which accepts any JSON value. `dependencies` and
 `resources` are optional. Root `sources`, root `schemas`, and binding `source`
-are no longer core fields.
+are no longer part of the document model.
 
 ## From the preceding 0.2 draft
 
@@ -44,9 +44,10 @@ are no longer core fields.
    or conflicting schema-resource membership. Multiple references to the same
    location count its declarations once.
 
-A resource reference in binding content does not activate a core schema. Core
-conformance does not require loading a kind definition or interpreting its
-content. Whether that kind accepts the content remains a separate question.
+A resource reference in binding content does not add a schema to the document's
+inventory. OpenBindings conformance does not require loading a kind definition
+or interpreting its content. Whether that kind accepts the content remains a
+separate question.
 
 ## Additional changes from 0.1
 
@@ -59,7 +60,7 @@ content. Whether that kind accepts the content remains a separate question.
 | Operation-level `idempotent` | Binding-level repetition claim |
 | `input: null` / `output: null` for no contract | Omit the schema field |
 | Root `roles`, operation `satisfies` | Qualified aliases for correspondence where intended |
-| Core transforms and security fields | Kind-defined content/context; core supplies neither transform language nor invocation API |
+| Transforms and security fields | Kind-defined content/context; OpenBindings supplies neither transform language nor invocation API |
 | Retrieval-relative schema references | Document-local or absolute references under §7 |
 
 Removed unprefixed fields cause structural nonconformance. `x-` fields remain
@@ -74,7 +75,7 @@ lifecycle belong to the kind. An absent schema states no contract; `true` and
 `{}` admit every value; `false` admits none; a null-only schema admits `null`.
 The output contract covers every caller-facing output, including error-shaped
 values when the kind exposes them. Other dialects require meaning-preserving
-translation before becoming core operation schemas.
+translation before becoming OpenBindings operation schemas.
 
 Aliases share one namespace with operation keys. Correspondence, realization,
 consumption, examples, and binding idempotency remain author claims. Neither
@@ -105,15 +106,15 @@ binding may carry:
 }
 ```
 
-The resource above is a shared descriptor, not a core source object. The kind
-interprets its `location`. [The embedded example](examples/shared-resources.obi.json)
+The resource above is a shared descriptor whose `location` the kind interprets.
+[The embedded example](examples/shared-resources.obi.json)
 instead shares a complete OpenAPI document.
 
 ## Validation and implementation status
 
-Run structural validation, then the core's recognition, meta-schema, reference,
-and identity checks. Check kind content separately and exercise actual
-inline/shared equivalence with that kind. The focused draft checks are documented
+Run structural validation, then the schema recognition, meta-schema, reference,
+and identity checks defined by OpenBindings. Check kind content separately and
+exercise actual inline/shared equivalence with that kind. The focused draft checks are documented
 in [conformance/resource-model-draft/README.md](conformance/resource-model-draft/README.md).
 Existing SDKs, family candidates, and the earlier corpus are not presumed to
 support this revision; [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) tracks the

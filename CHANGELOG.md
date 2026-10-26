@@ -11,8 +11,8 @@ chronological record of work on the draft is preserved in
 Version 0.2.0 has not been released. The latest release is 0.1.0, and details
 below may continue to change until the 0.2 release is cut. Entries describe
 the difference from 0.1.0. Compatibility checking, security declarations,
-transforms, and HTTP discovery leave the core; kinds, dependencies, value
-contracts, location-independent references, and numbered conformance rules
+transforms, and HTTP discovery leave this specification; kinds, dependencies,
+value contracts, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
 
 ### Binding/resources revision (2026-10-26)
@@ -21,7 +21,7 @@ This unreleased revision replaces the preceding 0.2 source/schema model. Binding
 carry their own required `kind`; `sources` and `bindings[*].source` are removed.
 Optional `resources` replaces the dedicated `schemas` map and stores any JSON
 value without a wrapper. Schemas are recognized from operation schemas and
-explicit local resource pointers; unused resources stay opaque. Core §7.6
+explicit local resource pointers; unused resources stay opaque. OpenBindings §7.6
 provides opt-in shared-value lookup for kinds without scanning or expanding
 arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revised
 schema inventory. No released snapshot is changed. Earlier corpus and kind
@@ -29,9 +29,9 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
 
 ### Added
 
-- **Core invariants.** [§2](openbindings.md#2-core-invariants) states the six
+- **Invariants.** [§2](openbindings.md#2-invariants) states the six
   invariants the model rests on: value contracts, declaration not
-  availability, bounded core meaning, location-independent references,
+  availability, bounded interpretation, location-independent references,
   self-contained conformance, and decentralized naming.
 - **Named operation dependencies.** The optional `dependencies` map
   ([§5.5](openbindings.md#55-dependencies)) declares named points where the
@@ -93,8 +93,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   opaque, non-empty names, with no normalization, version algebra, or address
   meaning (§6). `operation` and `kind` are required; `content` is optional and
   can be any JSON value. Source objects and the binding `source` member leave
-  the core. Target identification, value adaptation, interaction mechanics,
-  and context are interpreted under each binding's kind (§5.3).
+  the document model. Target identification, value adaptation, interaction
+  mechanics, and context are interpreted under each binding's kind (§5.3).
 - **Shared values use `resources`.** A name-to-value map replaces the dedicated
   schema map and optional source-content factoring. A schema-use pointer
   establishes a schema entry point; identifiers in otherwise opaque data are
@@ -145,7 +145,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   removed 0.1 member left in place makes a 0.2 document non-conformant. Keys
   inside the document's maps are entry names, not fields. Presence is
   distinct from value, and an `x-` field, an extension, never changes the
-  meaning of a core field.
+  meaning that OpenBindings assigns to a field.
 - **An OBI is UTF-8 JSON.** Invalid UTF-8, malformed JSON, duplicate object
   keys, and a leading byte-order mark make a document non-conformant
   (OBI-01).
@@ -155,7 +155,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   present, names 2020-12 (OBI-09), and every schema the document contains is
   read as 2020-12 ([§5.2](openbindings.md#52-schemas)), so a `$schema` has no
   other effect, even where JSON Schema does not permit one. Beyond §5.2 and §7, JSON
-  Schema governs meaning, resolution, and evaluation; the core defines no
+  Schema governs meaning, resolution, and evaluation; OpenBindings defines no
   keyword or evaluation of its own. In 0.1, tools declared the dialects they
   supported, with 2020-12 the recommended default.
 - **References are location-independent.** No OBI-defined reference resolves against
@@ -215,14 +215,14 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   Changed.
 - **Compatibility checking**: the schema-comparison profile, normalization,
   the operation-matching algorithm, interface conformance, and compatibility
-  reports. The core fixes only when two kinds are the same and which operation
+  reports. OpenBindings fixes only when two kinds are the same and which operation
   a string identifies ([§6](openbindings.md#6-kinds), [§5.1](openbindings.md#51-operations)).
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
   Credentials and other prerequisites are context.
 - **Transforms**: transform objects, named transforms, and the JSONata
   requirement. Value adaptation is read under the binding's kind, typically
-  from binding `content`; the core defines no transform or expression
+  from binding `content`; OpenBindings defines no transform or expression
   language.
 - **Source addressing rules**: the requirement of exactly one of `location`
   or `content`, and resolution of a relative `location` against the
@@ -232,7 +232,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
 - **Binding coverage, actionability, and location-based interface identity.**
   OBI assigns no document identity; `name` and `version` are labels.
 - **YAML** as an alternate serialization.
-- **HTTP discovery in the core.** The core no longer defines
+- **HTTP discovery.** This specification no longer defines
   `/.well-known/openbindings` or any discovery convention; see the HTTP
   Discovery companion below.
 
@@ -244,7 +244,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   DISC-S-04 bind servers and DISC-C-01 to DISC-C-03 bind clients, as separate
   conformance classes. It gives registration details for the well-known URI
   suffix `openbindings`. Fetching supplies the document no base URI.
-- **Core test corpus.** `conformance/` replaces 0.1's schema-comparison,
+- **Document conformance corpus.** `conformance/` replaces 0.1's schema-comparison,
   normalization, and operation-matching fixtures. `document/` holds validity
   fixtures, one file per rule and one per section that answers a case; each
   case carries exactly one of `document`, `documentText`, or
@@ -268,7 +268,7 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   in `formats/operation-graph/` is now the `openbindings.operation-graph@1`
   candidate. The `conformance/binding-specs/` and
   `conformance/operation-graph/` subcorpora are not evidence of conformance
-  to the current core.
+  to the current OpenBindings specification.
 - **Publication tooling.** `scripts/publish-binding-specifications.mjs`
   publishes named candidate revisions as immutable, self-contained bundles
   under `binding-specs/releases/`, recorded in `publications.json` with a
