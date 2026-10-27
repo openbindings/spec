@@ -159,8 +159,9 @@ evaluation and recognition rules, and shared `idempotent` field are unchanged.
   distinct from value, and an `x-` field, an extension, never changes the
   meaning that OpenBindings assigns to a field.
 - **An OBI is UTF-8 JSON.** Invalid UTF-8, malformed JSON, duplicate object
-  keys, and a leading byte-order mark make a document non-conformant
-  (OBI-01).
+  keys, a leading byte-order mark, and an escape that denotes an unpaired
+  surrogate (such as `"\ud800"`) make a document non-conformant (OBI-01).
+  Surrogate pairs and noncharacters remain permitted.
 - **JSON Schema 2020-12 is the dialect.** Every schema the document contains
   is a 2020-12 schema in object or boolean form, valid against the 2020-12
   meta-schemas with `format` as an annotation (OBI-10). A `$schema`, where

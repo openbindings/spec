@@ -320,7 +320,7 @@ query { t: __type(name: "__Type") { fields { name args { name } } } f: __type(na
 
 **[convention]** `content` is REQUIRED. No source mode this specification governs forbids `content`: the only mode it governs is the one in which `content` carries the document, so the set of `content`-forbidding modes Project [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness) item 3 asks for is empty, and a location-only source is not accepted, because a source without a document denotes no operation. This discharges item 3's forbidden-mode clause in the opposite direction, stated explicitly, at the refuse rung: the alternative, deriving a document from the schema, authors an operation no author wrote.
 
-**[incorporated]** `content` has primacy (Core [§5.4](../../openbindings.md#54-sources)): a fetch from `location` does not silently replace it.
+**[convention]** In this candidate, `content` has primacy: a fetch from `location` does not silently replace it.
 
 **[limit]** The carried `document` is the document sent, never rewritten (§5): a stripping or rewriting rule would author wire behaviour no authority states, so this specification defines none.
 

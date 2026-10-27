@@ -84,8 +84,7 @@
         "ecma262-unicode-property-escapes",
         "repeated-member-detection",
         "draft-07-dialect",
-        "exact-numbers",
-        "exact-lone-surrogate-strings"
+        "exact-numbers"
       ]
     },
     "features": {

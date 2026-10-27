@@ -113,9 +113,12 @@ instead shares a complete OpenAPI document.
 
 ## Validation and implementation status
 
-Run structural validation, then the schema recognition, meta-schema, reference,
-and identity checks defined by OpenBindings. Check kind content separately and
-verify the kind-defined interpretation of any inline or shared material.
+First check the JSON text for invalid UTF-8, malformed JSON, duplicate member
+names, a leading byte-order mark, and escapes that denote unpaired surrogates
+(OBI-01). Then run structural validation and the schema recognition, meta-schema,
+reference, and identity checks defined by OpenBindings. Check kind content
+separately and verify the kind-defined interpretation of any inline or shared
+material.
 The focused draft checks are documented
 in [conformance/resource-model-draft/README.md](conformance/resource-model-draft/README.md).
 Existing SDKs, family candidates, and the earlier corpus are not presumed to
