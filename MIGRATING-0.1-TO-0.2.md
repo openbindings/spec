@@ -35,10 +35,10 @@ are no longer part of the document model.
    that schema in the document, or publish/provide it as an external schema.
    Once recognized, its identifier is available to other schema references.
 5. **Preserve reference context.** An absolute `$id` keeps a standalone schema's
-   internal references scoped to its schema resource. A kind must likewise
-   preserve an artifact's root and required base when accepting inline and
-   shared representations of the same material. An OBI pointer is not an
-   artifact base URI.
+   internal references scoped to its schema resource. When migrating an
+   artifact, follow the kind's rules for its root, base, and references.
+   Shared-value lookup supplies no artifact base or guarantee that inline and
+   shared representations have equivalent interpretation.
 6. **Check consequences of use.** Unused resources remain arbitrary JSON. Adding
    a schema use can reveal malformed schemas, duplicate identifiers or anchors,
    or conflicting schema-resource membership. Multiple references to the same
@@ -115,7 +115,8 @@ instead shares a complete OpenAPI document.
 
 Run structural validation, then the schema recognition, meta-schema, reference,
 and identity checks defined by OpenBindings. Check kind content separately and
-exercise actual inline/shared equivalence with that kind. The focused draft checks are documented
+verify the kind-defined interpretation of any inline or shared material.
+The focused draft checks are documented
 in [conformance/resource-model-draft/README.md](conformance/resource-model-draft/README.md).
 Existing SDKs, family candidates, and the earlier corpus are not presumed to
 support this revision; [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) tracks the

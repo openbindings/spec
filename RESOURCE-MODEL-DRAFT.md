@@ -17,7 +17,9 @@ implementation work still needed. It is not a new released version.
 - A kind can adopt the shared-value reference form
   `{"$ref":"#/resources/name"}` at specified content positions. Lookup returns
   the selected value unchanged. There is no global reference expansion,
-  automatic merging, or scanning of unfamiliar content.
+  automatic merging, or scanning of unfamiliar content. Each kind determines
+  how inline and referenced material are interpreted; the draft no longer
+  requires those interpretations to be equivalent.
 - Operation schemas use JSON Schema references. A kind's shared-value reference
   and a schema's `$ref` have different semantics even when their spelling is
   identical. Artifact reference roots and bases remain the kind's responsibility.
@@ -77,7 +79,7 @@ revised rules. The focused checks are an executable design aid, not a complete
 conformance validator or proof that the illustrative kinds can execute.
 
 Before releasing this revision, migrate the document corpus and implementations,
-resolve each candidate kind's new content shape, test inline/shared artifact
-equivalence, and run independent implementations against the revised corpus.
+resolve each candidate kind's new content shape, test its reference and
+interpretation rules, and run independent implementations against the revised corpus.
 Do not mechanically merge old source content with binding content: both can
 already be arbitrary JSON, and only the kind can define that migration.

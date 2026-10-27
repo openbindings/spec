@@ -27,10 +27,21 @@ arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revi
 schema inventory. No released snapshot is changed. Earlier corpus and kind
 migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
 
-The glossary omits ordinary-language terms and duplicate definitions. Binding
-targets are explained in §5.3; undefined results, plain names, and version
-declarations are defined in §§5.2, 7.3, and 8.1. Schema references in the document
-resource are named directly. This terminology cleanup changes no document rules.
+The glossary omits ordinary-language terms and duplicate definitions. Undefined
+results, plain names, and version declarations are defined in §§5.2, 7.3, and
+8.1. Schema references in the document resource are named directly.
+
+**Kind interpretation boundary (breaking relative to the preceding working
+draft).** Shared-value lookup returns unchanged JSON and establishes no artifact
+base; it no longer requires equivalent interpretation of inline and referenced
+material. Each kind defines that interpretation (§7.6). Bindings declare
+realizations without requiring a separate target concept. The empty-object
+prescription for operations with no meaningful input or output and the advice
+that callers must distinguish errors through schemas are removed. The draft
+also trims repeated explanations and examples, makes security guidance about
+kind processing conditional, and consolidates the compatibility guarantees for
+kinds in §8.1. The structural schema, numbered conformance rules, schema
+evaluation and recognition rules, and shared `idempotent` field are unchanged.
 
 ### Added
 
@@ -51,10 +62,10 @@ resource are named directly. This terminology cleanup changes no document rules.
   in that direction, one value at a time (invariant 1,
   [§5.1](openbindings.md#51-operations)). Absent, `{}` or `true`, `false`,
   and `{"type": "null"}` are four distinct states, and boolean schemas are
-  valid. §5.1 recommends `{"type": "object", "maxProperties": 0}` for an
-  operation that takes, or returns, nothing meaningful. An operation is the
-  capability its identifiers name and its description conveys, with optional
-  input and output schemas ([§3](openbindings.md#3-terminology)).
+  valid. Schemas constrain values that occur without determining whether or
+  how many occur. An operation is the capability its identifiers name and its
+  description conveys, with optional input and output schemas
+  ([§3](openbindings.md#3-terminology)).
 - **Author claims.** [§5](openbindings.md#5-document-model) lists the document's
   author claims
   (examples, a binding's realization claim and its `idempotent`, a
