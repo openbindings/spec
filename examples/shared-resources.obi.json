@@ -1,0 +1,109 @@
+{
+  "openbindings": "0.2.0",
+  "name": "Task Service",
+  "description": "One embedded artifact shared by two bindings; its nested Task schema is explicitly used by the operation schemas.",
+  "operations": {
+    "createTask": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string"}
+        },
+        "required": ["title"]
+      },
+      "output": {"$ref": "#/resources/tasksApi/components/schemas/Task"}
+    },
+    "listTasks": {
+      "input": {"type": "object", "maxProperties": 0},
+      "output": {"$ref": "#/resources/TaskList"}
+    }
+  },
+  "bindings": {
+    "createTask.http": {
+      "operation": "createTask",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/tasksApi"},
+        "target": "#/paths/~1tasks/post"
+      }
+    },
+    "listTasks.http": {
+      "operation": "listTasks",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/tasksApi"},
+        "target": "#/paths/~1tasks/get"
+      }
+    }
+  },
+  "resources": {
+    "TaskList": {
+      "type": "array",
+      "items": {"$ref": "#/resources/tasksApi/components/schemas/Task"}
+    },
+    "tasksApi": {
+      "openapi": "3.1.0",
+      "info": {"title": "Tasks API", "version": "1.0.0"},
+      "servers": [
+        {"url": "https://tasks.example.com"}
+      ],
+      "paths": {
+        "/tasks": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "Task list",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Task"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "post": {
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "title": {"type": "string"}
+                    },
+                    "required": ["title"]
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Created task",
+                "content": {
+                  "application/json": {
+                    "schema": {"$ref": "#/components/schemas/Task"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "title": {"type": "string"}
+            },
+            "required": ["id", "title"]
+          }
+        }
+      }
+    }
+  }
+}

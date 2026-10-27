@@ -11,44 +11,68 @@ chronological record of work on the draft is preserved in
 Version 0.2.0 has not been released. The latest release is 0.1.0, and details
 below may continue to change until the 0.2 release is cut. Entries describe
 the difference from 0.1.0. Compatibility checking, security declarations,
-transforms, and HTTP discovery leave the core; kinds, dependencies, value
-contracts, location-independent references, and numbered conformance rules
+transforms, and HTTP discovery leave this specification; kinds, dependencies,
+per-value schemas, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
+
+### Binding/resources revision (2026-10-26)
+
+This unreleased revision replaces the preceding 0.2 source/schema model. Bindings
+carry their own required `kind`; `sources` and `bindings[*].source` are removed.
+Optional `resources` replaces the dedicated `schemas` map and stores any JSON
+value without a wrapper. Schemas are recognized from operation schemas and
+explicit local resource pointers; unused resources stay opaque. OpenBindings §7.6
+provides opt-in shared-value lookup for kinds without scanning or expanding
+arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revised
+schema inventory. No released snapshot is changed. Earlier corpus and kind
+migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
+
+The glossary omits ordinary-language terms and duplicate definitions. Undefined
+results, plain names, and version declarations are defined in §§5.2, 7.3, and
+8.1. Schema references in the document resource are named directly.
+
+**Kind interpretation boundary (breaking relative to the preceding working
+draft).** Shared-value lookup returns unchanged JSON and establishes no artifact
+base; it no longer requires equivalent interpretation of inline and referenced
+material. Each kind defines that interpretation (§7.6). Bindings declare
+realizations without requiring a separate target concept. The empty-object
+prescription for operations with no meaningful input or output and the advice
+that callers must distinguish errors through schemas are removed. The draft
+also trims repeated explanations and examples, makes security guidance about
+kind processing conditional, and consolidates the compatibility guarantees for
+kinds in §8.1. The structural schema, numbered conformance rules, schema
+evaluation and recognition rules, and shared `idempotent` field are unchanged.
 
 ### Added
 
-- **Core invariants.** [§2](openbindings.md#2-core-invariants) states the six
-  invariants the model rests on: value contracts, declaration not
-  availability, bounded core meaning, location-independent references,
+- **Invariants.** [§2](openbindings.md#2-invariants) states the six
+  invariants the model rests on: per-value schemas, declaration not
+  availability, bounded interpretation, location-independent references,
   self-contained conformance, and decentralized naming.
 - **Named operation dependencies.** The optional `dependencies` map
   ([§5.5](openbindings.md#55-dependencies)) declares named points where the
-  described component consumes a realization of an operation. An entry has a
-  required `operation` (an operation key, not an alias; OBI-08), optional
+  software described by the OBI consumes a realization of an operation. An entry
+  has a required `operation` (an operation key, not an alias; OBI-08), optional
   `kinds`, and `description`. `kinds` is a non-empty, unique, unordered any-of
-  constraint: a binding meets it exactly when its source's kind is the same
+  constraint: a binding meets it exactly when its kind is the same
   kind as a listed one ([§6](openbindings.md#6-kinds)). The document does not
   say which realization serves a dependency.
-- **Value contracts.** `input` and `output` each state a value contract that
-  governs every caller-facing value crossing the operation boundary in that
-  direction, one value at a time (invariant 1,
+- **Input and output schemas.** `input` and `output`, when present, each hold
+  a schema governing every caller-facing value crossing the operation boundary
+  in that direction, one value at a time (invariant 1,
   [§5.1](openbindings.md#51-operations)). Absent, `{}` or `true`, `false`,
   and `{"type": "null"}` are four distinct states, and boolean schemas are
-  valid. §5.1 recommends `{"type": "object", "maxProperties": 0}` for an
-  operation that takes, or returns, nothing meaningful. An operation's
-  contract is the capability its identifiers name and its description
-  conveys, with its value contracts ([§3](openbindings.md#3-terminology)).
-- **Context and author claims.** [§3](openbindings.md#3-terminology)
-  defines context: what a realization needs that the operation is not about,
-  such as a credential, a target's address, or a deadline, carried in content
-  under the source's kind or coming from outside the document. A credential
-  is caller-facing only when the author describes it in `input` or `output`.
-  [§5](openbindings.md#5-document-model) lists the document's author claims
+  valid. Schemas constrain values that occur without determining whether or
+  how many occur. An operation is the capability its identifiers name and its
+  description conveys, with optional input and output schemas
+  ([§3](openbindings.md#3-terminology)).
+- **Author claims.** [§5](openbindings.md#5-document-model) lists the document's
+  author claims
   (examples, a binding's realization claim and its `idempotent`, a
   dependency's consumption claim, and correspondence); their truth is outside
   conformance.
-- **Satisfying a value contract.** [§5.2](openbindings.md#52-schemas)
-  defines when a value satisfies or fails a contract: under JSON Schema
+- **Evaluating a value against a schema.** [§5.2](openbindings.md#52-schemas)
+  defines when a value satisfies or fails an operation schema: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
   expressions with Unicode semantics, references resolved as §7 defines, and
   a schema document whose root declares no `$schema` read as 2020-12, one
@@ -58,8 +82,8 @@ arrive. The specification specifies the document model only.
   such a part only when the part's outcome, with the annotations that follow
   it, would change it; a value that depends on both is, from the document
   alone, undefined only if it would be undefined whatever the resource holds,
-  and with the resource the same rules decide. An absent schema states no
-  contract.
+  and with the resource the same rules decide. When a schema is absent, there is
+  no schema to evaluate for that direction.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
@@ -77,32 +101,25 @@ arrive. The specification specifies the document model only.
 
 ### Changed
 
-- **Sources carry a `kind` and kind-read `content`.** The required `format`
-  token (name compared case-insensitively, trailing `.0` version segments
-  ignored) is replaced by `kind`: an exact, opaque, non-empty string compared
-  whole, never normalized or read for compatibility or version order, and
-  never an address ([§6](openbindings.md#6-kinds)). A source is `kind` with optional
-  `content` (any JSON value) and `description`
-  ([§5.4](openbindings.md#54-sources)). The core gives `content` no meaning:
-  what it holds, how a binding's target is identified, value adaptation,
-  interaction mechanics, binary encoding, and required context are read under
-  the kind ([§6](openbindings.md#6-kinds)). Whether a definition of a kind
-  exists does not affect conformance. Changes to
-  the core provisions a kind stands on are recorded as breaking
-  ([§8.1](openbindings.md#81-openbindings-field-specification-version)).
-- **Bindings carry `content`.** The binding member `ref` is replaced by
-  optional `content`, any JSON value read under the source's kind
-  ([§5.3](openbindings.md#53-bindings)). It may identify the target and
-  describe how values are adapted between the operation's value contracts and
-  that target, which 0.1 expressed with transforms. A binding is an author
-  claim that its target realizes the operation as the document describes it.
-  The document need not suffice to identify or reach the target (invariant 2),
-  and the core defines no invocation behavior.
+- **Bindings carry their own `kind` and `content`.** Kind strings are exact,
+  opaque, non-empty names, with no normalization, version algebra, or address
+  meaning (§6). `operation` and `kind` are required; `content` is optional and
+  can be any JSON value. Source objects and the binding `source` member leave
+  the document model. Target identification, value adaptation, and interaction
+  mechanics are interpreted under each binding's kind (§5.3).
+- **Shared values use `resources`.** A name-to-value map replaces the dedicated
+  schema map and optional source-content factoring. A schema-use pointer
+  establishes a schema entry point; identifiers in otherwise opaque data are
+  not discovered by scanning. Repeated use of one location does not duplicate
+  its schema declarations. Conflicting schema-resource membership violates
+  OBI-12. Kinds may adopt shared-value lookup at explicit content positions
+  (§§5.4, 7.1, 7.6); internal artifact references retain their own context.
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
-  stronger author preference and omission states no preference. Sources carry
-  none. `preference` and `deprecated` are independent author signals; neither
+  stronger author preference and omission states no preference. There is no
+  source-level default. `preference` and `deprecated` are independent author
+  signals; neither
   takes precedence over the other.
 - **`idempotent` moves from operations to bindings.** It is each binding's
   author claim that repeating the operation through that binding with the
@@ -111,10 +128,10 @@ arrive. The specification specifies the document model only.
   ([§5.3](openbindings.md#53-bindings)). It no longer means safe to retry with
   the same result, and alone it establishes neither retry safety nor
   cacheability.
-- **An operation is a signature.** Its name and optional per-value `input`
-  and `output` schemas are its whole signature
+- **Operations are protocol-independent.** Each operation names a capability
+  with optional per-value `input` and `output` schemas
   ([§5.1](openbindings.md#51-operations)). Interaction pattern and
-  cardinality belong to each binding under its source's kind, replacing 0.1's
+  cardinality belong to each binding under its kind, replacing 0.1's
   model of every operation as a stream of events. `output` describes every
   value the operation returns, error-shaped values included, not only
   successful results. Declaring an operation does not by itself claim that a
@@ -123,14 +140,14 @@ arrive. The specification specifies the document model only.
   form one flat, document-unique namespace (OBI-05). A string identifies an
   operation exactly when it equals its key or one of its aliases, and the
   operation's bindings are those whose `operation` holds its key
-  ([§5.1](openbindings.md#51-operations)). Carrying a shared
-  contract's published name as a key or alias claims correspondence with that
-  contract's operation, as a reader holding the contract reads it, and with
-  the operation of that name in every other held contract that publishes it
+  ([§5.1](openbindings.md#51-operations)). Authors may publish sets of
+  operations for adoption, including as interfaces described by OBIs. Carrying
+  a published name as a key or alias claims correspondence with the operation
+  that name identifies in each published set the reader holds that includes it
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
-- **Names have a grammar.** Operation, dependency, binding, source, schema,
+- **Names have a grammar.** Operation, dependency, binding, resource,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
   compare as exact strings (OBI-04); strings are equal when their UTF-16 code
   units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.
@@ -140,7 +157,7 @@ arrive. The specification specifies the document model only.
   removed 0.1 member left in place makes a 0.2 document non-conformant. Keys
   inside the document's maps are entry names, not fields. Presence is
   distinct from value, and an `x-` field, an extension, never changes the
-  meaning of a core field.
+  meaning that OpenBindings assigns to a field.
 - **An OBI is UTF-8 JSON.** Invalid UTF-8, malformed JSON, duplicate object
   keys, a leading byte-order mark, and an escape that denotes an unpaired
   surrogate (such as `"\ud800"`) make a document non-conformant (OBI-01).
@@ -151,7 +168,7 @@ arrive. The specification specifies the document model only.
   present, names 2020-12 (OBI-09), and every schema the document contains is
   read as 2020-12 ([§5.2](openbindings.md#52-schemas)), so a `$schema` has no
   other effect, even where JSON Schema does not permit one. Beyond §5.2 and §7, JSON
-  Schema governs meaning, resolution, and evaluation; the core defines no
+  Schema governs meaning, resolution, and evaluation; OpenBindings defines no
   keyword or evaluation of its own. In 0.1, tools declared the dialects they
   supported, with 2020-12 the recommended default.
 - **References are location-independent.** No OBI-defined reference resolves against
@@ -160,8 +177,9 @@ arrive. The specification specifies the document model only.
   the document resource are absolute URIs or same-document references, and an
   `$id` at an OBI position is absolute (OBI-11). A same-document reference
   there identifies what [§7.3](openbindings.md#73-same-document-references)
-  defines (`#` the document itself), and each must identify a schema at an
-  OBI position (OBI-12). No plain name is declared twice in the document
+  defines (`#` the document itself), and each must identify a recognized schema at an
+  OBI position without conflicting resource membership (OBI-12). No plain name
+  is declared twice in the document
   resource, and no `$id` by two schemas (OBI-13). A schema that declares `$id`
   begins its own resource, resolved as JSON Schema defines. Reference cycles
   are permitted, and external resources never affect conformance. In 0.1, relative
@@ -191,9 +209,9 @@ arrive. The specification specifies the document model only.
   and the prose governed. Its descriptions are short labels that cite the
   section defining each member.
 - **Examples are author claims.** Each example `input` and `output` is one
-  caller-facing value the author claims satisfies the corresponding contract;
-  a value that fails it makes the claim false, and the schema alone states
-  the contract ([§5.1](openbindings.md#51-operations)). An
+  caller-facing value the author claims satisfies the corresponding schema,
+  where present. A value that fails it makes the claim false, and examples
+  never change the schema ([§5.1](openbindings.md#51-operations)). An
   explicit `null` member is the JSON value `null`. In 0.1, examples were
   documentation that SHOULD validate.
 - **Security considerations describe exposure.**
@@ -210,24 +228,23 @@ arrive. The specification specifies the document model only.
   Changed.
 - **Compatibility checking**: the schema-comparison profile, normalization,
   the operation-matching algorithm, interface conformance, and compatibility
-  reports. The core fixes only when two kinds are the same and which operation
+  reports. OpenBindings fixes only when two kinds are the same and which operation
   a string identifies ([§6](openbindings.md#6-kinds), [§5.1](openbindings.md#51-operations)).
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
-  Credentials and other prerequisites are context.
 - **Transforms**: transform objects, named transforms, and the JSONata
-  requirement. Value adaptation is read under the source's kind, typically
-  from binding `content`; the core defines no transform or expression
+  requirement. Value adaptation is read under the binding's kind, typically
+  from binding `content`; OpenBindings defines no transform or expression
   language.
 - **Source addressing rules**: the requirement of exactly one of `location`
   or `content`, and resolution of a relative `location` against the
   document's location.
 - **Literal `null` for an unspecified `input` or `output`.** Omission is the
-  only way to state no value contract.
+  only way to leave the schema unstated.
 - **Binding coverage, actionability, and location-based interface identity.**
   OBI assigns no document identity; `name` and `version` are labels.
 - **YAML** as an alternate serialization.
-- **HTTP discovery in the core.** The core no longer defines
+- **HTTP discovery.** This specification no longer defines
   `/.well-known/openbindings` or any discovery convention; see the HTTP
   Discovery companion below.
 
@@ -239,7 +256,7 @@ arrive. The specification specifies the document model only.
   DISC-S-04 bind servers and DISC-C-01 to DISC-C-03 bind clients, as separate
   conformance classes. It gives registration details for the well-known URI
   suffix `openbindings`. Fetching supplies the document no base URI.
-- **Core test corpus.** `conformance/` replaces 0.1's schema-comparison,
+- **Document conformance corpus.** `conformance/` replaces 0.1's schema-comparison,
   normalization, and operation-matching fixtures. `document/` holds validity
   fixtures, one file per rule and one per section that answers a case; each
   case carries exactly one of `document`, `documentText`, or
@@ -247,7 +264,7 @@ arrive. The specification specifies the document model only.
   `notViolated` rule lists. `scenarios/` holds scenarios in format
   `openbindings.core-scenarios@3` (`scenario.schema.json`), grouped by the
   section that answers them: which operation a string identifies, whether
-  values satisfy a contract, whether a binding meets a dependency's `kinds`,
+  values satisfy a schema, whether a binding meets a dependency's `kinds`,
   what examples claim, and whether a document conforms. `runners/go` is a
   reference runner. The corpus is reference material; the prose governs.
 - **Binding-specification candidates.** [`binding-specs/`](binding-specs/)
@@ -263,7 +280,7 @@ arrive. The specification specifies the document model only.
   in `formats/operation-graph/` is now the `openbindings.operation-graph@1`
   candidate. The `conformance/binding-specs/` and
   `conformance/operation-graph/` subcorpora are not evidence of conformance
-  to the current core.
+  to the current OpenBindings specification.
 - **Publication tooling.** `scripts/publish-binding-specifications.mjs`
   publishes named candidate revisions as immutable, self-contained bundles
   under `binding-specs/releases/`, recorded in `publications.json` with a

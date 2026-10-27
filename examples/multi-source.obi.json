@@ -2,156 +2,118 @@
   "openbindings": "0.2.0",
   "name": "User Service",
   "version": "2.0.0",
-  "description": "A user service available through two OpenAPI sources, a public API and an internal admin API, unified under one interface.",
-  "schemas": {
+  "description": "A user service available through two OpenAPI-described APIs, a public API and an internal admin API, unified under one interface.",
+  "operations": {
+    "getUser": {
+      "description": "Retrieve a user by ID.",
+      "input": {"$ref": "#/resources/GetUserInput"},
+      "output": {"$ref": "#/resources/User"}
+    },
+    "createUser": {
+      "description": "Create a new user account.",
+      "input": {"$ref": "#/resources/CreateUserInput"},
+      "output": {"$ref": "#/resources/User"}
+    },
+    "listUsers": {
+      "description": "List all users.",
+      "input": {"type": "object", "maxProperties": 0},
+      "output": {"$ref": "#/resources/ListUsersOutput"}
+    }
+  },
+  "bindings": {
+    "getUser.publicApi": {
+      "operation": "getUser",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/publicApi"},
+        "target": "#/paths/~1users~1%7BuserId%7D/get"
+      },
+      "idempotent": true,
+      "description": "Public-facing REST API"
+    },
+    "getUser.adminApi": {
+      "operation": "getUser",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/adminApi"},
+        "target": "#/paths/~1admin~1users~1%7BuserId%7D/get"
+      },
+      "idempotent": true,
+      "description": "Internal admin REST API"
+    },
+    "createUser.publicApi": {
+      "operation": "createUser",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/publicApi"},
+        "target": "#/paths/~1users/post"
+      },
+      "description": "Public-facing REST API"
+    },
+    "createUser.adminApi": {
+      "operation": "createUser",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/adminApi"},
+        "target": "#/paths/~1admin~1users/post"
+      },
+      "description": "Internal admin REST API"
+    },
+    "listUsers.adminApi": {
+      "operation": "listUsers",
+      "kind": "example.openapi@1",
+      "content": {
+        "document": {"$ref": "#/resources/adminApi"},
+        "target": "#/paths/~1admin~1users/get"
+      },
+      "idempotent": true,
+      "description": "Internal admin REST API"
+    }
+  },
+  "resources": {
     "User": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
-        "name": {
-          "type": "string"
-        },
+        "id": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "name": {"type": "string"},
         "role": {
           "type": "string",
-          "enum": [
-            "user",
-            "admin"
-          ]
+          "enum": ["user", "admin"]
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "createdAt": {"type": "string", "format": "date-time"}
       },
-      "required": [
-        "id",
-        "email",
-        "name",
-        "role"
-      ]
+      "required": ["id", "email", "name", "role"]
     },
     "GetUserInput": {
       "type": "object",
       "properties": {
-        "userId": {
-          "type": "string"
-        }
+        "userId": {"type": "string"}
       },
-      "required": [
-        "userId"
-      ]
+      "required": ["userId"]
     },
     "CreateUserInput": {
       "type": "object",
       "properties": {
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
-        "name": {
-          "type": "string"
-        },
+        "email": {"type": "string", "format": "email"},
+        "name": {"type": "string"},
         "role": {
           "type": "string",
-          "enum": [
-            "user",
-            "admin"
-          ]
+          "enum": ["user", "admin"]
         }
       },
-      "required": [
-        "email",
-        "name"
-      ]
+      "required": ["email", "name"]
     },
     "ListUsersOutput": {
       "type": "object",
       "properties": {
         "users": {
           "type": "array",
-          "items": {
-            "$ref": "#/schemas/User"
-          }
+          "items": {"$ref": "#/resources/User"}
         }
       }
-    }
-  },
-  "operations": {
-    "getUser": {
-      "description": "Retrieve a user by ID.",
-      "input": {
-        "$ref": "#/schemas/GetUserInput"
-      },
-      "output": {
-        "$ref": "#/schemas/User"
-      }
     },
-    "createUser": {
-      "description": "Create a new user account.",
-      "input": {
-        "$ref": "#/schemas/CreateUserInput"
-      },
-      "output": {
-        "$ref": "#/schemas/User"
-      }
-    },
-    "listUsers": {
-      "description": "List all users.",
-      "input": {
-        "type": "object",
-        "maxProperties": 0
-      },
-      "output": {
-        "$ref": "#/schemas/ListUsersOutput"
-      }
-    }
-  },
-  "sources": {
-    "publicApi": {
-      "kind": "example.openapi@1",
-      "content": { "location": "https://api.example.com/openapi.json" },
-      "description": "Public-facing REST API"
-    },
-    "adminApi": {
-      "kind": "example.openapi@1",
-      "content": { "location": "https://admin.example.com/openapi.json" },
-      "description": "Internal admin REST API"
-    }
-  },
-  "bindings": {
-    "getUser.publicApi": {
-      "operation": "getUser",
-      "source": "publicApi",
-      "content": { "target": "#/paths/~1users~1%7BuserId%7D/get" },
-      "idempotent": true
-    },
-    "getUser.adminApi": {
-      "operation": "getUser",
-      "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users~1%7BuserId%7D/get" },
-      "idempotent": true
-    },
-    "createUser.publicApi": {
-      "operation": "createUser",
-      "source": "publicApi",
-      "content": { "target": "#/paths/~1users/post" }
-    },
-    "createUser.adminApi": {
-      "operation": "createUser",
-      "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users/post" }
-    },
-    "listUsers.adminApi": {
-      "operation": "listUsers",
-      "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users/get" },
-      "idempotent": true
-    }
+    "publicApi": {"location": "https://api.example.com/openapi.json"},
+    "adminApi": {"location": "https://admin.example.com/openapi.json"}
   }
 }

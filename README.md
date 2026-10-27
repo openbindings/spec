@@ -20,83 +20,94 @@
 
 ## What is OpenBindings?
 
-OpenBindings defines an interface document model: protocol-independent operation contracts, author-declared realizations through bindings, and named consumption points through dependencies.
+OpenBindings describes operations, their author-declared realizations,
+and named consumption points independently of protocols. Operations state what
+a component does. Each binding carries the kind that interprets its content.
+Dependencies state which operations the software described by the OBI consumes.
 
-A single OpenBindings Interface (OBI) can point at sources read as OpenAPI,
-AsyncAPI, MCP, gRPC, GraphQL, or under a private kind, without redefining the
-operation contract for each one. OBI sits one layer above those artifacts and
-protocols. Its core document model does not define kind-specific source or
-binding behavior.
+An OBI can be as small as `openbindings`, `operations`, and `bindings`. A document
+that only declares operations needs only `openbindings` and `operations`.
+Schemas and binding content can be inline; an optional `resources` map stores
+shared JSON values when useful.
 
-The protocol labels and targets below illustrate content interpreted under a
-source's kind; they are not core fields or built-in protocol support.
-
-```
-┌────────────────────────────────────────────┐
-│          OpenBindings Interface            │
-│                                            │
-│  operations:                               │
-│    placeOrder   (aliases: orders.create)   │
-│    getMenu                                 │
-│    orderUpdates                            │
-│    payments.authorize                      │
-│                                            │
-│  dependencies:                             │
-│    payment → payments.authorize            │
-│                                            │
-│  bindings:                                 │
-│    placeOrder   → OpenAPI   POST /orders   │
-│    placeOrder   → MCP       tools/order    │
-│    orderUpdates → AsyncAPI  SSE /events    │
-└────────────────────────────────────────────┘
+```json
+{
+  "openbindings": "0.2.0",
+  "operations": { "echo": {} },
+  "bindings": {
+    "echo.local": {
+      "operation": "echo",
+      "kind": "example.echo@1",
+      "content": {}
+    }
+  }
+}
 ```
 
-### Core concepts
+The example kind is illustrative. OpenBindings supplies no built-in invocation
+behavior.
 
-- **Operations** are neutral contracts: named units of behavior with optional per-value input/output schemas and descriptive metadata, including tags and examples. Presence alone does not assert availability.
-- **Dependencies** are named consumption points that reference operations and may constrain acceptable kinds. They carry no concrete target.
-- **Bindings** declare realizations of operations through sources, as author claims. Multiple bindings can reference one operation. An optional `idempotent` member states a claim about repetition through that particular binding.
-- **Sources** carry an exact, opaque `kind` and optional `content` read under it. The core gives no meaning to that content; it might embed an artifact, contain an address, or describe a live surface.
-- **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
+### Document concepts
+
+- **Operations** are named capabilities with optional JSON Schema 2020-12
+  input and output schemas, each applying to one value at a time. An operation's
+  presence does not assert availability.
+- **Bindings** declare realizations. Each requires `operation` and `kind`, with
+  optional kind-interpreted `content`. The kind can describe a live surface, an
+  artifact and target, a complete graph, or another realization.
+- **Dependencies** are named consumption points referencing local operation
+  keys, optionally constrained to acceptable kinds.
+- **Resources** are optional named JSON values. Schemas, embedded artifacts,
+  graphs, and configuration can share one map. Their uses establish meaning;
+  unreferenced values remain ordinary JSON.
+- **Aliases** give an operation additional names, including names adopted
+  from published sets of operations. Correspondence is an author claim, with no
+  trust or compatibility proof attached.
+
+### Sharing and references
+
+An operation schema can use `{"$ref":"#/resources/Task"}`. This explicit use
+recognizes the target as a schema; merely storing an object with `$id` or
+`$schema` does not. A kind may adopt the same-document shared-value reference
+form at designated content positions, without adding the target to the
+document's schema inventory. OpenBindings never recursively expands arbitrary
+`$ref` objects in stored artifacts.
+
+The [reference chapter](openbindings.md#7-reference-resolution) defines schema
+recognition, resource boundaries, and shared-value lookup. The
+[embedded-artifact example](examples/shared-resources.obi.json) stores one
+OpenAPI document for two bindings. The
+[inline example](examples/inline.obi.json) uses only the three fields above.
 
 ## The specification
 
-The spec defines what an OBI document **is** and means: its shape, reference resolution, value contracts, versioning, exact kind comparison, and the rules a conformant document meets ([§10](openbindings.md#10-conformance)). It is a document model: how software uses documents, such as comparing them, composing dependencies with providers, choosing bindings, or resolving credentials, is outside it. How a binding reaches its target and adapts values between the operation and that target is read under its source's kind, outside the core. [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
+OpenBindings defines document meaning and conformance. Kind-specific
+interpretation, invocation APIs, binding selection, dependency wiring, and
+credential handling are outside it.
+[HTTP Discovery](http-discovery.md) is separately scoped and optional.
 
-The core defines no authentication field or invocation behavior. Context, such
-as a credential used to access a target, is carried in content under a source's
-kind or comes from outside the document
-([§5](openbindings.md#5-document-model)).
-
-## Guides and tutorials
-
-This repository contains the working core specification, its derived schema,
-core test corpus, and worked examples. The core specification is
-self-contained; the separately scoped specifications and informative material
-listed below do not add core requirements.
-
-Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version.
-
-## In this repository
-
-| Path | What it is |
+| Path | Purpose |
 | --- | --- |
-| [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
-| [`http-discovery.md`](http-discovery.md) | Optional, independently versioned HTTP Discovery specification |
-| [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
-| [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
-| [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
-| [`binding-specs/`](binding-specs/) | Unreleased first-`@1` binding-specification candidates and authoring guidance |
-| [`examples/`](examples/) | Example OBI documents, with illustrative kinds and `content` |
-| [`conformance/`](conformance/) | Conformance test corpus + reference runner |
-| [`versions/`](versions/) | Immutable released snapshots |
-| [`history/`](history/) | Archived, non-normative design records; not current requirements or issue lists |
-
-The specification is self-contained and does not depend on any of the reference or tooling material above.
+| [openbindings.md](openbindings.md) | Working 0.2.0 specification |
+| [openbindings.schema.json](openbindings.schema.json) | Derived structural schema |
+| [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) | This revision's decisions, validation, and migration boundaries |
+| [MIGRATING-0.1-TO-0.2.md](MIGRATING-0.1-TO-0.2.md) | Migration from 0.1 and the earlier 0.2 source model |
+| [examples/](examples/) | Illustrative documents using the current draft |
+| [conformance/resource-model-draft/](conformance/resource-model-draft/README.md) | Focused structural, schema-recognition, and lookup cases for this revision |
+| [binding-specs/](binding-specs/README.md) | Separately scoped kind candidates |
+| [versions/](versions/) | Immutable released snapshots |
 
 ## Status
 
-OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is the **v0.2.0 draft** (unreleased; the latest release is 0.1.0). Immutable released snapshots live under [`versions/`](versions/) and are cut at tag time, never before. See [the 0.1-to-0.2 migration guide](MIGRATING-0.1-TO-0.2.md), [CHANGELOG.md](CHANGELOG.md) for the release delta, and [`openbindings.md` §8](openbindings.md#8-versioning) for the versioning model.
+The current specification is the **unreleased 0.2.0 binding/resources draft**;
+0.1.0 remains the latest release. This revision replaces the preceding draft's
+`sources` and `schemas` maps and moves `kind` onto bindings.
+
+The historical document conformance corpus, reference SDK adapters, and family
+candidates still use preceding document models. Their existing checks are not
+evidence of support for this revision. The focused draft checks do not claim
+full OpenBindings conformance or executable support for the illustrative kinds. See
+[the draft status](RESOURCE-MODEL-DRAFT.md) before using implementation claims.
 
 ## Contributing
 

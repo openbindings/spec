@@ -1,5 +1,12 @@
 # Binding specifications
 
+**Binding/resources revision pending.** All family candidates below were written
+against earlier core shapes. The current working core puts `kind` on bindings
+and replaces `sources`/`schemas` with `resources`. These candidates require an
+explicit content-contract migration before claiming that revised model. Their
+publication records and earlier evidence are unchanged; see
+[the draft status](../RESOURCE-MODEL-DRAFT.md).
+
 Project transform policy: published binding specifications use JSONata when they
 provide transform expressions ([PB-04](PROJECT-POLICY.md#pb-04-transform-language)).
 Core defines no transform language.
@@ -10,7 +17,7 @@ Core defines no transform language.
 [OpenAPI 3.0](openapi-3.0/openbindings.openapi-3.0.md),
 [OpenAPI 3.1](openapi-3.1/openbindings.openapi-3.1.md)
 and [OpenAPI 3.2](openapi-3.2/openbindings.openapi-3.2.md)
-are written for core 0.2.0: source `kind`, kind-owned source/binding content,
+were written for the preceding core 0.2.0 draft: source `kind`, kind-owned source/binding content,
 and value adaptation defined by the kind. Other family candidates still contain pre-kind
 fields and require revision. [PROJECT-POLICY.md](PROJECT-POLICY.md) states the
 project's completeness and revision requirements; these are not core requirements
