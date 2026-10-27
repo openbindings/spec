@@ -23,7 +23,7 @@
 OpenBindings describes operations, their author-declared realizations,
 and named consumption points independently of protocols. Operations state what
 a component does. Each binding carries the kind that interprets its content.
-Dependencies state which operations the described component consumes.
+Dependencies state which operations the software described by the OBI consumes.
 
 An OBI can be as small as `openbindings`, `operations`, and `bindings`. A document
 that only declares operations needs only `openbindings` and `operations`.

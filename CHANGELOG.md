@@ -27,6 +27,11 @@ arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revi
 schema inventory. No released snapshot is changed. Earlier corpus and kind
 migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
 
+The glossary omits ordinary-language terms and duplicate definitions. Binding
+targets are explained in §5.3; undefined results, plain names, and version
+declarations are defined in §§5.2, 7.3, and 8.1. Schema references in the document
+resource are named directly. This terminology cleanup changes no document rules.
+
 ### Added
 
 - **Invariants.** [§2](openbindings.md#2-invariants) states the six
@@ -35,8 +40,8 @@ migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DR
   self-contained conformance, and decentralized naming.
 - **Named operation dependencies.** The optional `dependencies` map
   ([§5.5](openbindings.md#55-dependencies)) declares named points where the
-  described component consumes a realization of an operation. An entry has a
-  required `operation` (an operation key, not an alias; OBI-08), optional
+  software described by the OBI consumes a realization of an operation. An entry
+  has a required `operation` (an operation key, not an alias; OBI-08), optional
   `kinds`, and `description`. `kinds` is a non-empty, unique, unordered any-of
   constraint: a binding meets it exactly when its kind is the same
   kind as a listed one ([§6](openbindings.md#6-kinds)). The document does not

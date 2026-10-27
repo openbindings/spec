@@ -107,7 +107,7 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
 
 This specification defines an interface document model, not a client-server protocol or runtime API. An OBI may be authored and supplied by anyone, independently of the software it describes.
 
-OpenBindings sits one layer above protocol-specific interface specifications such as OpenAPI, AsyncAPI, gRPC, and MCP. Those describe how to interact with particular protocols and endpoints. An OBI describes operations (what a service can do rather than how) and the realizations bindings declare for them. It also describes the operations a described component consumes, and the published names by which operations can be recognized. It relates all of these across protocols, complementing the artifacts its bindings carry, reference, or otherwise use.
+OpenBindings sits one layer above protocol-specific interface specifications such as OpenAPI, AsyncAPI, gRPC, and MCP. Those describe how to interact with particular protocols and endpoints. An OBI describes the operations software can perform and the realizations bindings declare for them. It also describes which operations that software consumes and the published names by which operations can be recognized. It relates all of these across protocols, complementing the artifacts its bindings carry, reference, or otherwise use.
 
 ### 1.1. Out of scope
 
@@ -135,7 +135,7 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 1. **Per-value schemas.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary, one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are interpreted according to each binding's kind.
 2. **Declaration, not availability.** A binding declares a realization of its operation under its own kind. It does not assert that the realization is available, and the document alone need not suffice to identify or reach its target. A dependency carries no target ([§5.5](#55-dependencies)).
 3. **Bounded interpretation.** The operation carries the schemas governing its caller-facing input and output values. This specification defines neither the meaning of binding `content` nor how a binding's target is addressed, represented, referenced, adapted to, or interacted with. A kind does not change the meaning this specification assigns to fields.
-4. **Location-independent references.** No OBI-defined schema reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the meaning this specification assigns to a document is the same however it was obtained. This specification does not scan binding `content` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside the resolution rules defined here (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
+4. **Location-independent references.** No schema reference in the document resource ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the meaning this specification assigns to a document is the same however it was obtained. This specification does not scan binding `content` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside the resolution rules defined here (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
 5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on:
    - the document;
    - that release's text;
@@ -150,7 +150,6 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 ## 3. Terminology
 
 - **OBI**: an OpenBindings interface document.
-- **Described component**: the software, such as a service or a program, that an OBI describes. A dependency names a point where the described component consumes a realization ([§5.5](#55-dependencies)).
 - **Operation**: a named, protocol-independent capability declared under a key in `operations`. Its identifiers name the capability, its description conveys what it does, and its optional input and output schemas govern each caller-facing value ([§5.1](#51-operations)).
 - **Alias**: an additional name under which an operation is recognized. A string equal to it identifies the operation exactly as its key does ([§5.1](#51-operations)).
 - **Correspondence**: an operation that carries a published name as its key or an alias **claims correspondence with** the operation that name identifies. The claim is read against each published set of operations a reader holds that includes the name. The claim is the author's alone ([§5.1](#51-operations)).
@@ -158,22 +157,15 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 - **Author claim**: one of the claims [§5](#5-document-model) lists, which a document makes and whose truth is outside conformance.
 - **Binding**: an author-declared realization of an operation under a kind, under a key in `bindings` ([§5.3](#53-bindings)).
 - **Realization**: a concrete way of carrying out an operation through a target. A binding declares one ([§5.3](#53-bindings)) and a dependency consumes one ([§5.5](#55-dependencies)), each as an author claim.
-- **Target**: what a binding claims realizes its operation, identified under its kind ([§5.3](#53-bindings)). It can be an entry in an artifact, a member of a live surface such as a running service's tool listing, or another form.
-- **Interaction**: the exchange with a target through which a binding's realization is carried out, such as a request and response, a stream, or a subscription. Its mechanics are read under the binding's kind ([§6](#6-kinds)).
 - **Shared resource**: a named JSON value in `resources`, available for use by references. Its use determines its interpretation; storing it declares no kind or capability ([§5.4](#54-resources)). This is distinct from a JSON Schema resource.
-- **Artifact**: a concrete representation a binding kind may use, such as an OpenAPI document, a `.proto` source, an operation graph, or an MCP tool listing. Binding content can carry or reference it, or it can be supplied otherwise ([§5.3](#53-bindings)).
 - **Kind**: the exact, opaque, non-empty string a binding carries in `kind` and a dependency may list in `kinds`. It selects how the binding is read ([§6](#6-kinds)).
-- **Dependency**: a named point where the described component consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
+- **Dependency**: a named point where the software described by the OBI consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
 - **OBI position**: a schema position in the document resource, or the root of an identified schema resource reached from it. The **schemas the document contains** and their resource membership are determined by the recognition procedure of [§7.1](#71-schema-recognition).
 - **Document resource**: the anonymous schema resource containing recognized schemas with no intervening `$id` ([§7.2](#72-the-document-as-embedding)).
 - **Field**: a member of an OBI-defined object (the document root, and operation, dependency, binding and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
 - **Absolute URI**: a URI with a scheme (RFC 3986 §3), fragment permitted; not RFC 3986's `absolute-URI` production, which excludes fragments.
-- **Undefined result**: an evaluation result left undefined, in the cases [§5.2](#52-schemas) defines.
-- **Declares a version**: said of a text and the specification version its `openbindings` member names. [§8.1](#81-openbindings-field-specification-version) defines exactly when a text declares one.
-- **OBI-defined schema references**: `$ref` and `$dynamicRef` in the document resource. Their forms and targets are constrained by [§7](#7-reference-resolution). Shared-value references used by kinds are separately defined by [§7.6](#76-shared-value-references).
-- **Plain name**: a same-document fragment such as the `task` of `#task`, as distinct from a JSON Pointer. [§7.3](#73-same-document-references) defines which fragments are plain names, and what a same-document reference, a plain name included, identifies.
 
-Other terms are defined where they are used: reading under a binding's kind ([§1.1](#11-out-of-scope)); an operation's identifiers ([§5.1](#51-operations)); published names ([§5.1](#51-operations)); satisfying and failing a schema ([§5.2](#52-schemas)); an any-of constraint ([§5.5](#55-dependencies)); and an extension ([§12](#12-extensions)).
+Additional terms are defined where they are used.
 
 ---
 
@@ -452,6 +444,8 @@ A binding object has these fields ([OBI-02](#10-conformance)):
 | `description` | string         | no       | Human-readable description.                                               |
 | `deprecated`  | boolean        | no       | Author recommends migration away from this binding.                       |
 
+A binding's **target** is what it claims realizes its operation, identified according to its kind. It can be an entry in an artifact, a member of a live surface such as a running service's tool listing, or another form.
+
 A binding's `content` might carry a complete realization description, identify the target that realizes the operation, or describe how the operation's input and output values are adapted to and from that target. The `content` might also serve any other purpose its kind gives it. A JSON Pointer into an OpenAPI document, a fully qualified gRPC method name with a value mapping, and an MCP tool name are examples. This specification assigns no meaning to its presence, absence, type, or members.
 
 **Realizations.** Multiple bindings MAY reference the same operation, each an author-declared realization of it. Attaching a binding asserts, as an author claim ([§5](#5-document-model)), that its target realizes the operation as the document describes it:
@@ -495,7 +489,7 @@ A dependency object has these fields ([OBI-02](#10-conformance)):
 | `kinds`       | array of strings | no       | Kinds acceptable at this consumption point. |
 | `description` | string           | no       | Human-readable description.                 |
 
-**Consumption.** Declaring a dependency asserts, as an author claim ([§5](#5-document-model)), that the described component, as a caller of the operation, sends only values that satisfy `input`. The claim also asserts that the component takes any value that satisfies `output`, error-shaped values included, as the operation's output. Each half applies where the operation states the corresponding input or output schema.
+**Consumption.** Declaring a dependency asserts, as an author claim ([§5](#5-document-model)), that the software described by the OBI, as a caller of the operation, sends only values that satisfy `input`. The claim also asserts that the software takes any value that satisfies `output`, error-shaped values included, as the operation's output. Each half applies where the operation states the corresponding input or output schema.
 
 When present, `kinds` holds one or more unique kinds ([§6](#6-kinds), [OBI-02](#10-conformance)), in no meaningful order. The field is an **any-of constraint**: a binding meets it exactly when its kind is the same kind as one listed ([§6](#6-kinds)). Without `kinds`, the dependency places no constraint on kind: it accepts every kind.
 
@@ -586,14 +580,14 @@ A schema with its own `$id` cannot address the anonymous document resource by UR
 
 ### 7.3. Same-document references
 
-The **OBI-defined schema references** are `$ref` and `$dynamicRef` in the document resource. Each must be an absolute URI or a same-document reference; each `$id` at an OBI position must be an absolute URI. All are well-formed URI-references (RFC 3986 §4.1; OBI-11). A same-document reference is empty or a fragment alone (RFC 3986 §4.4).
+Each `$ref` and `$dynamicRef` in the document resource must be an absolute URI or a same-document reference; each `$id` at an OBI position must be an absolute URI. All are well-formed URI-references (RFC 3986 §4.1; OBI-11). A same-document reference is empty or a fragment alone (RFC 3986 §4.4).
 
 In the document resource, a same-document reference identifies a location as follows:
 
 1. Percent-decode its fragment once as UTF-8. Invalid UTF-8 identifies nothing.
 2. An empty reference or empty fragment, such as `#`, identifies the OBI document itself.
 3. A decoded fragment beginning with `/` is a JSON Pointer evaluated from the OBI root under RFC 6901. A malformed pointer or one reaching no location identifies nothing.
-4. Any other fragment is a plain name, identifying the recognized schema in the document resource that declares it with `$anchor` or `$dynamicAnchor`. Anchor grammar follows JSON Schema Core §8.2.2 (OBI-10).
+4. Any other fragment is a **plain name**, such as `task` in `#task`, identifying the recognized schema in the document resource that declares it with `$anchor` or `$dynamicAnchor`. Anchor grammar follows JSON Schema Core §8.2.2 (OBI-10).
 
 After recognition (§7.1), every such schema reference must identify a schema at an OBI position, with no conflicting resource membership (OBI-12). A resource-use pointer can establish a schema entry point as §7.1 defines. A pointer elsewhere can only reach an already recognized OBI position; it cannot promote arbitrary binding content, examples, extensions, maps, or non-schema values into schemas. Plain-name references do not recognize new schemas.
 
@@ -734,7 +728,7 @@ The optional `version` field is the author's label for the described interface. 
 
 Processing OBI documents involves parsing untrusted JSON, optionally obtaining external artifacts and schemas, resolving references, and acting on `content` that may include author-supplied expressions. The threat surface is comparable to that of JSON Schema processors and artifact-consuming tools generally (SSRF, resource exhaustion, untrusted code evaluation, content confusion). The document format creates the following exposure:
 
-- **URIs as attack vectors.** Addresses a tool reads from a binding's `content`, and schema `$ref` values, may resolve to arbitrary endpoints, network or local. These endpoints include internal or link-local addresses such as `http://169.254.169.254/...` and local files such as `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure. Moving a document does not change what its OBI-defined schema references resolve to (invariant 4).
+- **URIs as attack vectors.** Addresses a tool reads from a binding's `content`, and schema `$ref` values, may resolve to arbitrary endpoints, network or local. These endpoints include internal or link-local addresses such as `http://169.254.169.254/...` and local files such as `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure. Moving a document does not change what schema references in its document resource resolve to (invariant 4).
 - **Unbounded size.** The specification caps the size of neither OBI documents nor the artifacts and schemas they reference. Untrusted input creates memory and processing-time exhaustion exposure.
 - **Regular-expression cost.** Schema `pattern` and `patternProperties` values run on the evaluating tool's regular-expression engine. A backtracking engine can take exponential time on crafted input.
 - **Schema `$ref` cycles.** Permitted by [§7](#7-reference-resolution); naive resolvers can exhaust the stack or loop indefinitely.
