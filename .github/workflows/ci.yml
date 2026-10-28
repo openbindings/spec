@@ -91,7 +91,7 @@ jobs:
       - name: Exercise binding-specification publication lifecycle
         run: node scripts/test-binding-spec-publication-lifecycle.mjs
 
-      - name: Verify historical core corpus consistency
+      - name: Verify core corpus consistency
         run: node scripts/verify-corpus.mjs
 
       - name: Exercise the corpus verifier's controls
@@ -100,7 +100,7 @@ jobs:
       - name: Exercise the runner-results comparator's controls
         run: node scripts/test-check-runner-results.mjs
 
-      - name: Check historical conformance manifest is up-to-date
+      - name: Check conformance manifest is up-to-date
         run: |
           node scripts/generate-conformance-manifest.mjs
           git diff --exit-code conformance/manifest.json
@@ -112,7 +112,7 @@ jobs:
         # Released snapshots under versions/X.Y.Z/ are immutable
         # (RELEASING.md Principles; CONTRIBUTING.md): a PR may only ADD
         # files there (a new release's snapshot). versions/README.md is the
-        # one mutable file — its index gains an entry per release.
+        # one mutable file: its index gains an entry per release.
         if: github.event_name == 'pull_request'
         run: |
           base="${{ github.event.pull_request.base.sha }}"

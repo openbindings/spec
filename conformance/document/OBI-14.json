@@ -1,0 +1,218 @@
+{
+  "rule": "OBI-14",
+  "section": "10",
+  "description": "Has no schema that belongs to the document resource with a $dynamicAnchor member (§7.2).",
+  "tests": [
+    {
+      "description": "An unused schemas entry with $dynamicAnchor belongs to the document resource (§7.2, OBI-14).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Unused": {
+            "$dynamicAnchor": "n"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-14"
+      ]
+    },
+    {
+      "description": "An operation schema with $dynamicAnchor belongs to the document resource (§7.2, OBI-14).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "output": {
+              "$dynamicAnchor": "n"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-14"
+      ]
+    },
+    {
+      "description": "Even a malformed $dynamicAnchor member violates OBI-14; meta-schema validity also fails (§7, §7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Unused": {
+            "$dynamicAnchor": null
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-10",
+        "OBI-14"
+      ]
+    },
+    {
+      "description": "A $dynamicAnchor on a nested schema still belongs to the document resource (§7.2, OBI-14).",
+      "valid": false,
+      "violates": [
+        "OBI-14"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Tree": {
+            "properties": {
+              "child": {
+                "$dynamicAnchor": "n"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "A $dynamicAnchor inside an $id resource is permitted (§7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$dynamicAnchor": "n"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A $dynamicAnchor on a schema nested inside an $id resource belongs to that resource (§7.2).",
+      "valid": true,
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Lib": {
+            "$defs": {
+              "R": {
+                "$id": "https://e.test/r.json",
+                "properties": {
+                  "child": {
+                    "$dynamicAnchor": "n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "An operation schema declaring $id may have $dynamicAnchor (§7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$id": "https://e.test/op.json",
+              "$dynamicAnchor": "n"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor under const is data, outside the schema inventory (§7).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Data": {
+            "const": {
+              "$dynamicAnchor": "n"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor under enum is data, outside the schema inventory (§7).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Data": {
+            "enum": [
+              {
+                "$dynamicAnchor": "n"
+              }
+            ]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor under unfamiliar is data, outside the schema inventory (§7).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "Data": {
+            "unfamiliar": {
+              "$dynamicAnchor": "n"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor in an extension is data (§7, §12).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "x-data": {
+          "$dynamicAnchor": "n"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor in binding content is data (§5.3, §7).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {}
+        },
+        "bindings": {
+          "b": {
+            "operation": "op",
+            "kind": "example.test@1",
+            "content": {
+              "$dynamicAnchor": "n"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$dynamicAnchor in resources is data (§5.4, §7).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "resources": {
+          "data": {
+            "$dynamicAnchor": "n"
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

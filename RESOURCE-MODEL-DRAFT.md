@@ -72,27 +72,26 @@ in place, and the copy can drift from the artifact. Everything in `schemas` take
 effect whether used or not, including `$id`s that replace published schemas, so
 unfinished or untranslated material waits in `resources`.
 
-## Draft coverage and remaining migration
+## Coverage and remaining implementation work
 
 | Area | Status |
 | --- | --- |
 | Specification text and derived structural schema | Updated |
 | Top-level examples, overview, changelog, migration guide | Updated |
 | Focused structural, schema-inventory, and shared-value lookup checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
-| Historical document corpus and its manifest | Still describe the preceding source model; its schema cases match the restored `schemas` map, except where OBI-12's extension or OBI-14 now differ |
+| Core document corpus, scenarios and manifest | Migrated to binding-owned kinds, resource data, current OBI-12 and OBI-14, with §7.6 lookup scenarios; see [core coverage](conformance/README.md#coverage) |
 | Binding family candidates and their corpora | Still require individual content, reference, and base-preservation designs |
-| SDKs and conformance runner adapters | Not migrated or claimed compatible |
+| SDKs and conformance runner adapters | No current qualification run recorded; the Go adapter and failures are historical, and its manual workflow uses a pinned historical corpus |
 | Released snapshots and published binding bundles | Unchanged |
 
-In particular, this draft changes OBI-07 from the old binding-source reference
-rule to the required binding-kind rule, permits pointers into schemas that
-declare `$id`, extends OBI-12 to references that resolve into a schema resource
-the document contains, and adds OBI-14. Existing corpus results do not
-prove these revised rules. The focused checks are an executable design aid, not a complete
-conformance validator or proof that the illustrative kinds can execute.
+The core corpus now exercises OBI-07's binding-kind rule, pointers into identified
+resources, OBI-12's contained-resource requirements and OBI-14. Its §7.6 action
+checks lookup without giving core any interpretation of kind content. Corpus
+verification checks fixture consistency; it does not establish SDK support.
+The focused checks remain an executable design aid.
 
-Before releasing this revision, migrate the document corpus and implementations,
-resolve each candidate kind's new content shape, test its reference and
-interpretation rules, and run independent implementations against the revised corpus.
-Do not mechanically merge old source content with binding content: both can
-already be arbitrary JSON, and only the kind can define that migration.
+Before releasing this revision, migrate implementations, resolve each candidate
+kind's new content shape, test its reference and interpretation rules, and run
+independent implementations against the revised corpus. Do not mechanically
+merge old source content with binding content: both can already be arbitrary
+JSON, and only the kind can define that migration.

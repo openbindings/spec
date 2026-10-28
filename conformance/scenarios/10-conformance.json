@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.core-scenarios@3",
+  "format": "openbindings.core-scenarios@4",
   "section": "10",
   "description": "Whether a text conforms: a text that section 10's rules govern conforms when it meets every rule (section 10).",
   "scenarios": [
@@ -63,23 +63,26 @@
     },
     {
       "id": "CONFORMANCE-05",
-      "description": "A binding naming a missing operation and a missing source violates OBI-06 and OBI-07 (section 10).",
+      "description": "A binding naming a missing operation and carrying an empty kind violates OBI-06, OBI-07 and OBI-02 (§§5.3, 10).",
       "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
           "bindings": {
             "b": {
               "operation": "missing",
-              "source": "missing"
+              "kind": ""
             }
-          },
-          "operations": {}
+          }
         }
       },
       "expected": {
         "outcome": "non-conformant",
         "violates": [
+          "OBI-02",
           "OBI-06",
           "OBI-07"
         ]

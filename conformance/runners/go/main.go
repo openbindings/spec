@@ -1,4 +1,4 @@
-// Reference Go runner for the OpenBindings core conformance corpus.
+// Historical source-model Go runner. See README.md for its fixed corpus baseline.
 //
 // It executes every case the corpus manifest counts, with the openbindings-go
 // SDK and its schemaeval evaluator: the validity fixtures under document/ and
@@ -22,6 +22,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -76,6 +77,12 @@ func main() {
 	flag.Parse()
 	if flag.NArg() > 0 {
 		fmt.Fprintf(os.Stderr, "unexpected arguments: %v\n", flag.Args())
+		os.Exit(2)
+	}
+
+	manifest, manifestErr := os.ReadFile(filepath.Join(corpusDir, "manifest.json"))
+	if manifestErr != nil || fmt.Sprintf("%x", sha256.Sum256(manifest)) != "48db33125573ee15fb36eb3fbce3bcab2f33c110438d0fd30cd79d2008f5cdf8" {
+		fmt.Fprintln(os.Stderr, "historical runner requires the corpus at spec commit 30416ef1ca626e58eb8c383a0c71422a68f9243f; no current qualification run is recorded")
 		os.Exit(2)
 	}
 

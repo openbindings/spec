@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.core-scenarios@3",
+  "format": "openbindings.core-scenarios@4",
   "section": "5.1",
   "description": "Which operation a string identifies, and that operation's bindings: a string identifies an operation exactly when it equals the operation's key or one of its aliases, and the operation's bindings are those whose operation member holds its key (section 5.1, Aliases).",
   "scenarios": [
@@ -17,19 +17,14 @@
               ]
             }
           },
-          "sources": {
-            "s": {
-              "kind": "k@1"
-            }
-          },
           "bindings": {
             "b1": {
               "operation": "op",
-              "source": "s"
+              "kind": "k@1"
             },
             "b2": {
               "operation": "op",
-              "source": "s"
+              "kind": "k@1"
             }
           }
         },
@@ -74,15 +69,10 @@
               "deprecated": true
             }
           },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
           "bindings": {
             "legacy": {
               "operation": "legacyTask",
-              "source": "s"
+              "kind": "example.test@1"
             }
           }
         },
@@ -106,40 +96,35 @@
           "operations": {
             "createTask": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
           "bindings": {
             "deprecated": {
               "operation": "createTask",
-              "source": "s",
-              "deprecated": true
+              "deprecated": true,
+              "kind": "example.test@1"
             },
             "nullContent": {
               "operation": "createTask",
-              "source": "s",
-              "content": null
+              "content": null,
+              "kind": "example.test@1"
             },
             "noContent": {
               "operation": "createTask",
-              "source": "s"
+              "kind": "example.test@1"
             },
             "zeroPreference": {
               "operation": "createTask",
-              "source": "s",
-              "preference": 0
+              "preference": 0,
+              "kind": "example.test@1"
             },
             "negativePreference": {
               "operation": "createTask",
-              "source": "s",
-              "preference": -5
+              "preference": -5,
+              "kind": "example.test@1"
             },
             "preferred": {
               "operation": "createTask",
-              "source": "s",
-              "preference": 10
+              "preference": 10,
+              "kind": "example.test@1"
             }
           }
         },
@@ -190,16 +175,11 @@
             "createTask": {},
             "other": {}
           },
-          "sources": {
-            "s": {
-              "kind": "k@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "createTask",
-              "source": "s",
-              "x-operation": "other"
+              "x-operation": "other",
+              "kind": "k@1"
             }
           }
         },
@@ -221,15 +201,10 @@
           "operations": {
             "createTask": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
           "bindings": {
             "primary": {
               "operation": "createTask",
-              "source": "s"
+              "kind": "example.test@1"
             }
           }
         },
@@ -258,15 +233,10 @@
               ]
             }
           },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
           "bindings": {
             "canonical": {
               "operation": "createTask",
-              "source": "s"
+              "kind": "example.test@1"
             }
           }
         },
@@ -479,15 +449,10 @@
           "operations": {
             "createTask": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
           "bindings": {
             "tasks.http": {
               "operation": "createTask",
-              "source": "s"
+              "kind": "example.test@1"
             }
           }
         },
@@ -521,7 +486,7 @@
     },
     {
       "id": "NAMES-21",
-      "description": "Source and schema keys are not operation identifiers: a string equal to both identifies no operation.",
+      "description": "Resource and schema keys are not operation identifiers: a string equal to both identifies no operation (§5.1).",
       "action": "resolve-operation",
       "given": {
         "document": {
@@ -529,15 +494,13 @@
           "operations": {
             "createTask": {}
           },
-          "sources": {
-            "Task": {
-              "kind": "example.test@1"
-            }
-          },
           "schemas": {
             "Task": {
               "type": "object"
             }
+          },
+          "resources": {
+            "Task": {}
           }
         },
         "name": "Task"

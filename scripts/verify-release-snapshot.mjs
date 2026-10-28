@@ -65,7 +65,7 @@ try {
       "conformance/scenario.schema.json",
       "conformance/document/OBI-01.json",
       "conformance/document/section-12.json",
-      "conformance/scenarios/5.2-value-contracts.json",
+      "conformance/scenarios/5.2-values.json",
       "conformance/scenarios/10-conformance.json",
       "conformance/runners/go/main.go",
     ];

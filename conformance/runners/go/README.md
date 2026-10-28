@@ -1,12 +1,21 @@
-# Go reference runner
+# Historical Go reference runner
 
-Reference Go harness for the OpenBindings core conformance corpus. It executes every case `manifest.json` counts, with the `openbindings-go` SDK and its `schemaeval` evaluator: the validity fixtures under `document/` and the scenarios (format `openbindings.core-scenarios@3`) under `scenarios/`. It judges each answer as the corpus README's "Judging" table says, reports each case in one run category (corpus README, "Run categories"), gives every case that is not a pass its reason, and reconciles its cases with the manifest.
+This adapter and [`expected-failures.json`](expected-failures.json) describe the
+preceding source model, with SDK pin `c5c6076fcf6bcf30a428c70c00bb4f3cbf6447df`
+and corpus/spec commit `30416ef1ca626e58eb8c383a0c71422a68f9243f`.
+They are retained for reproduction and are not qualification evidence for the
+current corpus. No current SDK run has been recorded. The executable refuses a
+manifest other than that historical baseline. It does not implement
+`lookup-shared-value` or binding-owned kinds.
 
-This is exemplar code for SDK authors writing harnesses in other languages. The pattern is the same in any language; only the SDK invocation differs.
+Use the historical checkout of both the runner and corpus to reproduce those
+results. A new adapter must execute the current manifest and publish observed
+results, including the corpus digest required by the current comparator. Do not
+re-key these old failures as if the new corpus had been run.
 
 ## Run
 
-The runner builds against the SDK checked out beside the spec repository, at `../openbindings-go` relative to the spec checkout (its `go.mod` `replace` directives), as spec CI lays them out:
+The runner builds against the SDK checked out beside the spec repository, at `../openbindings-go` relative to the spec checkout (its `go.mod` `replace` directives), as the manual historical workflow lays them out. Run these commands in the historical spec checkout:
 
 ```sh
 cd spec/conformance/runners/go
@@ -36,7 +45,7 @@ The SDK's answer is one of three kinds: a result (a conclusion, an outcome, or a
 | validity fixture | `ValidateDocument` | a conforming text concluded conformant; a non-conforming one concluded non-conformant with every rule in `violates` violated (a minimum set) and none in `notViolated` | a wrong conclusion FAILs; a decline on a non-conforming text FAILs; a decline on a conforming text is a SHORTFALL (fixtures carry no `dependsOn`) |
 | `validate-document` | `ValidateDocument` | as a fixture, and also a decline on a conforming text under a `dependsOn` feature the profile declares unsupported | as a fixture |
 | `resolve-operation` | `Document.ResolveOperation`, `Document.OperationBindings` | the same outcome, with the same binding keys in any order | another outcome, a decline included, FAILs |
-| `check-dependency-kind` | `Dependency.AcceptsKind` on the binding's source kind | the same outcome | another outcome, a decline included, FAILs |
+| `check-dependency-kind` | `Dependency.AcceptsKind` on the historical binding's source kind | the same outcome | another outcome, a decline included, FAILs |
 | `validate-operation-values` | `ValueContractCompiler.Resolve`, `CompileInput` or `CompileOutput`, `ValueContract.ValidateJSON` | `satisfies` or `fails`: the same result, or a decline where the value carries `orNoVerdict` or depends (by the case's `dependsOn`, or the value's own, which replaces it) on a feature the profile declares unsupported; `undefined`, `external`, `no-contract`: any decline | a wrong result, or any result where a decline is expected, FAILs; a decline of `satisfies` or `fails` under declared support is a SHORTFALL |
 | `check-examples` | a composition of value validation (the Go core has no example checker) | `true` and `false` as `satisfies` and `fails`; `undefined`, `external`, and `no-claim` as their value results | as for values; and every example of the operation and every side it supplies must have exactly one expected result |
 
@@ -64,6 +73,11 @@ A SHORTFALL, a decline where the profile supports every feature the case depends
 - `1`: a case failed or fell short, or the reconciliation found a problem
 - `2`: usage or IO error
 
-## Spec CI
+## CI status
 
-The `reference-go-core` job in `.github/workflows/ci.yml` runs this runner with the SDK pinned to one commit and compares its `-json` results with the corpus's complete case set and with [`expected-failures.json`](expected-failures.json), whose failures, shortfalls, and omissions are keyed by case, pin, status, and signature (`scripts/check-runner-results.mjs`): an unexpected failure, shortfall, or omission, a status outside the four run categories, an expected failure or omission that is executed or not run, a changed signature, a missing, extra, or unexplained case, and a reconciliation problem all fail. The pin is the Go commit that adopts this text; a later Go commit reaches the job only by changing the pin and re-keying the expected results with it, in a spec change.
+Ordinary CI checks the current corpus and comparator controls without claiming
+SDK results. The manual `reference-go-core` job in
+[historical-compatibility.yml](../../../.github/workflows/historical-compatibility.yml)
+checks out the historical spec/corpus commit above and runs its historical
+runner and comparator against the pinned SDK. It makes no claim about this
+working tree's corpus.

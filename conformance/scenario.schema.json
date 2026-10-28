@@ -13,7 +13,7 @@
   "additionalProperties": false,
   "properties": {
     "format": {
-      "const": "openbindings.core-scenarios@3"
+      "const": "openbindings.core-scenarios@4"
     },
     "section": {
       "description": "The number of the openbindings.md heading whose text answers the file's cases, such as 5.2 or 10.",
@@ -43,6 +43,9 @@
           },
           {
             "$ref": "#/$defs/validateDocument"
+          },
+          {
+            "$ref": "#/$defs/lookupSharedValue"
           }
         ]
       }
@@ -79,7 +82,6 @@
       "description": "A feature a case's answer depends on. The software under test declares each feature the cases depend on as supported or unsupported. The enum lists the features this corpus's cases depend on; it does not list every limitation software may have.",
       "enum": [
         "recursive-references",
-        "document-resource-dynamic-scope",
         "supplied-resources",
         "ecma262-unicode-property-escapes",
         "repeated-member-detection",
@@ -108,13 +110,13 @@
     "valueResult": {
       "oneOf": [
         {
-          "description": "satisfies or fails: the value satisfies or fails the contract (section 5.2). undefined: whether it satisfies the contract is undefined. external: the result rests on a resource the document does not contain and the case does not supply. no-contract: no contract is stated, so the value neither satisfies nor fails one.",
+          "description": "satisfies or fails: the value satisfies or fails the schema (section 5.2). undefined: whether it satisfies the schema is undefined. external: the result rests on a resource the document does not contain and the case does not supply. no-schema: no schema is stated, so the value neither satisfies nor fails one.",
           "enum": [
             "satisfies",
             "fails",
             "undefined",
             "external",
-            "no-contract"
+            "no-schema"
           ]
         },
         {
@@ -158,7 +160,7 @@
       ]
     },
     "exampleResult": {
-      "description": "true or false: the example's claim for that value is true or false (section 5.1). undefined: its truth is undefined. external: its truth rests on a resource the document does not contain. no-claim: no contract is stated for that side, so the value makes no claim.",
+      "description": "true or false: the example's claim for that value is true or false (section 5.1). undefined: its truth is undefined. external: its truth rests on a resource the document does not contain. no-claim: no schema is stated for that side, so the value makes no claim.",
       "enum": [
         "true",
         "false",
@@ -241,7 +243,7 @@
       }
     },
     "validateValues": {
-      "description": "Whether each value satisfies or fails the contract an operation's input or output schema states, or is undefined, external, or meets no contract (section 5.2).",
+      "description": "Whether each value satisfies or fails an operation's input or output schema, or is undefined, external, or meets no contract (section 5.2).",
       "type": "object",
       "allOf": [
         {
@@ -511,6 +513,69 @@
                   "outcome": {
                     "const": "non-conformant"
                   }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lookupSharedValue": {
+      "description": "Lookup at a position a kind designates for shared-value references (§7.6). No discovery or expansion of binding content is implied.",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "lookup-shared-value"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "reference"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "reference": {
+              "description": "The JSON value at the designated position. Only an object with exactly one string-valued $ref member can identify a shared value."
+            }
+          }
+        },
+        "expected": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "outcome",
+                "value"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "const": "found"
+                },
+                "value": {
+                  "description": "The selected JSON value, unchanged; null is a successful selection."
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "outcome"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "const": "not-found"
                 }
               }
             }

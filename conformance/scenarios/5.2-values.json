@@ -1,11 +1,11 @@
 {
-  "format": "openbindings.core-scenarios@3",
+  "format": "openbindings.core-scenarios@4",
   "section": "5.2",
-  "description": "Whether a value satisfies or fails the contract an operation's input or output schema states, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, references resolved as section 7 defines, and a schema document whose root declares no $schema read as 2020-12; or whether the result is undefined, rests on a resource the document does not contain, or meets no contract because none is stated (section 5.2, Value contracts).",
+  "description": "Whether a value satisfies or fails an operation's input or output schema, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, references resolved as section 7 defines, and a schema document whose root declares no $schema read as 2020-12; or whether the result is undefined, rests on a resource the document does not contain, or has no schema to meet because none is stated (section 5.2, Schema evaluation).",
   "scenarios": [
     {
       "id": "VALUES-01",
-      "description": "Extension fields on an operation do not change its input contract (section 12).",
+      "description": "Extension fields on an operation do not change its input schema (section 12).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -38,7 +38,7 @@
     },
     {
       "id": "VALUES-02",
-      "description": "A pattern is part of the input contract: a string of digits satisfies it and a string of letters fails it (section 5.2).",
+      "description": "A pattern is part of the input schema: a string of digits satisfies it and a string of letters fails it (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -68,7 +68,7 @@
     },
     {
       "id": "VALUES-03",
-      "description": "unevaluatedProperties: false is part of the input contract: an object with an undeclared member fails it (section 5.2).",
+      "description": "unevaluatedProperties: false is part of the input schema: an object with an undeclared member fails it (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -362,7 +362,7 @@
     },
     {
       "id": "VALUES-09",
-      "description": "A value valid against the input schema satisfies the contract (section 5.2).",
+      "description": "A value valid against the input schema satisfies the schema (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -390,7 +390,7 @@
     },
     {
       "id": "VALUES-10",
-      "description": "A value invalid against the input schema fails the contract (section 5.2).",
+      "description": "A value invalid against the input schema fails the schema (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -417,7 +417,7 @@
     },
     {
       "id": "VALUES-11",
-      "description": "format is an annotation in a value contract (section 5.2), so a string that is not an email address satisfies format: email.",
+      "description": "format is an annotation in a schema (section 5.2), so a string that is not an email address satisfies format: email.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -445,7 +445,7 @@
     },
     {
       "id": "VALUES-12",
-      "description": "A value contract applies to each value separately, never to several values taken together (section 5.2).",
+      "description": "A schema applies to each value separately, never to several values taken together (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -581,7 +581,7 @@
     },
     {
       "id": "VALUES-15",
-      "description": "An absent input states no value contract, so a value neither satisfies nor fails one (section 5.2).",
+      "description": "An absent input states no schema, so a value neither satisfies nor fails one (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -604,15 +604,15 @@
       },
       "expected": {
         "results": [
-          "no-contract",
-          "no-contract",
-          "no-contract"
+          "no-schema",
+          "no-schema",
+          "no-schema"
         ]
       }
     },
     {
       "id": "VALUES-16",
-      "description": "An absent output states no value contract, so a value neither satisfies nor fails one (section 5.2).",
+      "description": "An absent output states no schema, so a value neither satisfies nor fails one (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -633,13 +633,13 @@
       },
       "expected": {
         "results": [
-          "no-contract"
+          "no-schema"
         ]
       }
     },
     {
       "id": "VALUES-17",
-      "description": "input: true is a stated contract every value satisfies (section 5.1).",
+      "description": "input: true is a stated schema every value satisfies (section 5.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -668,7 +668,7 @@
     },
     {
       "id": "VALUES-18",
-      "description": "input: false is a stated contract no value satisfies (section 5.1).",
+      "description": "input: false is a stated schema no value satisfies (section 5.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -795,8 +795,8 @@
     },
     {
       "id": "VALUES-22",
-      "description": "Within an $id resource, a pointer that reaches no schema has an undefined result (section 7.4).",
-      "action": "validate-operation-values",
+      "description": "A pointer that reaches no schema in a contained $id resource violates OBI-12 (§7.4, §10).",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
@@ -813,23 +813,19 @@
               }
             }
           }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1
-        ]
+        }
       },
       "expected": {
-        "results": [
-          "undefined"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-12"
         ]
       }
     },
     {
       "id": "VALUES-23",
-      "description": "Within an $id resource, a plain name declared twice has an undefined result (section 7.4).",
-      "action": "validate-operation-values",
+      "description": "A reference to a plain name declared twice in a contained resource violates OBI-12 (§7.4, §10).",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
@@ -856,16 +852,12 @@
               }
             }
           }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "s"
-        ]
+        }
       },
       "expected": {
-        "results": [
-          "undefined"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-12"
         ]
       }
     },
@@ -980,9 +972,9 @@
         "operation": "op",
         "side": "input",
         "values": [
-          "\u00a0",
-          "\ufeff",
-          "\u2028",
+          " ",
+          "﻿",
+          " ",
           "x"
         ]
       },
@@ -1015,7 +1007,7 @@
         "side": "input",
         "values": [
           "123",
-          "\u0661\u0662\u0663"
+          "١٢٣"
         ]
       },
       "expected": {
@@ -1044,7 +1036,7 @@
         "operation": "op",
         "side": "input",
         "values": [
-          "\ud83d\ude00",
+          "😀",
           "a"
         ]
       },
@@ -1140,10 +1132,10 @@
         "side": "input",
         "values": [
           {
-            "\u00a0": 1
+            " ": 1
           },
           {
-            "\u00a0": "x"
+            " ": "x"
           },
           {
             "x": 1
@@ -1177,7 +1169,7 @@
         "operation": "op",
         "side": "input",
         "values": [
-          "\u00e9t\u00e9",
+          "été",
           "123"
         ]
       },
@@ -1429,8 +1421,8 @@
     },
     {
       "id": "VALUES-41",
-      "description": "A $dynamicRef inside an $id resource resolves through the dynamic scope to the document resource's $dynamicAnchor (section 7.5).",
-      "action": "validate-operation-values",
+      "description": "The document-resource $dynamicAnchor that would capture a dynamic reference violates OBI-14 (§§7.2, 7.5, 10).",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
@@ -1458,34 +1450,12 @@
               }
             }
           }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "children": [
-              {
-                "children": []
-              }
-            ]
-          },
-          {
-            "children": [
-              {
-                "extra": 1
-              }
-            ]
-          }
-        ]
+        }
       },
       "expected": {
-        "results": [
-          "satisfies",
-          "fails"
-        ],
-        "dependsOn": [
-          "document-resource-dynamic-scope",
-          "recursive-references"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-14"
         ]
       }
     },
@@ -1591,7 +1561,7 @@
     },
     {
       "id": "VALUES-45",
-      "description": "An example outside the schema does not widen the contract (section 5.1).",
+      "description": "An example outside the schema does not widen the schema (section 5.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1626,7 +1596,7 @@
     },
     {
       "id": "VALUES-46",
-      "description": "Examples do not narrow the contract to themselves (section 5.1).",
+      "description": "Examples do not narrow the schema to themselves (section 5.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1658,7 +1628,7 @@
     },
     {
       "id": "VALUES-47",
-      "description": "An example does not change an enum's contract (section 5.1).",
+      "description": "An example does not change an enum's meaning (section 5.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1735,7 +1705,7 @@
     },
     {
       "id": "VALUES-49",
-      "description": "A value that lacks the property satisfies the contract whatever the property schema's invalid pattern gives (section 5.2). Software that evaluates the whole schema may decline.",
+      "description": "A value that lacks the property satisfies the schema whatever the property schema's invalid pattern gives (section 5.2). Software that evaluates the whole schema may decline.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1968,8 +1938,8 @@
     },
     {
       "id": "VALUES-55",
-      "description": "Within an $id resource, a pointer that reaches a map rather than a schema has an undefined result (section 7.4).",
-      "action": "validate-operation-values",
+      "description": "A pointer to a map in a contained resource identifies no schema and violates OBI-12 (§7.4, §10).",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
@@ -1991,16 +1961,12 @@
               }
             }
           }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ]
+        }
       },
       "expected": {
-        "results": [
-          "undefined"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-12"
         ]
       }
     },
@@ -2152,8 +2118,8 @@
         "values": [
           "\n",
           "\r",
-          "\u2028",
-          "\u2029",
+          " ",
+          " ",
           "a"
         ]
       },
@@ -2188,8 +2154,8 @@
         "values": [
           "a",
           "_",
-          "\u00e9",
-          "\u212a"
+          "é",
+          "K"
         ]
       },
       "expected": {
@@ -2221,7 +2187,7 @@
         "side": "input",
         "values": [
           "a-",
-          "a\u00e9",
+          "aé",
           "a_"
         ]
       },
@@ -2252,7 +2218,7 @@
         "operation": "op",
         "side": "input",
         "values": [
-          "\ud83d\ude00",
+          "😀",
           "a"
         ]
       },
@@ -2488,7 +2454,7 @@
     },
     {
       "id": "VALUES-69",
-      "description": "The value-contract provisions hold inside a supplied resource: format is an annotation, a pattern is read with Unicode semantics, so the dot matches one code point outside the Basic Multilingual Plane, and the resource's own reference resolves as JSON Schema defines (section 5.2).",
+      "description": "The four schema-evaluation provisions hold inside a supplied resource: format is an annotation, a pattern is read with Unicode semantics, so the dot matches one code point outside the Basic Multilingual Plane, and the resource's own reference resolves as JSON Schema defines (section 5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2504,7 +2470,7 @@
         "operation": "op",
         "side": "input",
         "values": [
-          "\ud83d\ude00",
+          "😀",
           "ab",
           5
         ],
@@ -2806,8 +2772,8 @@
     },
     {
       "id": "VALUES-76",
-      "description": "Which schema a $ref reaches is one of the ways an undefined result can come out, beside whether the reference comes out valid at all: a plain name declared twice in an $id resource gives two targets with the same validity but different annotations, so an object with x depends on which one unevaluatedProperties sees, and an empty object on whether the reference comes out valid (section 5.2). With a property neither target evaluates, every way gives the same validity, invalid. Software that evaluates the whole schema may decline that one.",
-      "action": "validate-operation-values",
+      "description": "Ambiguous plain-name resolution violates OBI-12 before value or annotation evaluation (§7.4, §10).",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
@@ -2838,27 +2804,164 @@
               }
             }
           }
+        }
+      },
+      "expected": {
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-12"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-77",
+      "description": "A pointer into an $id resource preserves its base for a relative reference (§7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#/schemas/R/$defs/Selected"
+              }
+            }
+          },
+          "schemas": {
+            "R": {
+              "$id": "https://e.test/root.json",
+              "$defs": {
+                "Selected": {
+                  "$ref": "string.json"
+                }
+              }
+            },
+            "S": {
+              "$id": "https://e.test/string.json",
+              "type": "string"
+            }
+          }
         },
         "operation": "op",
         "side": "input",
         "values": [
-          {
-            "x": 1
-          },
-          {},
-          {
-            "z": 1
-          }
+          "x",
+          1
         ]
       },
       "expected": {
         "results": [
-          "undefined",
-          "undefined",
-          {
-            "result": "fails",
-            "orNoVerdict": true
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-78",
+      "description": "A pointer into a nested relative $id resource uses that resource base, including dot-segment resolution (§7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#/schemas/R/$defs/Inner/$defs/Selected"
+              }
+            }
+          },
+          "schemas": {
+            "R": {
+              "$id": "https://e.test/root.json",
+              "$defs": {
+                "Inner": {
+                  "$id": "nested/inner.json",
+                  "$defs": {
+                    "Selected": {
+                      "$ref": "../string.json"
+                    }
+                  }
+                }
+              }
+            },
+            "S": {
+              "$id": "https://e.test/string.json",
+              "type": "string"
+            }
           }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-79",
+      "description": "A malformed reference inside an $id resource stays undefined, without violating OBI-12 (§7.4, §5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$id": "https://e.test/malformed.json",
+                "$ref": "#%ZZ"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-80",
+      "description": "Resources cannot supply an external schema merely by storing its $id (§5.4, §7.2, §5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.test/stored.json"
+              }
+            }
+          },
+          "resources": {
+            "data": {
+              "$id": "https://e.test/stored.json",
+              "type": "string"
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "external"
         ]
       }
     }

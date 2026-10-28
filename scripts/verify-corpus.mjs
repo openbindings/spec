@@ -16,10 +16,11 @@
 //   4. Scenarios: case IDs unique in the corpus, one prefix per file and a
 //      prefix no other file uses; per action, one result per value, absolute
 //      resource URIs, named operations, dependencies, and bindings present,
-//      no-contract and no-claim exactly where no contract is stated, complete
+//      no-schema and no-claim exactly where no schema is stated, complete
 //      example expectations, which operation a string identifies and whether
 //      a binding meets a kinds constraint as the document says (sections 5.1,
-//      5.5, and 6), and violates only on a non-conformant outcome.
+//      5.5, and 6), shared-value lookup returns the selected value unchanged
+//      (section 7.6), and violates only on a non-conformant outcome.
 //   5. The README's coverage table has one row per cited rule or section,
 //      listing exactly the files that cite it; every rule has a row, and a
 //      rule row without files is marked deferred.
@@ -33,6 +34,8 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { isDeepStrictEqual } from "node:util";
+import { sharedValue } from "./resource-model-draft.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let SPEC_ROOT = resolve(__dirname, "..");
@@ -50,7 +53,7 @@ const CONFORMANCE_ROOT = join(SPEC_ROOT, "conformance");
 const README = join(CONFORMANCE_ROOT, "README.md");
 const FIXTURE_SCHEMA = join(CONFORMANCE_ROOT, "fixture.schema.json");
 const SCENARIO_SCHEMAS = {
-  "openbindings.core-scenarios@3": join(CONFORMANCE_ROOT, "scenario.schema.json"),
+  "openbindings.core-scenarios@4": join(CONFORMANCE_ROOT, "scenario.schema.json"),
 };
 
 const errors = [];
@@ -228,7 +231,7 @@ function identify(d, name) {
 function meets(d, dependency, binding) {
   const dep = d.dependencies[dependency];
   if (!own(dep, "kinds")) return true;
-  const kind = d.sources?.[d.bindings[binding].source]?.kind;
+  const kind = d.bindings[binding].kind;
   return dep.kinds.some((k) => k === kind);
 }
 
@@ -269,7 +272,7 @@ function verifyScenarios(file, relPath, ctx) {
         }
         const stated = own(operations[g.operation], g.side);
         for (const [j, r] of (e.results || []).entries()) {
-          if ((r === "no-contract") === stated) err(`${label}: result ${j} is ${JSON.stringify(r)}, but the operation ${stated ? "states" : "states no"} ${g.side} contract (section 5.2)`);
+          if ((r === "no-schema") === stated) err(`${label}: result ${j} is ${JSON.stringify(r)}, but the operation ${stated ? "states" : "states no"} ${g.side} schema (section 5.2)`);
         }
         break;
       }
@@ -289,7 +292,7 @@ function verifyScenarios(file, relPath, ctx) {
           if (JSON.stringify(sides) !== JSON.stringify(expectedSides)) err(`${label}: example ${exName} supplies ${sides.join(", ") || "no value"}; expectations cover ${expectedSides.join(", ") || "none"}`);
           for (const side of sides) {
             const r = e.examples?.[exName]?.[side];
-            if (r !== undefined && (r === "no-claim") === own(op, side)) err(`${label}: example ${exName} ${side} is ${JSON.stringify(r)}, but the operation ${own(op, side) ? "states" : "states no"} ${side} contract (section 5.1)`);
+            if (r !== undefined && (r === "no-claim") === own(op, side)) err(`${label}: example ${exName} ${side} is ${JSON.stringify(r)}, but the operation ${own(op, side) ? "states" : "states no"} ${side} schema (section 5.1)`);
           }
         }
         break;
@@ -312,6 +315,16 @@ function verifyScenarios(file, relPath, ctx) {
           if (e.operationKey !== got.operationKey) err(`${label}: expected operation ${e.operationKey}, but the string identifies ${got.operationKey}`);
           const a = [...(e.bindingKeys || [])].sort(), b = [...got.bindingKeys].sort();
           if (JSON.stringify(a) !== JSON.stringify(b)) err(`${label}: expected bindings ${a.join(", ")}; the operation's bindings are ${b.join(", ")}`);
+        }
+        break;
+      }
+      case "lookup-shared-value": {
+        if (!d) break;
+        const selected = sharedValue(d, g.reference);
+        const want = selected.found ? "found" : "not-found";
+        if (e.outcome !== want) err(`${label}: expected ${e.outcome}, but shared-value lookup says ${want} (section 7.6)`);
+        else if (selected.found && (!own(e, "value") || !isDeepStrictEqual(e.value, selected.value))) {
+          err(`${label}: expected value differs from the unchanged selected value (section 7.6)`);
         }
         break;
       }
@@ -410,4 +423,4 @@ if (errors.length > 0) {
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log(`\nHistorical source/schema corpus internal consistency: OK (not binding/resources draft conformance)`);
+console.log(`\nCore corpus internal consistency: OK (not an implementation conformance result)`);
