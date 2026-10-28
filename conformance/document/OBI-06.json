@@ -10,15 +10,10 @@
         "operations": {
           "createTask": {}
         },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
-            "source": "httpApi"
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -31,15 +26,10 @@
         "operations": {
           "createTask": {}
         },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "createTask.http": {
             "operation": "nonexistentOp",
-            "source": "httpApi"
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -55,15 +45,10 @@
         "operations": {
           "createTask": {}
         },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "createTask.http": {
             "operation": "constructor",
-            "source": "httpApi"
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -83,15 +68,10 @@
             ]
           }
         },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "addTask.http": {
             "operation": "addTask",
-            "source": "httpApi"
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -107,15 +87,10 @@
         "operations": {
           "createTask": {}
         },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "createTask.http": {
             "operation": "createtask",
-            "source": "httpApi"
+            "kind": "example.openapi@1"
           }
         }
       },

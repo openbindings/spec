@@ -1,6 +1,6 @@
 {
   "section": "5",
-  "description": "Some of what a document says is its author's claim, namely: an operation's examples (section 5.1); a binding's claim to realize its operation, and its idempotent claim (section 5.3); a dependency's claim to consume its operation within its value contracts (section 5.5); correspondence (section 5.1). This specification defines what each asserts; whether it is true is outside conformance.",
+  "description": "Some of what a document says is its author's claim, namely: an operation's examples (section 5.1); a binding's claim to realize its operation, and its idempotent claim (section 5.3); a dependency's claim to consume its operation according to its input and output schemas (section 5.5); correspondence (section 5.1). This specification defines what each asserts; whether it is true is outside conformance.",
   "notes": "All tests are positive (valid: true). Each document carries an author claim that a plausibility heuristic would doubt; whether the claim is true is outside conformance, so the document conforms. The fixtures concern only the document: whether a claim holds against a real target, consuming component, or shared contract is outside any document fixture.",
   "tests": [
     {
@@ -10,16 +10,11 @@
         "operations": {
           "createTask": {}
         },
-        "sources": {
-          "api": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "createTask.api": {
             "operation": "createTask",
-            "source": "api",
-            "idempotent": true
+            "idempotent": true,
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -32,16 +27,11 @@
         "operations": {
           "listTasks": {}
         },
-        "sources": {
-          "api": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "listTasks.api": {
             "operation": "listTasks",
-            "source": "api",
-            "idempotent": false
+            "idempotent": false,
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -54,16 +44,11 @@
         "operations": {
           "deleteAllRecords": {}
         },
-        "sources": {
-          "api": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "deleteAllRecords.api": {
             "operation": "deleteAllRecords",
-            "source": "api",
-            "idempotent": true
+            "idempotent": true,
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -116,18 +101,13 @@
             "description": "Delete a task."
           }
         },
-        "sources": {
-          "api": {
-            "kind": "example.openapi@1"
-          }
-        },
         "bindings": {
           "deleteTask.api": {
             "operation": "deleteTask",
-            "source": "api",
             "content": {
               "target": "#/paths/~1tasks/post"
-            }
+            },
+            "kind": "example.openapi@1"
           }
         }
       },

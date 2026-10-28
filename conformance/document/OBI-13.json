@@ -157,7 +157,8 @@
       },
       "valid": false,
       "violates": [
-        "OBI-13"
+        "OBI-13",
+        "OBI-14"
       ]
     },
     {
@@ -205,7 +206,8 @@
       },
       "valid": false,
       "violates": [
-        "OBI-13"
+        "OBI-13",
+        "OBI-14"
       ]
     },
     {
@@ -374,7 +376,7 @@
       "valid": true
     },
     {
-      "description": "a plain name declared twice within one schema resource that declares $id is outside this rule, which counts declarations in the document resource; the result is undefined, but the document conforms (section 7.4)",
+      "description": "Repeated plain names inside an $id resource do not violate OBI-13; no reference uses the ambiguous name, so OBI-12 also holds (§7.4).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {

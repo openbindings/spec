@@ -276,11 +276,12 @@ schema inside a schema that declares `$id` (§7.3).
   case carries exactly one of `document`, `documentText`, or
   `documentBase64`, an expected verdict, and optional `violates` and
   `notViolated` rule lists. `scenarios/` holds scenarios in format
-  `openbindings.core-scenarios@3` (`scenario.schema.json`), grouped by the
+  `openbindings.core-scenarios@4` (`scenario.schema.json`), grouped by the
   section that answers them: which operation a string identifies, whether
   values satisfy a schema, whether a binding meets a dependency's `kinds`,
-  what examples claim, and whether a document conforms. `runners/go` is a
-  reference runner. The corpus is reference material; the prose governs.
+  what examples claim, what a shared-value reference selects, and whether a
+  document conforms. `runners/go` keeps the historical runner for the preceding
+  source-model corpus. The corpus is reference material; the prose governs.
 - **Binding-specification candidates.** [`binding-specs/`](binding-specs/)
   holds unreleased first-revision candidates: one OpenAPI kind per OAS line
   (`openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`,

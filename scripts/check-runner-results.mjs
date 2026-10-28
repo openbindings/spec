@@ -4,13 +4,14 @@
 //
 // Results (written by the runner's -json mode):
 //   {"pin": "<full commit SHA of the implementation run>",
+//    "corpusDigest": "<SHA-256 from corpusCases(dir).digest>",
 //    "reconciliation": ["<a problem the runner found reconciling its cases with the manifest>"],
 //    "cases": [{"id": "<case ID or fixture path#/tests/N>",
 //               "status": "pass" | "FAIL" | "SHORTFALL" | "OMITTED",
 //               "signature": "<a stable one-line description of a failure or omission>"}]}
 //
-// Expected results (conformance/runners/go/expected-failures.json):
-//   {"pin": "<the same SHA>",
+// Expected results (produced for the same SDK and corpus; no current SDK run is recorded):
+//   {"pin": "<the same SHA>", "corpusDigest": "<the same corpus SHA-256>",
 //    "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" (default FAIL),
 //                  "signature": "...", "reason": "..."}],
 //    "omissions": [{"case": "...", "signature": "...", "reason": "..."}]}
@@ -38,6 +39,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 
 const CATEGORIES = new Set(["pass", "FAIL", "SHORTFALL", "OMITTED"]);
 const KEYED = new Set(["FAIL", "SHORTFALL", "OMITTED"]);
@@ -72,6 +74,13 @@ function load(path) {
 // manifest's count of it.
 export function corpusCases(dir) {
   const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
+  // Hash the exact inputs, including the formats and expectations. Case IDs and
+  // counts alone cannot distinguish a rewritten case from its old meaning.
+  const hash = createHash("sha256");
+  const paths = ["manifest.json", "fixture.schema.json", "scenario.schema.json",
+    ...(manifest.files || []).map(f => f.path), ...(manifest.scenarioFiles || []).map(f => f.path)].sort();
+  for (const path of paths) hash.update(path).update("\0").update(readFileSync(join(dir, path))).update("\0");
+  const digest = hash.digest("hex");
   const ids = [];
   const problems = [];
   for (const f of manifest.files || []) {
@@ -84,11 +93,15 @@ export function corpusCases(dir) {
     if (scenarios.length !== f.scenarios) problems.push(`${f.path}: the manifest counts ${f.scenarios} cases, the file holds ${scenarios.length}`);
     for (const s of scenarios) ids.push(s.id);
   }
-  return { ids, problems };
+  return { ids, problems, digest };
 }
 
 export function compare(results, expected, corpus) {
   const problems = [...corpus.problems];
+  for (const [label, record] of [["results", results], ["expected results", expected]]) {
+    if (!/^[0-9a-f]{64}$/.test(record.corpusDigest ?? "")) problems.push(`the ${label} name no corpus SHA-256 digest`);
+    else if (record.corpusDigest !== corpus.digest) problems.push(`the ${label} are for a different corpus digest`);
+  }
   if (!/^[0-9a-f]{40}$/.test(results.pin ?? "")) problems.push(`the results name no full commit SHA (pin ${JSON.stringify(results.pin)})`);
   if (results.pin !== expected.pin) problems.push(`the results are for ${results.pin}; the expected failures are keyed to ${expected.pin}`);
   if (!Array.isArray(results.reconciliation)) problems.push("the results carry no reconciliation");

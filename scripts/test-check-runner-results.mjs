@@ -11,17 +11,18 @@ import { compare, corpusCases } from "./check-runner-results.mjs";
 
 const PIN = "0123456789abcdef0123456789abcdef01234567";
 const OTHER = "fedcba9876543210fedcba9876543210fedcba98";
+const DIGEST = "a".repeat(64);
 const FIXTURE = "document/OBI-01.json#/tests/0";
 const pass = (id) => ({ id, status: "pass", signature: "" });
 const fail = (id, signature) => ({ id, status: "FAIL", signature });
 const as = (id, status, signature) => ({ id, status, signature });
 const SIG = "concluded non-conformant; expected conformant";
-const expected = { pin: PIN, failures: [{ case: "CONFORMANCE-06", signature: SIG, reason: "control" }] };
-const corpus = { ids: [FIXTURE, "VALUES-01", "CONFORMANCE-06", "NAMES-01"], problems: [] };
-const results = (cases, extra = {}) => ({ pin: PIN, reconciliation: [], cases, ...extra });
+const expected = { pin: PIN, corpusDigest: DIGEST, failures: [{ case: "CONFORMANCE-06", signature: SIG, reason: "control" }] };
+const corpus = { digest: DIGEST, ids: [FIXTURE, "VALUES-01", "CONFORMANCE-06", "NAMES-01"], problems: [] };
+const results = (cases, extra = {}) => ({ pin: PIN, corpusDigest: DIGEST, reconciliation: [], cases, ...extra });
 const ordinary = [pass(FIXTURE), pass("VALUES-01"), pass("NAMES-01")];
 const without = (id) => ordinary.filter((c) => c.id !== id);
-const omitted = { pin: PIN, failures: expected.failures, omissions: [{ case: "VALUES-01", signature: "action not implemented", reason: "control" }] };
+const omitted = { pin: PIN, corpusDigest: DIGEST, failures: expected.failures, omissions: [{ case: "VALUES-01", signature: "action not implemented", reason: "control" }] };
 
 // A corpus whose manifest miscounts a file.
 const dir = mkdtempSync(join(tmpdir(), "check-runner-results-"));
@@ -33,10 +34,21 @@ writeFileSync(join(dir, "manifest.json"), JSON.stringify({
   files: [{ path: "document/OBI-01.json", tests: 1 }],
   scenarioFiles: [{ path: "scenarios/10-conformance.json", scenarios: 1 }],
 }));
-const miscounted = corpusCases(dir);
+writeFileSync(join(dir, "fixture.schema.json"), "{}");
+writeFileSync(join(dir, "scenario.schema.json"), "{}");
+const firstDigest = corpusCases(dir).digest;
+// Same identifiers and counts, different intent or expectation: digest must change.
+writeFileSync(join(dir, "document", "OBI-01.json"), JSON.stringify({ tests: [{ valid: false }, {}] }));
+const changedDigest = corpusCases(dir).digest;
+if (firstDigest === changedDigest) throw new Error("corpus digest ignored a rewritten case");
+const miscounted = { ...corpusCases(dir), digest: DIGEST };
 rmSync(dir, { recursive: true, force: true });
 
 const controls = [
+  ["results without a corpus identity are stale", results([...ordinary, fail("CONFORMANCE-06", SIG)], { corpusDigest: undefined }), corpus, ["results name no corpus SHA-256 digest"]],
+  ["results for a rewritten corpus are stale", results([...ordinary, fail("CONFORMANCE-06", SIG)], { corpusDigest: "b".repeat(64) }), corpus, ["results are for a different corpus digest"]],
+  ["old expected failures cannot qualify a rewritten corpus", results([...ordinary, fail("CONFORMANCE-06", SIG)]), corpus, ["expected results name no corpus SHA-256 digest"], { ...expected, corpusDigest: undefined }],
+  ["expected failures for another corpus are stale", results([...ordinary, fail("CONFORMANCE-06", SIG)]), corpus, ["expected results are for a different corpus digest"], { ...expected, corpusDigest: "b".repeat(64) }],
   ["the expected failure and passes elsewhere match", results([...ordinary, fail("CONFORMANCE-06", SIG)]), corpus, []],
   ["an unexpected failure", results([...without("VALUES-01"), fail("VALUES-01", "x"), fail("CONFORMANCE-06", SIG)]), corpus, ["unexpected failure"]],
   ["an expected failure that passes", results([...ordinary, pass("CONFORMANCE-06")]), corpus, ["expected FAIL, but passed"]],
@@ -54,7 +66,7 @@ const controls = [
   ["a keyed omission with another reason", results([...without("VALUES-01"), as("VALUES-01", "OMITTED", "another reason"), fail("CONFORMANCE-06", SIG)]), corpus, ["signature changed"], omitted],
   ["a keyed omission that is executed", results([...ordinary, fail("CONFORMANCE-06", SIG)]), corpus, ["expected OMITTED, but passed"], omitted],
   ["an omission keyed under failures", results([...without("VALUES-01"), as("VALUES-01", "OMITTED", "action not implemented"), fail("CONFORMANCE-06", SIG)]), corpus, ["keyed under omissions"],
-    { pin: PIN, failures: [...expected.failures, { case: "VALUES-01", status: "OMITTED", signature: "action not implemented", reason: "control" }] }],
+    { pin: PIN, corpusDigest: DIGEST, failures: [...expected.failures, { case: "VALUES-01", status: "OMITTED", signature: "action not implemented", reason: "control" }] }],
   ["an unknown status", results([...without("VALUES-01"), as("VALUES-01", "ERROR", "no verdict"), fail("CONFORMANCE-06", SIG)]), corpus, ["not a run category"]],
   ["a misspelled status", results([...without("VALUES-01"), as("VALUES-01", "shortfall", "no verdict"), fail("CONFORMANCE-06", SIG)]), corpus, ["not a run category"]],
   ["an empty status", results([...without("VALUES-01"), as("VALUES-01", "", "no verdict"), fail("CONFORMANCE-06", SIG)]), corpus, ["not a run category"]],
@@ -63,12 +75,12 @@ const controls = [
   ["a retired category (UNVERIFIED)", results([...without("VALUES-01"), as("VALUES-01", "UNVERIFIED", "no applied text"), fail("CONFORMANCE-06", SIG)]), corpus, ["not a run category"]],
   ["an unkeyed SHORTFALL", results([...without("VALUES-01"), as("VALUES-01", "SHORTFALL", "value 0: no verdict"), fail("CONFORMANCE-06", SIG)]), corpus, ["unexpected SHORTFALL"]],
   ["a keyed SHORTFALL", results([...without("VALUES-01"), as("VALUES-01", "SHORTFALL", "value 0: no verdict"), fail("CONFORMANCE-06", SIG)]),
-    corpus, [], { pin: PIN, failures: [...expected.failures, { case: "VALUES-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
+    corpus, [], { pin: PIN, corpusDigest: DIGEST, failures: [...expected.failures, { case: "VALUES-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
   ["a keyed failure that falls short instead", results([...ordinary, as("CONFORMANCE-06", "SHORTFALL", SIG)]), corpus, ["expected FAIL, got SHORTFALL"]],
   ["a keyed SHORTFALL that fails instead", results([...without("VALUES-01"), fail("VALUES-01", "value 0: got fails"), fail("CONFORMANCE-06", SIG)]),
-    corpus, ["expected SHORTFALL, got FAIL"], { pin: PIN, failures: [...expected.failures, { case: "VALUES-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
-  ["a reconciliation problem", results([...ordinary, fail("CONFORMANCE-06", SIG)], { reconciliation: ["scenarios/5.2-value-contracts.json: the manifest counts 64 cases, the file holds 63"] }), corpus, ["reconciliation: scenarios/5.2-value-contracts.json"]],
-  ["results without a reconciliation", { pin: PIN, cases: [...ordinary, fail("CONFORMANCE-06", SIG)] }, corpus, ["carry no reconciliation"]],
+    corpus, ["expected SHORTFALL, got FAIL"], { pin: PIN, corpusDigest: DIGEST, failures: [...expected.failures, { case: "VALUES-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
+  ["a reconciliation problem", results([...ordinary, fail("CONFORMANCE-06", SIG)], { reconciliation: ["scenarios/5.2-values.json: the manifest counts 64 cases, the file holds 63"] }), corpus, ["reconciliation: scenarios/5.2-values.json"]],
+  ["results without a reconciliation", { pin: PIN, corpusDigest: DIGEST, cases: [...ordinary, fail("CONFORMANCE-06", SIG)] }, corpus, ["carry no reconciliation"]],
 ];
 
 let bad = 0;

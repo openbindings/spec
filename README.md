@@ -108,11 +108,13 @@ The current specification is the **unreleased 0.2.0 binding/resources draft**;
 `sources` map, adds `resources` for values that kinds use, keeps `schemas`, and
 moves `kind` onto bindings.
 
-The historical document conformance corpus, reference SDK adapters, and family
-candidates still use preceding document models. Their existing checks are not
-evidence of support for this revision. The focused draft checks do not claim
-full OpenBindings conformance or executable support for the illustrative kinds. See
-[the draft status](RESOURCE-MODEL-DRAFT.md) before using implementation claims.
+The [core conformance corpus](conformance/README.md) now tests this document
+model, including binding kinds, resources, contained schema references, OBI-14
+and shared-value lookup. No SDK qualification result is asserted for this
+baseline. The Go adapter and its recorded failures describe the historical
+source model; family candidates and SDK adapters still require migration.
+The focused draft checks remain a design aid. See
+[the draft status](RESOURCE-MODEL-DRAFT.md) for implementation boundaries.
 
 ## Contributing
 

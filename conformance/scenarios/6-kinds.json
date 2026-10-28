@@ -1,7 +1,7 @@
 {
-  "format": "openbindings.core-scenarios@3",
+  "format": "openbindings.core-scenarios@4",
   "section": "6",
-  "description": "Whether a binding meets a dependency's kinds constraint: exactly when its source's kind is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
+  "description": "Whether a binding meets a dependency's kinds constraint: exactly when its own kind is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
   "scenarios": [
     {
       "id": "KINDS-01",
@@ -13,15 +13,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.openapi@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "example.openapi@1"
             }
           },
           "dependencies": {
@@ -50,15 +45,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "Example.OpenAPI@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "Example.OpenAPI@1"
             }
           },
           "dependencies": {
@@ -87,15 +77,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.openapi@1 "
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "example.openapi@1 "
             }
           },
           "dependencies": {
@@ -124,22 +109,17 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "caf\u00e9@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "café@1"
             }
           },
           "dependencies": {
             "d": {
               "operation": "op",
               "kinds": [
-                "cafe\u0301@1"
+                "café@1"
               ]
             }
           }
@@ -161,15 +141,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.openapi@1.0"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "example.openapi@1.0"
             }
           },
           "dependencies": {
@@ -198,15 +173,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.openapi@2"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "example.openapi@2"
             }
           },
           "dependencies": {
@@ -235,15 +205,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "example.openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "example.openapi"
             }
           },
           "dependencies": {
@@ -272,15 +237,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "https://kinds.example.test/openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "https://kinds.example.test/openapi"
             }
           },
           "dependencies": {
@@ -309,15 +269,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "HTTPS://KINDS.EXAMPLE.TEST/openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "HTTPS://KINDS.EXAMPLE.TEST/openapi"
             }
           },
           "dependencies": {
@@ -346,15 +301,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "http://kinds.example.test/openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "http://kinds.example.test/openapi"
             }
           },
           "dependencies": {
@@ -383,15 +333,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "urn:example:kind:openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "urn:example:kind:openapi"
             }
           },
           "dependencies": {
@@ -420,15 +365,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "totally-fictional-format@9.9.9"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "totally-fictional-format@9.9.9"
             }
           },
           "dependencies": {
@@ -457,15 +397,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "anything@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "anything@1"
             }
           },
           "dependencies": {
@@ -491,15 +426,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "b@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "b@1"
             }
           },
           "dependencies": {
@@ -529,15 +459,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "file:///kinds/openapi"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "file:///kinds/openapi"
             }
           },
           "dependencies": {
@@ -566,15 +491,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "x@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "x@1"
             }
           },
           "dependencies": {
@@ -603,15 +523,10 @@
           "operations": {
             "op": {}
           },
-          "sources": {
-            "s": {
-              "kind": "b@1"
-            }
-          },
           "bindings": {
             "b": {
               "operation": "op",
-              "source": "s"
+              "kind": "b@1"
             }
           },
           "dependencies": {

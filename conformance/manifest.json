@@ -6,20 +6,22 @@
   ],
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 20,
-    "fixtureFiles": 15,
-    "scenarioFiles": 5,
-    "tests": 313,
-    "scenarios": 127,
-    "positives": 122,
-    "negatives": 191,
-    "rulesCoveredDocument": 13,
+    "files": 23,
+    "fixtureFiles": 17,
+    "scenarioFiles": 6,
+    "tests": 363,
+    "scenarios": 180,
+    "positives": 149,
+    "negatives": 214,
+    "rulesCoveredDocument": 14,
     "rulesPartialDocument": 0,
     "sectionsCited": [
       "5",
       "5.1",
       "5.2",
+      "5.4",
       "6",
+      "7.6",
       "10",
       "12"
     ]
@@ -27,10 +29,11 @@
   "actions": {
     "check-dependency-kind": 17,
     "check-examples": 7,
+    "lookup-shared-value": 49,
     "resolve-operation": 21,
-    "validate-document": 6,
-    "validate-operation-values": 76,
-    "validity fixture": 313
+    "validate-document": 11,
+    "validate-operation-values": 75,
+    "validity fixture": 363
   },
   "files": [
     {
@@ -45,9 +48,9 @@
       "path": "document/OBI-02.json",
       "rule": "OBI-02",
       "section": "10",
-      "tests": 70,
+      "tests": 71,
       "positives": 13,
-      "negatives": 57
+      "negatives": 58
     },
     {
       "path": "document/OBI-03.json",
@@ -61,9 +64,9 @@
       "path": "document/OBI-04.json",
       "rule": "OBI-04",
       "section": "10",
-      "tests": 29,
-      "positives": 15,
-      "negatives": 14
+      "tests": 34,
+      "positives": 18,
+      "negatives": 16
     },
     {
       "path": "document/OBI-05.json",
@@ -85,9 +88,9 @@
       "path": "document/OBI-07.json",
       "rule": "OBI-07",
       "section": "10",
-      "tests": 4,
-      "positives": 1,
-      "negatives": 3
+      "tests": 11,
+      "positives": 4,
+      "negatives": 7
     },
     {
       "path": "document/OBI-08.json",
@@ -118,16 +121,16 @@
       "rule": "OBI-11",
       "section": "10",
       "tests": 25,
-      "positives": 16,
-      "negatives": 9
+      "positives": 14,
+      "negatives": 11
     },
     {
       "path": "document/OBI-12.json",
       "rule": "OBI-12",
       "section": "10",
-      "tests": 48,
-      "positives": 23,
-      "negatives": 25
+      "tests": 63,
+      "positives": 28,
+      "negatives": 35
     },
     {
       "path": "document/OBI-13.json",
@@ -138,11 +141,26 @@
       "negatives": 10
     },
     {
+      "path": "document/OBI-14.json",
+      "rule": "OBI-14",
+      "section": "10",
+      "tests": 13,
+      "positives": 9,
+      "negatives": 4
+    },
+    {
       "path": "document/section-12.json",
       "section": "12",
       "tests": 5,
       "positives": 4,
       "negatives": 1
+    },
+    {
+      "path": "document/section-5.4.json",
+      "section": "5.4",
+      "tests": 9,
+      "positives": 9,
+      "negatives": 0
     },
     {
       "path": "document/section-5.json",
@@ -156,7 +174,7 @@
     {
       "path": "scenarios/10-conformance.json",
       "section": "10",
-      "format": "openbindings.core-scenarios@3",
+      "format": "openbindings.core-scenarios@4",
       "scenarios": 6,
       "actions": {
         "validate-document": 6
@@ -165,7 +183,7 @@
     {
       "path": "scenarios/5.1-examples.json",
       "section": "5.1",
-      "format": "openbindings.core-scenarios@3",
+      "format": "openbindings.core-scenarios@4",
       "scenarios": 7,
       "actions": {
         "check-examples": 7
@@ -174,28 +192,38 @@
     {
       "path": "scenarios/5.1-names.json",
       "section": "5.1",
-      "format": "openbindings.core-scenarios@3",
+      "format": "openbindings.core-scenarios@4",
       "scenarios": 21,
       "actions": {
         "resolve-operation": 21
       }
     },
     {
-      "path": "scenarios/5.2-value-contracts.json",
+      "path": "scenarios/5.2-values.json",
       "section": "5.2",
-      "format": "openbindings.core-scenarios@3",
-      "scenarios": 76,
+      "format": "openbindings.core-scenarios@4",
+      "scenarios": 80,
       "actions": {
-        "validate-operation-values": 76
+        "validate-document": 5,
+        "validate-operation-values": 75
       }
     },
     {
       "path": "scenarios/6-kinds.json",
       "section": "6",
-      "format": "openbindings.core-scenarios@3",
+      "format": "openbindings.core-scenarios@4",
       "scenarios": 17,
       "actions": {
         "check-dependency-kind": 17
+      }
+    },
+    {
+      "path": "scenarios/7.6-shared-values.json",
+      "section": "7.6",
+      "format": "openbindings.core-scenarios@4",
+      "scenarios": 49,
+      "actions": {
+        "lookup-shared-value": 49
       }
     }
   ]

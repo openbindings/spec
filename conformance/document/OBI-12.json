@@ -1,8 +1,8 @@
 {
   "rule": "OBI-12",
   "section": "10",
-  "description": "Has every same-document schema $ref and $dynamicRef in the document resource identifying a schema at an OBI position (§7.3).",
-  "notes": "# and an empty reference name the OBI document itself. Locations that hold no schema (operation objects, maps, strings, extension values, source content, example values) and locations inside a schema that declares $id are not schemas at OBI positions. A plain name qualifies only when a schema in the document's own resource declares it; a name declared only inside a schema that declares $id belongs to that resource. References within a schema resource that declares $id and absolute URIs are outside the rule; positives pin that.",
+  "description": "Has every same-document schema $ref and $dynamicRef in the document resource identify a schema the document contains (§7.3), and every reference resolving into a contained schema resource identify a schema there (§7.4). For $dynamicRef this uses initial resolution; resource identity uses OBI-13's exact comparison.",
+  "notes": "Pointers may enter schemas that declare $id, preserving the target resource's base. Resource data, binding content, examples, extensions, const and unknown keywords never add schemas. Malformed references within identified resources have undefined results rather than violating OBI-12 (§7.4).",
   "tests": [
     {
       "description": "a same-document pointer to a schemas entry",
@@ -189,7 +189,7 @@
       "valid": true
     },
     {
-      "description": "an absolute reference is outside this rule, even when its fragment is a JSON Pointer",
+      "description": "An absolute reference to an external resource is permitted; OBI-12 constrains contained resources (§7.4).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -203,7 +203,7 @@
       "valid": true
     },
     {
-      "description": "a pointer within a schema resource that declares $id resolves against that resource and is outside this rule",
+      "description": "A pointer within an $id resource that reaches nothing violates OBI-12 (§7.4).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -225,7 +225,10 @@
           }
         }
       },
-      "valid": true
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
     },
     {
       "description": "a plain name declared with $anchor by a schemas entry",
@@ -293,7 +296,7 @@
       "valid": true
     },
     {
-      "description": "a $dynamicRef naming a plain name declared with $dynamicAnchor in the document's resource",
+      "description": "A $dynamicRef identifies the declared plain name, but a document-resource $dynamicAnchor violates OBI-14 (§§7.3, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -318,7 +321,13 @@
           }
         }
       },
-      "valid": true
+      "valid": false,
+      "violates": [
+        "OBI-14"
+      ],
+      "notViolated": [
+        "OBI-12"
+      ]
     },
     {
       "description": "a percent-encoded plain name matches the declared name after decoding (#t%61sk names task)",
@@ -412,7 +421,7 @@
       "valid": true
     },
     {
-      "description": "a plain-name reference within a schema resource that declares $id resolves against that resource and is outside this rule",
+      "description": "An undeclared plain name within an $id resource violates OBI-12 (§7.4).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -434,7 +443,10 @@
           }
         }
       },
-      "valid": true
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
     },
     {
       "description": "a plain name that no schema declares",
@@ -608,23 +620,20 @@
       ]
     },
     {
-      "description": "a pointer into a source's content, which is read under the source's kind",
+      "description": "A pointer reaches schema-shaped resource data, which is never a schema the document contains (§§5.4, 7.3).",
       "document": {
         "openbindings": "0.2.0",
-        "sources": {
-          "s": {
-            "kind": "example.test@1",
-            "content": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        },
         "operations": {
           "f": {
             "input": {
-              "$ref": "#/sources/s/content/schema"
+              "$ref": "#/resources/s/schema"
+            }
+          }
+        },
+        "resources": {
+          "s": {
+            "schema": {
+              "type": "object"
             }
           }
         }
@@ -659,7 +668,7 @@
       ]
     },
     {
-      "description": "a pointer inside a schema that declares $id, which is reached through that $id",
+      "description": "A same-document pointer identifies a schema inside an $id resource, in that resource (§7.3).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -681,10 +690,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-12"
-      ]
+      "valid": true
     },
     {
       "description": "a $dynamicRef with a JSON Pointer fragment that reaches no location",
@@ -844,7 +850,7 @@
       ]
     },
     {
-      "description": "a pointer into a binding's content, which is read under the source's kind",
+      "description": "a pointer into a binding's content, which is read under the binding's kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -854,20 +860,15 @@
             }
           }
         },
-        "sources": {
-          "s": {
-            "kind": "example.k@1"
-          }
-        },
         "bindings": {
           "b": {
             "operation": "f",
-            "source": "s",
             "content": {
               "schema": {
                 "type": "string"
               }
-            }
+            },
+            "kind": "example.k@1"
           }
         }
       },
@@ -1094,7 +1095,7 @@
       "valid": true
     },
     {
-      "description": "a $ref may name a plain name declared only with $dynamicAnchor: either keyword declares it",
+      "description": "A $ref identifies a name declared by $dynamicAnchor, but the document-resource declaration violates OBI-14 (§§7.3, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -1111,7 +1112,13 @@
           }
         }
       },
-      "valid": true
+      "valid": false,
+      "violates": [
+        "OBI-14"
+      ],
+      "notViolated": [
+        "OBI-12"
+      ]
     },
     {
       "description": "a $dynamicRef may name a plain name declared only with $anchor: either keyword declares it",
@@ -1132,6 +1139,317 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "An absolute URI with a missing pointer in a contained resource violates OBI-12 (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "https://e.test/r.json#/missing"
+            }
+          }
+        },
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "An absolute $dynamicRef uses its initial resolution for OBI-12 (§7.4, §10).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$dynamicRef": "https://e.test/r.json#missing"
+            }
+          }
+        },
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "A host-case spelling stays external under the exact OBI-13 comparison, even with a missing fragment (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "https://E.test/r.json#/missing"
+            }
+          }
+        },
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A percent-encoded unreserved spelling stays external under OBI-13 (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "https://e.test/%72.json#/missing"
+            }
+          }
+        },
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A local $dynamicRef reaching nothing in an $id resource violates OBI-12 (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$dynamicAnchor": "node",
+            "$dynamicRef": "#missing"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "A $dynamicRef initially reaching an ambiguous name violates OBI-12 before dynamic replacement (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$dynamicAnchor": "node",
+            "$defs": {
+              "a": {
+                "$dynamicAnchor": "node"
+              }
+            },
+            "$dynamicRef": "#node"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "A name declared by $anchor and $dynamicAnchor in one $id schema is ambiguous when referenced (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$anchor": "n",
+            "$dynamicAnchor": "n",
+            "$ref": "#n"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "Repeated anchors in an unused $id resource are permitted when no reference names them (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$defs": {
+              "a": {
+                "$anchor": "n"
+              },
+              "b": {
+                "$anchor": "n"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A pointer from an identified resource may cross into a nested $id resource (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$defs": {
+              "inner": {
+                "$id": "sub/inner.json",
+                "$defs": {
+                  "S": {
+                    "type": "string"
+                  }
+                },
+                "$ref": "#/$defs/S"
+              }
+            },
+            "$ref": "#/$defs/inner/$defs/S"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A same-document pointer can enter a nested relative $id resource whose references use its own base (§7.3).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#/schemas/R/$defs/inner"
+            }
+          }
+        },
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/root.json",
+            "$defs": {
+              "inner": {
+                "$id": "sub/inner.json",
+                "$defs": {
+                  "S": {
+                    "type": "string"
+                  }
+                },
+                "$ref": "#/$defs/S"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A relative reference within an $id resource resolves to another contained resource and must reach a schema (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$ref": "sub/s.json#missing"
+          },
+          "S": {
+            "$id": "https://e.test/sub/s.json"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
+    },
+    {
+      "description": "A malformed $ref inside an $id resource is undefined, without a conformance violation (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$ref": "#%ZZ"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "A malformed $dynamicRef inside an $id resource is undefined, without a conformance violation (§7.4).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "schemas": {
+          "R": {
+            "$id": "https://e.test/r.json",
+            "$dynamicRef": "#%ZZ"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "An $id in resources does not identify a contained schema resource; its URI remains external (§§5.4, 7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "https://e.test/data.json#/missing"
+            }
+          }
+        },
+        "resources": {
+          "data": {
+            "$id": "https://e.test/data.json"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "An anchor declared only in resources identifies no document-resource schema (§§5.4, 7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#data"
+            }
+          }
+        },
+        "resources": {
+          "data": {
+            "$anchor": "data"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-12"
+      ]
     }
   ]
 }
