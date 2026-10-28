@@ -7,27 +7,27 @@
     "getMenu": {
       "description": "Returns the full menu with drinks, sizes, and prices.",
       "input": {"type": "object", "maxProperties": 0},
-      "output": {"$ref": "#/resources/Menu"}
+      "output": {"$ref": "#/schemas/Menu"}
     },
     "placeOrder": {
       "description": "Place a new order. Returns the order with its ID and initial status.",
-      "input": {"$ref": "#/resources/PlaceOrderInput"},
-      "output": {"$ref": "#/resources/Order"}
+      "input": {"$ref": "#/schemas/PlaceOrderInput"},
+      "output": {"$ref": "#/schemas/Order"}
     },
     "getOrderStatus": {
       "description": "Check the current status of an order by ID.",
-      "input": {"$ref": "#/resources/OrderStatusInput"},
-      "output": {"$ref": "#/resources/Order"}
+      "input": {"$ref": "#/schemas/OrderStatusInput"},
+      "output": {"$ref": "#/schemas/Order"}
     },
     "cancelOrder": {
       "description": "Cancel a pending order. Only works if the order has not started preparation.",
-      "input": {"$ref": "#/resources/CancelOrderInput"},
-      "output": {"$ref": "#/resources/CancelOrderOutput"}
+      "input": {"$ref": "#/schemas/CancelOrderInput"},
+      "output": {"$ref": "#/schemas/CancelOrderOutput"}
     },
     "orderUpdates": {
       "description": "Reports each change in an order's status.",
       "input": {"type": "object", "maxProperties": 0},
-      "output": {"$ref": "#/resources/OrderUpdate"}
+      "output": {"$ref": "#/schemas/OrderUpdate"}
     }
   },
   "bindings": {
@@ -249,7 +249,7 @@
       "description": "GraphQL API with queries and subscriptions"
     }
   },
-  "resources": {
+  "schemas": {
     "MenuItem": {
       "type": "object",
       "properties": {
@@ -275,7 +275,7 @@
       "properties": {
         "items": {
           "type": "array",
-          "items": {"$ref": "#/resources/MenuItem"}
+          "items": {"$ref": "#/schemas/MenuItem"}
         }
       }
     },
@@ -335,7 +335,9 @@
         "updatedAt": {"type": "string", "format": "date-time"}
       },
       "required": ["orderId", "status", "updatedAt"]
-    },
+    }
+  },
+  "resources": {
     "rest": {"location": "https://blend.openbindings.com/openapi.json"},
     "mcp": {"location": "https://blend.openbindings.com/mcp"},
     "grpc": {"location": "blend.openbindings.com:9090"},

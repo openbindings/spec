@@ -54,9 +54,19 @@
         "$ref": "#/$defs/BindingEntry"
       }
     },
+    "schemas": {
+      "type": "object",
+      "description": "Map of schema names to JSON Schemas (§5.2).",
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/JSONSchema"
+      }
+    },
     "resources": {
       "type": "object",
-      "description": "Named shared JSON values; interpretation follows use (§5.4).",
+      "description": "Named shared JSON values that kinds use; never read as schemas (§5.4).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },

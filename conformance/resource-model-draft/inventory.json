@@ -1,0 +1,725 @@
+[
+  {
+    "name": "inline operation schemas and their subschemas",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "input": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          "output": true
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/input",
+      "/operations/get/output"
+    ],
+    "schemas": [
+      "/operations/get/input",
+      "/operations/get/input/properties/id",
+      "/operations/get/output"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "every schemas entry is a schema, used or not",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/schemas/Task"
+          }
+        }
+      },
+      "schemas": {
+        "Task": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "Unused": {
+          "type": "string"
+        },
+        "Never": false
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Never",
+      "/schemas/Task",
+      "/schemas/Unused"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Never",
+      "/schemas/Task",
+      "/schemas/Task/properties/id",
+      "/schemas/Unused"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "an invalid unused schemas entry is still checked",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {},
+      "schemas": {
+        "Draft": {
+          "type": 42
+        }
+      }
+    },
+    "entries": [
+      "/schemas/Draft"
+    ],
+    "schemas": [
+      "/schemas/Draft"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": false
+  },
+  {
+    "name": "a pointer into resources identifies nothing",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/resources/api/components/schemas/Task"
+          }
+        }
+      },
+      "resources": {
+        "api": {
+          "openapi": "3.1.0",
+          "components": {
+            "schemas": {
+              "Task": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output"
+    ],
+    "schemas": [
+      "/operations/get/output"
+    ],
+    "unresolved": [
+      "/operations/get/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "a schema-shaped resource is data",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/resources/Task"
+          }
+        }
+      },
+      "resources": {
+        "Task": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output"
+    ],
+    "schemas": [
+      "/operations/get/output"
+    ],
+    "unresolved": [
+      "/operations/get/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "identifiers and anchors inside resources declare nothing",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#stored"
+          }
+        },
+        "put": {
+          "input": {
+            "$ref": "https://example.com/stored.json"
+          }
+        }
+      },
+      "resources": {
+        "stored": {
+          "$id": "https://example.com/stored.json",
+          "$anchor": "stored",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": 42
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/operations/put/input"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/operations/put/input"
+    ],
+    "unresolved": [
+      "/operations/get/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "binding content and examples are not traversed",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "run": {
+          "input": {
+            "const": {
+              "$ref": "#/nowhere"
+            },
+            "examples": [
+              {
+                "$ref": "#/nowhere"
+              }
+            ],
+            "x-schema": {
+              "$ref": "#/nowhere"
+            }
+          },
+          "examples": {
+            "one": {
+              "input": {
+                "$ref": "#/nowhere"
+              }
+            }
+          }
+        }
+      },
+      "bindings": {
+        "run.local": {
+          "operation": "run",
+          "kind": "example.local@1",
+          "content": {
+            "schema": {
+              "$ref": "#/nowhere",
+              "type": 42
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/run/input"
+    ],
+    "schemas": [
+      "/operations/run/input"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "pointers must reach a schema, not a keyword value or map",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "a": {
+          "output": {
+            "$ref": "#/schemas/Task/type"
+          }
+        },
+        "b": {
+          "output": {
+            "$ref": "#/schemas/Task/properties"
+          }
+        },
+        "c": {
+          "output": {
+            "$ref": "#"
+          }
+        },
+        "d": {
+          "output": {
+            "$ref": "#/schemas/Missing"
+          }
+        },
+        "e": {
+          "output": {
+            "$ref": "#/schemas/~2"
+          }
+        }
+      },
+      "schemas": {
+        "Task": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    },
+    "entries": [
+      "/operations/a/output",
+      "/operations/b/output",
+      "/operations/c/output",
+      "/operations/d/output",
+      "/operations/e/output",
+      "/schemas/Task"
+    ],
+    "schemas": [
+      "/operations/a/output",
+      "/operations/b/output",
+      "/operations/c/output",
+      "/operations/d/output",
+      "/operations/e/output",
+      "/schemas/Task",
+      "/schemas/Task/properties/id"
+    ],
+    "unresolved": [
+      "/operations/a/output#$ref",
+      "/operations/b/output#$ref",
+      "/operations/c/output#$ref",
+      "/operations/d/output#$ref",
+      "/operations/e/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "a pointer may reach into a schema that declares $id",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/schemas/Tree/properties/children"
+          }
+        }
+      },
+      "schemas": {
+        "Tree": {
+          "$id": "https://example.com/tree.json",
+          "type": "object",
+          "properties": {
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#"
+              }
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Tree"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Tree",
+      "/schemas/Tree/properties/children",
+      "/schemas/Tree/properties/children/items"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "plain names belong to their resource",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "a": {
+          "output": {
+            "$ref": "#task"
+          }
+        },
+        "b": {
+          "output": {
+            "$ref": "#tree"
+          }
+        }
+      },
+      "schemas": {
+        "Task": {
+          "$anchor": "task",
+          "type": "object"
+        },
+        "Tree": {
+          "$id": "https://example.com/tree.json",
+          "$anchor": "tree"
+        }
+      }
+    },
+    "entries": [
+      "/operations/a/output",
+      "/operations/b/output",
+      "/schemas/Task",
+      "/schemas/Tree"
+    ],
+    "schemas": [
+      "/operations/a/output",
+      "/operations/b/output",
+      "/schemas/Task",
+      "/schemas/Tree"
+    ],
+    "unresolved": [
+      "/operations/b/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "a $dynamicAnchor outside an $id resource is reported for OBI-14",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "getTree": {
+          "output": {
+            "$ref": "https://example.com/tree.json"
+          }
+        }
+      },
+      "schemas": {
+        "Tree": {
+          "$id": "https://example.com/tree.json",
+          "$dynamicAnchor": "node",
+          "properties": {
+            "children": {
+              "items": {
+                "$dynamicRef": "#node"
+              }
+            }
+          }
+        },
+        "LabeledNode": {
+          "$dynamicAnchor": "node",
+          "$ref": "https://example.com/tree.json"
+        }
+      }
+    },
+    "entries": [
+      "/operations/getTree/output",
+      "/schemas/LabeledNode",
+      "/schemas/Tree"
+    ],
+    "schemas": [
+      "/operations/getTree/output",
+      "/schemas/LabeledNode",
+      "/schemas/Tree",
+      "/schemas/Tree/properties/children",
+      "/schemas/Tree/properties/children/items"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [
+      "/schemas/LabeledNode"
+    ],
+    "metaValid": true
+  },
+  {
+    "name": "legacy definitions and dependencies are schema positions",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {},
+      "schemas": {
+        "Legacy": {
+          "definitions": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "dependencies": {
+            "b": {
+              "required": [
+                "c"
+              ]
+            },
+            "d": [
+              "e"
+            ]
+          }
+        }
+      }
+    },
+    "entries": [
+      "/schemas/Legacy"
+    ],
+    "schemas": [
+      "/schemas/Legacy",
+      "/schemas/Legacy/definitions/a",
+      "/schemas/Legacy/dependencies/b"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "pointers between schemas entries and nested $defs",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/schemas/lib/$defs/Task"
+          }
+        }
+      },
+      "schemas": {
+        "lib": {
+          "$defs": {
+            "Task": {
+              "properties": {
+                "owner": {
+                  "$ref": "#/schemas/lib/$defs/User"
+                }
+              }
+            },
+            "User": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/lib"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/lib",
+      "/schemas/lib/$defs/Task",
+      "/schemas/lib/$defs/Task/properties/owner",
+      "/schemas/lib/$defs/User"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "a copied schema without $id reads its pointers from the OBI root",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/schemas/Customer"
+          }
+        }
+      },
+      "schemas": {
+        "Customer": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "$ref": "#/$defs/Address"
+            }
+          },
+          "$defs": {
+            "Address": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Customer"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Customer",
+      "/schemas/Customer/$defs/Address",
+      "/schemas/Customer/properties/address"
+    ],
+    "unresolved": [
+      "/schemas/Customer/properties/address#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "the same schema copied with $id keeps its pointers",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#/schemas/Customer"
+          }
+        }
+      },
+      "schemas": {
+        "Customer": {
+          "$id": "https://example.com/customer.json",
+          "type": "object",
+          "properties": {
+            "address": {
+              "$ref": "#/$defs/Address"
+            }
+          },
+          "$defs": {
+            "Address": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Customer"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Customer",
+      "/schemas/Customer/$defs/Address",
+      "/schemas/Customer/properties/address"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  },
+  {
+    "name": "a $dynamicAnchor in the document resource declares a plain name and is reported",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#node"
+          }
+        }
+      },
+      "schemas": {
+        "Node": {
+          "$dynamicAnchor": "node",
+          "type": "object"
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Node"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Node"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [
+      "/schemas/Node"
+    ],
+    "metaValid": true
+  },
+  {
+    "name": "an anchor outside the plain-name grammar declares nothing",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#1x"
+          }
+        }
+      },
+      "schemas": {
+        "Bad": {
+          "$anchor": "1x"
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Bad"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Bad"
+    ],
+    "unresolved": [
+      "/operations/get/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": false
+  },
+  {
+    "name": "a string that is no URI-reference is left to OBI-11",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#a b"
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output"
+    ],
+    "schemas": [
+      "/operations/get/output"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
+  }
+]

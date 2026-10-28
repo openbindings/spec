@@ -1,7 +1,7 @@
 {
   "openbindings": "0.2.0",
   "name": "Task Service",
-  "description": "One embedded artifact shared by two bindings; its nested Task schema is explicitly used by the operation schemas.",
+  "description": "One embedded OpenAPI document shared by two bindings; the operations use a copy of its Task schema, held in schemas.",
   "operations": {
     "createTask": {
       "input": {
@@ -11,11 +11,11 @@
         },
         "required": ["title"]
       },
-      "output": {"$ref": "#/resources/tasksApi/components/schemas/Task"}
+      "output": {"$ref": "#/schemas/Task"}
     },
     "listTasks": {
       "input": {"type": "object", "maxProperties": 0},
-      "output": {"$ref": "#/resources/TaskList"}
+      "output": {"$ref": "#/schemas/TaskList"}
     }
   },
   "bindings": {
@@ -36,11 +36,21 @@
       }
     }
   },
-  "resources": {
+  "schemas": {
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"}
+      },
+      "required": ["id", "title"]
+    },
     "TaskList": {
       "type": "array",
-      "items": {"$ref": "#/resources/tasksApi/components/schemas/Task"}
-    },
+      "items": {"$ref": "#/schemas/Task"}
+    }
+  },
+  "resources": {
     "tasksApi": {
       "openapi": "3.1.0",
       "info": {"title": "Tasks API", "version": "1.0.0"},

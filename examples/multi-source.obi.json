@@ -6,18 +6,18 @@
   "operations": {
     "getUser": {
       "description": "Retrieve a user by ID.",
-      "input": {"$ref": "#/resources/GetUserInput"},
-      "output": {"$ref": "#/resources/User"}
+      "input": {"$ref": "#/schemas/GetUserInput"},
+      "output": {"$ref": "#/schemas/User"}
     },
     "createUser": {
       "description": "Create a new user account.",
-      "input": {"$ref": "#/resources/CreateUserInput"},
-      "output": {"$ref": "#/resources/User"}
+      "input": {"$ref": "#/schemas/CreateUserInput"},
+      "output": {"$ref": "#/schemas/User"}
     },
     "listUsers": {
       "description": "List all users.",
       "input": {"type": "object", "maxProperties": 0},
-      "output": {"$ref": "#/resources/ListUsersOutput"}
+      "output": {"$ref": "#/schemas/ListUsersOutput"}
     }
   },
   "bindings": {
@@ -70,7 +70,7 @@
       "description": "Internal admin REST API"
     }
   },
-  "resources": {
+  "schemas": {
     "User": {
       "type": "object",
       "properties": {
@@ -109,10 +109,12 @@
       "properties": {
         "users": {
           "type": "array",
-          "items": {"$ref": "#/resources/User"}
+          "items": {"$ref": "#/schemas/User"}
         }
       }
-    },
+    }
+  },
+  "resources": {
     "publicApi": {"location": "https://api.example.com/openapi.json"},
     "adminApi": {"location": "https://admin.example.com/openapi.json"}
   }
