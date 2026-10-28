@@ -31,7 +31,12 @@ for (const content of [null, false, 3, "text", [], {}, { operation: "kind-owned"
   document.resources = { value: content };
   shape(document, true, "arbitrary content and shared values");
 }
-for (const field of ["sources", "schemas"]) shape({ ...base(), [field]: {} }, false, `removed ${field}`);
+shape({ ...base(), sources: {} }, false, "removed sources");
+shape({ ...base(), schemas: {} }, true, "empty schemas map");
+shape({ ...base(), schemas: { Task: { type: "object" }, Never: false } }, true, "schemas entries in object and boolean form");
+for (const entry of [null, 3, "text", []]) shape({ ...base(), schemas: { bad: entry } }, false, "schemas entries are schemas");
+shape({ ...base(), schemas: { "invalid/key": {} } }, false, "schema entry key syntax");
+shape({ ...base(), schemas: { old: { $schema: "http://json-schema.org/draft-07/schema#" } } }, false, "a schemas entry's top-level $schema names 2020-12");
 for (const kind of [undefined, null, "", 1]) {
   const document = base();
   if (kind === undefined) delete document.bindings.local.kind;
@@ -48,17 +53,17 @@ shape({ ...base(), resources: { valid: { type: 42 } } }, true, "structure does n
 const cases = parse("conformance/resource-model-draft/recognition.json");
 for (const test of cases) {
   shape(test.document, true, test.name);
-  const expected = { entries: test.entries, schemas: test.schemas, conflicts: test.conflicts };
+  const expected = { entries: test.entries, schemas: test.schemas, unresolved: test.unresolved, documentDynamicAnchors: test.documentDynamicAnchors };
   const actual = schemaInventory(test.document);
   assert.deepEqual(actual, expected, test.name);
   assert.equal(entriesValid(test.document, actual), test.metaValid, `${test.name}: entry meta-schema validity`);
   const reordered = structuredClone(test.document);
   reordered.operations = Object.fromEntries(Object.entries(reordered.operations).reverse());
-  if (reordered.resources) reordered.resources = Object.fromEntries(Object.entries(reordered.resources).reverse());
+  for (const map of ["schemas", "resources"]) if (reordered[map]) reordered[map] = Object.fromEntries(Object.entries(reordered[map]).reverse());
   assert.deepEqual(schemaInventory(reordered), expected, `${test.name}: order independence`);
 }
 
-const stored = JSON.parse(`{"resources":{"data":{"a/b":{"~key":null},"array":[false,{"ok":true}],"":"empty","%2F":"percent","é":"unicode","__proto__":"own"},"literal":{"$ref":"#/resources/other"},"artifact":{"openapi":"3.1.0","nested":{"$ref":"#/components/schemas/Task"}},"other":42}}`);
+const stored = JSON.parse(`{"schemas":{"Task":{"type":"object","properties":{"id":{"$ref":"#/schemas/Id"}}}},"resources":{"data":{"a/b":{"~key":null},"array":[false,{"ok":true}],"":"empty","%2F":"percent","é":"unicode","__proto__":"own"},"literal":{"$ref":"#/resources/other"},"artifact":{"openapi":"3.1.0","nested":{"$ref":"#/components/schemas/Task"}},"other":42}}`);
 const original = JSON.stringify(stored);
 const found = [
   ["#/resources/data/a~1b/~0key", null],
@@ -70,9 +75,11 @@ const found = [
   ["#/resources/data/__proto__", "own"],
   ["#/resources/literal", { $ref: "#/resources/other" }],
   ["#/resources/artifact", stored.resources.artifact],
+  ["#/schemas/Task", stored.schemas.Task],
+  ["#/schemas/Task/properties/id", { $ref: "#/schemas/Id" }],
 ];
 for (const [reference, value] of found) assert.deepEqual(sharedValue(stored, { $ref: reference }), { found: true, value }, reference);
-const missing = ["", "#", "#name", "#/resources", "#/resources/missing", "#/operations/run", "other.json#/resources/data", "https://example.com/#/resources/data", "#/resources/data/array/01", "#/resources/data/array/-", "#/resources/data/array/2", "#/resources/data/array/1.0", "#/resources/data/array/length", "#/resources/data/toString", "#/resources/data/a~2b", "#/resources/data/%FF", "#/resources/data/%ZZ", "#/resources/data/%", "#/resources/data/a b", "#/resources/data/é", "#/resources/data/a#b"];
+const missing = ["", "#", "#name", "#/resources", "#/resources/missing", "#/schemas", "#/schemas/Missing", "#/operations", "#/operations/run", "other.json#/resources/data", "https://example.com/#/resources/data", "#/resources/data/array/01", "#/resources/data/array/-", "#/resources/data/array/2", "#/resources/data/array/1.0", "#/resources/data/array/length", "#/resources/data/toString", "#/resources/data/a~2b", "#/resources/data/%FF", "#/resources/data/%ZZ", "#/resources/data/%", "#/resources/data/a b", "#/resources/data/é", "#/resources/data/a#b"];
 for (const reference of missing) assert.deepEqual(sharedValue(stored, { $ref: reference }), { found: false }, reference);
 for (const reference of [null, "#/resources/other", {}, { $ref: 42 }, { $ref: "#/resources/other", description: "sibling" }]) assert.deepEqual(sharedValue(stored, reference), { found: false });
 assert.deepEqual(fragmentPointer("#/resources/data/%7E01"), ["resources", "data", "~1"], "tilde decoding occurs once");
@@ -82,7 +89,8 @@ let checked = 0;
 function example(document, name) {
   shape(document, true, name);
   const inventory = schemaInventory(document);
-  assert.deepEqual(inventory.conflicts, [], `${name}: schema membership`);
+  assert.deepEqual(inventory.unresolved, [], `${name}: same-document references identify schemas`);
+  assert.deepEqual(inventory.documentDynamicAnchors, [], `${name}: no $dynamicAnchor in the document resource`);
   assert.equal(entriesValid(document, inventory), true, `${name}: meta-schema validity`);
   checked++;
 }
@@ -93,4 +101,4 @@ for (const file of ["openbindings.md", "README.md", "MIGRATING-0.1-TO-0.2.md"]) 
     if (document !== null && typeof document === "object" && Object.hasOwn(document, "openbindings")) example(document, `${file}: JSON example`);
   }
 }
-console.log(`Draft checks passed: structural cases, ${cases.length} recognition cases (both orders), ${found.length + missing.length + 5} lookup cases, ${checked} example documents. This is not a full conformance validator.`);
+console.log(`Draft checks passed: structural cases, ${cases.length} inventory cases (both orders), ${found.length + missing.length + 5} lookup cases, ${checked} example documents. This is not a full conformance validator.`);

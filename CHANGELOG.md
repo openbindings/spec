@@ -17,14 +17,17 @@ arrive. The specification specifies the document model only.
 
 ### Binding/resources revision (2026-10-26)
 
-This unreleased revision replaces the preceding 0.2 source/schema model. Bindings
+This unreleased revision replaces the preceding 0.2 source model. Bindings
 carry their own required `kind`; `sources` and `bindings[*].source` are removed.
-Optional `resources` replaces the dedicated `schemas` map and stores any JSON
-value without a wrapper. Schemas are recognized from operation schemas and
-explicit local resource pointers; unused resources stay opaque. OpenBindings §7.6
-provides opt-in shared-value lookup for kinds without scanning or expanding
-arbitrary content. OBI-07 now constrains binding kinds; OBI-09–13 use the revised
-schema inventory. No released snapshot is changed. Earlier corpus and kind
+Optional `resources` stores any JSON value a kind uses, without a wrapper, and
+the `schemas` map stays: where a value sits decides how OpenBindings reads it.
+Every `schemas` entry is one of the document's schemas; nothing in `resources`
+is, and a schema reference into `resources` identifies nothing (OBI-12).
+OpenBindings §7.6 provides opt-in shared-value lookup into either map for kinds,
+without scanning or expanding arbitrary content. OBI-07 now constrains binding
+kinds. OBI-12 also covers references that resolve into a schema resource the
+document contains, and the new OBI-14 excludes `$dynamicAnchor` from the document
+resource. No released snapshot is changed. Earlier corpus and kind
 migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
 
 The glossary omits ordinary-language terms and duplicate definitions. Undefined
@@ -40,8 +43,16 @@ prescription for operations with no meaningful input or output and the advice
 that callers must distinguish errors through schemas are removed. The draft
 also trims repeated explanations and examples, makes security guidance about
 kind processing conditional, and consolidates the compatibility guarantees for
-kinds in §8.1. The structural schema, numbered conformance rules, schema
-evaluation and recognition rules, and shared `idempotent` field are unchanged.
+kinds in §8.1. Schema evaluation and the shared `idempotent` field are unchanged.
+
+**Typed schema storage (2026-10-27).** An intermediate form of this revision
+replaced `schemas` with `resources` and recognized schemas by following local
+pointers into it. An operation schema could then point into an embedded
+artifact, whose own references and dialect were read by OpenBindings rules and
+gave failed or wrong readings. Restoring the `schemas` map removes that
+recognition procedure: a pointer into `resources` identifies nothing, and an
+`$id` there identifies nothing to the document's schemas. A pointer may reach a
+schema inside a schema that declares `$id` (§7.3).
 
 ### Added
 
@@ -85,7 +96,7 @@ evaluation and recognition rules, and shared `idempotent` field are unchanged.
   and with the resource the same rules decide. When a schema is absent, there is
   no schema to evaluate for that direction.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
-  defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
+  defines conformance by rules OBI-01 to OBI-14, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
   document conforms depends only on the document and that release's text,
   derived schema, and normative references, the JSON Schema 2020-12
@@ -107,13 +118,12 @@ evaluation and recognition rules, and shared `idempotent` field are unchanged.
   can be any JSON value. Source objects and the binding `source` member leave
   the document model. Target identification, value adaptation, and interaction
   mechanics are interpreted under each binding's kind (§5.3).
-- **Shared values use `resources`.** A name-to-value map replaces the dedicated
-  schema map and optional source-content factoring. A schema-use pointer
-  establishes a schema entry point; identifiers in otherwise opaque data are
-  not discovered by scanning. Repeated use of one location does not duplicate
-  its schema declarations. Conflicting schema-resource membership violates
-  OBI-12. Kinds may adopt shared-value lookup at explicit content positions
-  (§§5.4, 7.1, 7.6); internal artifact references retain their own context.
+- **Shared values use `resources`.** A name-to-value map replaces optional
+  source-content factoring and holds whatever kinds use, such as an embedded API
+  description. OpenBindings never reads it as schemas: a schema reference into it
+  identifies nothing, and identifiers in it are not registered. Kinds may adopt
+  shared-value lookup into `resources` or `schemas` at explicit content positions
+  (§§5.4, 7.6); internal artifact references retain their own context.
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
@@ -177,10 +187,12 @@ evaluation and recognition rules, and shared `idempotent` field are unchanged.
   the document resource are absolute URIs or same-document references, and an
   `$id` at an OBI position is absolute (OBI-11). A same-document reference
   there identifies what [§7.3](openbindings.md#73-same-document-references)
-  defines (`#` the document itself), and each must identify a recognized schema at an
-  OBI position without conflicting resource membership (OBI-12). No plain name
-  is declared twice in the document
-  resource, and no `$id` by two schemas (OBI-13). A schema that declares `$id`
+  defines (`#` the document itself), and each must identify a schema the
+  document contains, as must every reference that resolves into a schema
+  resource the document contains (OBI-12). No plain name is declared twice in
+  the document resource, and no `$id` by two schemas (OBI-13). No
+  `$dynamicAnchor` appears in the document resource, where it would capture
+  `$dynamicRef`s throughout the document (OBI-14). A schema that declares `$id`
   begins its own resource, resolved as JSON Schema defines. Reference cycles
   are permitted, and external resources never affect conformance. In 0.1, relative
   references resolved against the document's location and cycles failed

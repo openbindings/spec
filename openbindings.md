@@ -51,7 +51,7 @@ See `EDITORS.md` for the current editor roster.
 
 This is **version 0.2.0** of the OpenBindings specification. This text is the unreleased working draft of that version; the latest release is **0.1.0** (immutable released snapshots live under `versions/`). It is pre-1.0, and minor-version revisions may include breaking changes per [§8. Versioning](#8-versioning). Substantive changes are recorded in `CHANGELOG.md` and cite rule identifiers (`OBI-##`) where applicable, each under the version it belongs to.
 
-**Binding/resources revision.** This working draft places `kind` on bindings and replaces `sources` and `schemas` with optional `resources`. [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) records the decisions and migration status. Earlier 0.2 corpora and kind candidates have not been migrated wholesale; they are not evidence for this revised model.
+**Binding/resources revision.** This working draft places `kind` on bindings, removes `sources`, and adds optional `resources` for shared values that are not schemas, beside the `schemas` map. [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) records the decisions and migration status. Earlier 0.2 corpora and kind candidates have not been migrated wholesale; they are not evidence for this revised model.
 
 ## License and intellectual property
 
@@ -84,7 +84,7 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
   - [5.5. Dependencies](#55-dependencies)
 - [6. Kinds](#6-kinds)
 - [7. Reference resolution](#7-reference-resolution)
-  - [7.1. Schema recognition](#71-schema-recognition)
+  - [7.1. Reference forms](#71-reference-forms)
   - [7.2. The document as embedding](#72-the-document-as-embedding)
   - [7.3. Same-document references](#73-same-document-references)
   - [7.4. Other references](#74-other-references)
@@ -124,7 +124,7 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 1. **Per-value schemas.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary, one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are interpreted according to each binding's kind.
 2. **Declaration, not availability.** A binding declares a realization of its operation under its own kind. It does not assert that the realization is available, and the document alone need not suffice to use it. A dependency does not identify a realization to serve it ([§5.5](#55-dependencies)).
 3. **Bounded interpretation.** The operation carries the schemas governing its caller-facing input and output values. A binding's kind interprets its content and realization without changing the meaning this specification assigns to fields.
-4. **Location-independent references.** No schema reference in the document resource ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the meaning this specification assigns to a document is the same however it was obtained. This specification does not scan binding `content` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside the resolution rules defined here (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
+4. **Location-independent references.** No schema reference in the document resource ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the meaning this specification assigns to a document is the same however it was obtained. This specification does not scan binding `content` or `resources` for references. A kind can adopt the shared-value lookup of §7.6; its other references remain outside the resolution rules defined here (invariant 3). This specification assigns no document identity. `name` and `version` are labels.
 5. **Self-contained conformance.** Whether a document conforms to a release of this specification depends only on:
    - the document;
    - that release's text;
@@ -146,11 +146,11 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 - **Author claim**: one of the claims [§5](#5-document-model) lists, which a document makes and whose truth is outside conformance.
 - **Binding**: an author-declared realization of an operation under a kind, under a key in `bindings` ([§5.3](#53-bindings)).
 - **Realization**: a concrete way of carrying out an operation. A binding declares one ([§5.3](#53-bindings)) and a dependency consumes one ([§5.5](#55-dependencies)), each as an author claim.
-- **Shared resource**: a named JSON value in `resources`, available for use by references. Its use determines its interpretation; storing it declares no kind or capability ([§5.4](#54-resources)). This is distinct from a JSON Schema resource.
+- **Shared resource**: a named JSON value in `resources`, which kinds use through shared-value references ([§7.6](#76-shared-value-references)). This specification never reads a shared resource, or anything in one, as a schema ([§5.4](#54-resources)). This is distinct from a JSON Schema resource.
 - **Kind**: the exact, opaque, non-empty string a binding carries in `kind` and a dependency may list in `kinds`. It selects how the binding is read ([§6](#6-kinds)).
 - **Dependency**: a named point where the software described by the OBI consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
-- **OBI position**: a schema position in the document resource, or the root of an identified schema resource reached from it. The **schemas the document contains** and their resource membership are determined by the recognition procedure of [§7.1](#71-schema-recognition).
-- **Document resource**: the anonymous schema resource containing recognized schemas with no intervening `$id` ([§7.2](#72-the-document-as-embedding)).
+- **OBI position**: a place where the document model puts a schema. The **schemas the document contains** extend these through the resources declared there, nested resources included ([§7](#7-reference-resolution) defines both).
+- **Document resource**: the schema resource every schema at an OBI position that declares no `$id` belongs to ([§7.2](#72-the-document-as-embedding)).
 - **Field**: a member of an OBI-defined object (the document root, and operation, dependency, binding and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
 - **Absolute URI**: a URI with a scheme (RFC 3986 §3), fragment permitted; not RFC 3986's `absolute-URI` production, which excludes fragments.
 
@@ -171,7 +171,7 @@ Every OBI declares a specification version and an operations map. The minimal co
 }
 ```
 
-Each binding carries its own kind and optional content. Optional resources hold shared values; their uses determine their interpretation. This fuller OBI:
+Each binding carries its own kind and optional content. Optional `schemas` hold shared schemas, and optional `resources` hold other shared values that kinds use, such as an API description. This fuller OBI:
 
 - binds `createTask` over two protocols;
 - shares a schema between operations;
@@ -195,8 +195,8 @@ Each binding carries its own kind and optional content. Optional resources hold 
       },
       "output": {
         "anyOf": [
-          {"$ref": "#/resources/Task"},
-          {"$ref": "#/resources/Problem"}
+          {"$ref": "#/schemas/Task"},
+          {"$ref": "#/schemas/Problem"}
         ]
       }
     },
@@ -207,9 +207,9 @@ Each binding carries its own kind and optional content. Optional resources hold 
         "anyOf": [
           {
             "type": "array",
-            "items": {"$ref": "#/resources/Task"}
+            "items": {"$ref": "#/schemas/Task"}
           },
-          {"$ref": "#/resources/Problem"}
+          {"$ref": "#/schemas/Problem"}
         ]
       }
     }
@@ -240,7 +240,7 @@ Each binding carries its own kind and optional content. Optional resources hold 
       }
     }
   },
-  "resources": {
+  "schemas": {
     "Task": {
       "type": "object",
       "properties": {
@@ -257,7 +257,9 @@ Each binding carries its own kind and optional content. Optional resources hold 
       },
       "required": ["problem"],
       "additionalProperties": false
-    },
+    }
+  },
+  "resources": {
     "httpApi": {"location": "https://example.com/openapi.json"}
   }
 }
@@ -301,9 +303,10 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 | `operations`   | object | yes      | Map of operation keys to operation objects.                                                                                        |
 | `dependencies` | object | no       | Map of dependency keys to dependency objects.                                                                                      |
 | `bindings`     | object | no       | Map of binding keys to binding objects. |
-| `resources`    | object | no       | Map of names to shared JSON values, interpreted where used. |
+| `schemas`      | object | no       | Map of schema names to JSON Schemas ([§5.2](#52-schemas)). |
+| `resources`    | object | no       | Map of names to shared JSON values that kinds use; never read as schemas ([§5.4](#54-resources)). |
 
-**Names.** The map keys this specification defines (operation, dependency, binding, resource, and example keys) and operation aliases are names. They are opaque tokens, each matched as a whole against the grammar of [OBI-04](#10-conformance), so a name ending in a newline does not match it. Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name. That is why the grammar admits a leading digit (`2fa.verify`).
+**Names.** The map keys this specification defines (operation, dependency, binding, schema, resource, and example keys) and operation aliases are names. They are opaque tokens, each matched as a whole against the grammar of [OBI-04](#10-conformance), so a name ending in a newline does not match it. Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name. That is why the grammar admits a leading digit (`2fa.verify`).
 
 **Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of UTF-16 code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3). Two numbers are equal exactly when their exact decimal values are.
 
@@ -371,7 +374,7 @@ Examples are **positive** author claims ([§5](#5-document-model)): each provide
 
 ### 5.2. Schemas
 
-Operation `input` and `output` hold schemas inline. A schema can refer to a shared value, for example `{"$ref": "#/resources/Task"}`. The recognition procedure in [§7.1](#71-schema-recognition) determines which stored values are schemas.
+Operation `input` and `output` hold schemas inline. The top-level `schemas` map holds named JSON Schemas, which schemas reference with `$ref` (for example, `{"$ref": "#/schemas/Task"}`). Every `schemas` entry is a schema the document contains, whether or not anything references it; nothing in `resources` is one ([§5.4](#54-resources), [§7](#7-reference-resolution)).
 
 Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) schema in object or boolean form, valid against the 2020-12 meta-schemas ([OBI-10](#10-conformance)). An invalid schema the document contains, such as `{"type": 42}`, violates that rule.
 
@@ -379,7 +382,7 @@ Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 202
 
 JSON Schema permits `$schema` only at a resource root (JSON Schema Core §8.1.1). In an OBI, the resource roots that are themselves schemas are exactly the schemas that declare `$id` ([§7.2](#72-the-document-as-embedding)). A schema reached through an external URI follows the dialect JSON Schema assigns it (JSON Schema Core §8.1.1). Where JSON Schema leaves its dialect to the implementation, such a schema is read as 2020-12 (**Schema evaluation**, below).
 
-Beyond this section and [§7](#7-reference-resolution), JSON Schema 2020-12 governs the document's schemas: their meaning, reference resolution, and value evaluation. This specification defines no keyword and no evaluation of its own, beyond the four provisions that **Schema evaluation** (below) sets among JSON Schema's options. OBI-09 to OBI-13 concern schemas ([§7.5](#75-notes-and-examples-informative)). OBI-01 and OBI-02 apply to them as part of the whole document.
+Beyond this section and [§7](#7-reference-resolution), JSON Schema 2020-12 governs the document's schemas: their meaning, reference resolution, and value evaluation. This specification defines no keyword and no evaluation of its own, beyond the four provisions that **Schema evaluation** (below) sets among JSON Schema's options. OBI-09 to OBI-14 concern schemas ([§7.5](#75-notes-and-examples-informative)). OBI-01 and OBI-02 apply to them as part of the whole document.
 
 **Note.** A schema that breaks another of JSON Schema's requirements does not by that alone violate a rule.
 
@@ -406,7 +409,13 @@ Where every way gives the same validity, that validity stands: a value that sati
 
 Where `input` or `output` is absent, no corresponding schema is stated ([§5.1](#51-operations)), and a value neither satisfies nor fails one.
 
-**Schemas from other dialects (informative).** Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores. So a `null` the service returns fails `{"type": "string", "nullable": true}`. Draft-07's array form of `items` violates OBI-10. Translating such schemas to 2020-12 when bringing them in keeps their meaning.
+**Copying schemas (informative).** A schema inside an API description in `resources`, such as an OpenAPI component, is not one of the document's schemas. An operation that uses it holds a copy, usually in `schemas`, and the copy is a translation into 2020-12:
+
+- **Dialect.** Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores. So a `null` the service returns fails `{"type": "string", "nullable": true}`. Draft-07's array form of `items` violates OBI-10, and its `dependencies` is not evaluated. Translating such schemas to 2020-12 when bringing them in keeps their meaning.
+- **References.** A copy's same-document references name places in this document. `#/components/schemas/User` copied from an OpenAPI document identifies nothing here, and `#/schemas/Owner` copied from another OBI identifies this document's `Owner`, whatever that is. Rewriting them to the copies they mean keeps their meaning. An absolute `$id` keeps only references relative to the schema's own root, such as a standalone file's `#/$defs/Node` ([§7.5](#75-notes-and-examples-informative)); references relative to the root of the artifact the schema came from still have to be rewritten.
+- **Identifiers.** A copy that keeps the `$id` of the schema it came from takes that URI within this document, while the original in `resources` can change independently. Everything in `schemas` takes effect whether or not it is used: an entry that declares a published `$id` replaces that schema throughout the document. Material that is unfinished, untranslated, or kept only for a kind belongs in `resources`.
+
+A tool that hands the whole document to a JSON Schema implementation also exposes the schemas, `$id`s, and references inside `resources` and binding content, which this specification does not read.
 
 ### 5.3. Bindings
 
@@ -437,11 +446,11 @@ The operation's tags, deprecation, and examples are not part of the claim. Each 
 
 ### 5.4. Resources
 
-The optional `resources` map stores named JSON values for reference from elsewhere in the document. Each entry MAY be any JSON value, without a required wrapper, `kind`, or type declaration. Its name follows OBI-04; member names within the stored value are ordinary data and are not constrained by that rule. Entries need not be referenced or used more than once.
+The optional `resources` map stores named JSON values that kinds use, such as an API description that bindings' content refers to. Each entry MAY be any JSON value, without a required wrapper, `kind`, or type declaration. Its name follows OBI-04; member names within the stored value are ordinary data and are not constrained by that rule. Entries need not be used, or used more than once, and one value may serve several kinds.
 
-Storage alone assigns no interpretation. A value may be used by multiple kinds, as a schema, or both. Schema recognition is defined by [§7.1](#71-schema-recognition); use by a kind alone does not recognize a schema.
+This specification never reads a shared resource, or anything inside one, as a schema. A schema reference that points into `resources` identifies nothing ([OBI-12](#10-conformance)), and an `$id` inside a shared resource identifies nothing to the document's schemas ([§7.2](#72-the-document-as-embedding)). A shared resource may hold JSON Schemas of any dialect, or whole documents that contain them; what they mean is for the kinds that use them.
 
-Operation schemas refer to shared values using schema references ([§7](#7-reference-resolution)). Kinds may adopt shared-value lookup at positions they define ([§7.6](#76-shared-value-references)).
+Kinds reach shared resources through shared-value references at positions they define ([§7.6](#76-shared-value-references)).
 
 ### 5.5. Dependencies
 
@@ -473,7 +482,7 @@ A binding's `kind` ([§3](#3-terminology)) names how its `content` and realizati
 
 **Interpretation.** A kind determines the meaning of binding `content`, including its presence, absence, type, and members, and how the declared realization carries out the operation. It cannot change the meaning of fields defined by this specification ([§1.1](#11-out-of-scope)).
 
-A kind may adopt shared-value lookup at positions it defines ([§7.6](#76-shared-value-references)). Other references and any interpretation of content as schemas belong to the kind; they do not alter schema recognition ([§7.1](#71-schema-recognition)).
+A kind may adopt shared-value lookup at positions it defines ([§7.6](#76-shared-value-references)). Other references and any interpretation of content as schemas belong to the kind; they never make a value in binding content or `resources` one of the document's schemas ([§7](#7-reference-resolution)).
 
 **Sharing a kind (informative).** Portability extends as far as a kind's meaning is shared. Authors can describe that meaning in writing, qualify public names under a namespace they control, and give an incompatible interpretation a new name. This specification requires neither publication nor registration. The project's candidate definitions (§14) have no special standing here.
 
@@ -499,124 +508,192 @@ A private kind can describe a local command directly:
 
 ## 7. Reference resolution
 
-An OBI has a document-local schema embedding base drawn from nowhere else (§7.2). Obtaining the same document at another location changes no reference meaning defined by this specification. Schema references (§7.1–§7.5) and kind-adopted shared-value references (§7.6) are distinct uses of addressing. Neither mechanism searches all stored JSON for `$id`, anchors, or `$ref`.
+A document's base URI is its own ([§7.2](#72-the-document-as-embedding)), so its OBI-defined references resolve identically however it was obtained (invariant 4). A same-document reference in the document resource resolves against the OBI document as [§7.2](#72-the-document-as-embedding) and [§7.3](#73-same-document-references) define. A reference to the URI that a schema the document contains declares with `$id` resolves to that schema ([§7.2](#72-the-document-as-embedding)). Other references resolve as [§7.4](#74-other-references) describes. Shared-value references ([§7.6](#76-shared-value-references)) use the same spelling for a different purpose and follow their own rules.
 
-### 7.1. Schema recognition
+**OBI positions.** An **OBI position** is a place where the document model puts a schema, namely:
 
-Schema recognition depends only on the document. It performs no instance evaluation, network retrieval, kind interpretation, or dynamic-reference evaluation. The following procedure defines the **schema entry points**, **schemas the document contains**, and their schema-resource membership. Locations are compared by their resolved JSON locations, so differently escaped pointers reaching one location do not create two declarations.
+- an operation's `input` or `output`;
+- an entry in the `schemas` map;
+- every subschema reached from one of these through the keywords the JSON Schema 2020-12 meta-schema validates as schemas.
 
-1. **Start.** Each object or boolean at an operation's `input` or `output` is a schema entry point. Every entry point begins in the document resource, unless it declares `$id`, in which case it begins its own resource. A present value of any other type violates OBI-02.
-2. **Traverse schemas.** From each entry point, visit subschemas through the keywords listed below. Visiting an object or boolean recognizes it as a schema, even when it fails the meta-schemas. Resource membership is inherited, except that a schema with an `$id` member begins its own resource, identified for this procedure by that schema's location. A schema in the document resource, or a schema declaring `$id` reached directly from that resource, is at an **OBI position**. Traversal continues inside identified resources, although their contents are not OBI positions by that traversal.
-3. **Follow local schema uses.** For each recognized schema in the document resource, inspect its `$ref` and `$dynamicRef`. If a well-formed same-document JSON Pointer (§7.3) reaches an object or boolean within a `resources` entry, add that target as a schema entry point. A pointer can select an entire entry or a nested value. Other references add no entry point. References inside an identified schema resource resolve under JSON Schema and never activate an OBI resource by this step.
-4. **Close.** Repeat steps 2–3 until no location/resource-membership pair or entry point is added. Visit each such pair once; references may form cycles. The result is the least set reached by these rules, independent of traversal order. Recognizing one location repeatedly does not duplicate its `$id` or anchor declarations.
-5. **Check membership.** A location reached both as a subschema of an identified resource and as a new document-resource entry point would have conflicting membership unless that location declares its own absolute `$id` and therefore names the same resource in both readings. Conflicting membership violates OBI-12. No traversal or reference overrides another's resource boundary.
+Those keywords are `$defs`, `properties`, `patternProperties`, `dependentSchemas`, `additionalProperties`, `propertyNames`, `items`, `prefixItems`, `contains`, `allOf`, `anyOf`, `oneOf`, `not`, `if`, `then`, `else`, `unevaluatedItems`, `unevaluatedProperties`, and `contentSchema`, with the legacy `definitions` and the schema values of the legacy `dependencies` (JSON Schema Validation, Appendix A). For map- and array-valued keywords, their entries are the subschemas; the map or array itself is not.
 
-The schema-valued keywords are `$defs`, `properties`, `patternProperties`, `dependentSchemas`, `additionalProperties`, `propertyNames`, `items`, `prefixItems`, `contains`, `allOf`, `anyOf`, `oneOf`, `not`, `if`, `then`, `else`, `unevaluatedItems`, `unevaluatedProperties`, and `contentSchema`, with legacy `definitions` and schema values of legacy `dependencies`. For map- and array-valued keywords, their entries are the subschemas; the map or array itself is not. These are the schema positions of the JSON Schema 2020-12 meta-schemas. Malformed keyword values are handled by OBI-10, not reinterpreted to manufacture schemas.
+OBI positions do not extend into a schema that declares `$id` (has an `$id` member). That schema is itself at an OBI position, but nothing inside it is, its own keywords other than `$id` included. They belong to the resource it declares ([§7.2](#72-the-document-as-embedding)).
 
-Only schemas reached by this procedure are **schemas the document contains**. Data under `const`, `enum`, `examples`, unknown schema keywords, extension values, or binding content is not traversed as schemas. Within `resources`, a direct schema-use pointer may explicitly select such a stored value; its otherwise uninterpreted ancestors supply no schema base or declarations. Once selected, it is subject to the same schema rules as every other entry point.
+The **schemas the document contains** are:
 
-**Identifiers do not discover schemas.** Plain-name and absolute-URI references resolve using the completed inventory. A `$id` stored only in an unrecognized resource is not registered merely because an operation references that URI. To make that schema locally known, an operation schema or a schema already in the document resource uses a local pointer to it. After recognition, its `$id` is available to all schema references that JSON Schema resolves to it. No installed kind or processing order can change this inventory.
+- the schemas at OBI positions;
+- every subschema reached through the same keywords from a schema at an OBI position that declares `$id`, entering nested schemas that declare `$id` as well.
 
-**Note.** An unused resource such as `{"type": 42}` is ordinary data and does not violate OBI-10. Adding a schema reference to it makes it a schema entry point and exposes that violation. A resource consumed only by a binding kind remains outside this schema recognition procedure, even if that kind interprets it as a schema of another dialect.
+Nothing else in the document is a schema it contains: no value in `resources`, in binding content, in an example, or in an extension, and no data under `const`, `enum`, or an unknown keyword. Following a reference never adds to these schemas. Wherever this specification uses these terms, a schema at an OBI position, or a schema the document contains, is any JSON object or boolean there. It is such a schema whether or not it is valid against the meta-schemas. Any other value there is not a schema.
+
+### 7.1. Reference forms
+
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
 
 ### 7.2. The document as embedding
 
-JSON Schema allows the embedding format to establish an initial base and resource model (JSON Schema Core §§9.1.1, 4.3.5). An OBI establishes these as follows:
+JSON Schema lets the format that embeds a schema determine its initial base URI (JSON Schema Core §9.1.1). It leaves open how such schemas fit its resource model (JSON Schema Core §4.3.5). This specification settles both:
 
-- **Document resource.** Recognized schemas without an intervening `$id` belong to one anonymous schema resource, the document resource. Its base is unique to the document and independent of its retrieval URI (RFC 3986 §5.1.4). Its anchors are those declared by recognized schemas belonging to it. Evaluation beginning at one of these schemas begins in the document resource, which is outermost in that evaluation's dynamic scope.
-- **Identified resources.** A recognized schema declaring `$id` begins its own resource. An `$id` at an OBI position must be absolute (OBI-11); nested `$id`s otherwise follow JSON Schema. Each resource's own references and anchors belong to it. A reference to an identifier declared by a recognized schema resolves to that schema within the document, as JSON Schema defines.
-- **Stored values.** Membership in the top-level `resources` map does not itself establish a schema resource or base URI. Recognition and `$id` establish those boundaries. A shared resource and a schema resource are different concepts.
-
-A schema with its own `$id` cannot address the anonymous document resource by URI. A shared schema it references must be reachable through an identified schema resource or through JSON Schema's dynamic scope. A schema meant to retain standalone internal references when embedded can declare an absolute `$id`.
+- **Base URI.** The document is its schemas' embedding document, with a base URI unique to it and drawn from nowhere else (RFC 3986 §5.1.4). In the document resource, a same-document reference initially resolves to what [§7.3](#73-same-document-references) says it identifies, with dynamic resolution then following JSON Schema ([§7.4](#74-other-references)).
+- **Document resource.** The schemas at OBI positions that declare no `$id` are subschemas of one schema resource, the **document resource**. The plain names those schemas declare with `$anchor` belong to the document resource; [OBI-14](#10-conformance) excludes `$dynamicAnchor` there. An evaluation that begins at one of those schemas begins in it, making the document resource the outermost in the evaluation's dynamic scope.
+- **`$id` resources.** A schema that declares `$id` begins a resource of its own, as does a schema nested in it that declares `$id`. A reference to the URI such an `$id` declares resolves to that schema within the document. The references, anchors, and nested `$id`s within a schema that declares `$id`, including its own keywords other than `$id`, take any form JSON Schema allows. They resolve against its base. A plain name declared only inside a schema that declares `$id` belongs to that schema's resource.
+- **Shared resources.** The `resources` map establishes no schema resource and no base URI. An `$id`, anchor, or reference inside a shared resource is data: it identifies nothing to the document's schemas, and none of them resolves to it.
 
 ### 7.3. Same-document references
 
-Each `$ref` and `$dynamicRef` in the document resource must be an absolute URI or a same-document reference; each `$id` at an OBI position must be an absolute URI. All are well-formed URI-references (RFC 3986 §4.1; OBI-11). A same-document reference is empty or a fragment alone (RFC 3986 §4.4).
+In the document resource, a same-document reference identifies as follows:
 
-In the document resource, a same-document reference identifies a location as follows:
+1. **Decoding.** Its fragment is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
+2. **Empty reference or fragment.** An empty reference or an empty fragment, such as `#`, identifies the OBI document itself, not the schema that contains it.
+3. **JSON Pointer.** A decoded fragment that begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer evaluated per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §4 from the document root. A valid pointer identifies the location it reaches. One that is not valid, or reaches no location, identifies nothing.
+4. **Plain name.** Any other fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)).
 
-1. Percent-decode its fragment once as UTF-8. Invalid UTF-8 identifies nothing.
-2. An empty reference or empty fragment, such as `#`, identifies the OBI document itself.
-3. A decoded fragment beginning with `/` is a JSON Pointer evaluated from the OBI root under RFC 6901. A malformed pointer or one reaching no location identifies nothing.
-4. Any other fragment is a **plain name**, such as `task` in `#task`, identifying the recognized schema in the document resource that declares it with `$anchor` or `$dynamicAnchor`. Anchor grammar follows JSON Schema Core §8.2.2 (OBI-10).
+An `$anchor` or `$dynamicAnchor` declares a plain name only when its value is a string matching, as a whole, the grammar of JSON Schema Core §8.2.2. One whose value does not match violates [OBI-10](#10-conformance).
 
-After recognition (§7.1), every such schema reference must identify a schema at an OBI position, with no conflicting resource membership (OBI-12). A resource-use pointer can establish a schema entry point as §7.1 defines. A pointer elsewhere can only reach an already recognized OBI position; it cannot promote arbitrary binding content, examples, extensions, maps, or non-schema values into schemas. Plain-name references do not recognize new schemas.
+In the document resource, what a same-document reference identifies depends only on the document.
 
-The empty reference and `#` violate OBI-12 in the document resource because the OBI root is not a schema. A pointer into an identified schema resource must respect §7.1's membership check; reach its contents through its `$id` instead of assigning them a second document-resource interpretation.
+A pointer can reach locations that are not schemas the document contains. Such locations include an operation object, a map, a string, an extension's value ([§12](#12-extensions)), a binding's `content`, an example value, and anything in `resources`. A pointer can also reach a schema inside a schema that declares `$id`. It then identifies that schema in its own resource: references within it resolve against that resource's base, and evaluation through the pointer enters that resource, as for any reference whose target lies in an embedded resource (JSON Schema Core §9.2.1, which advises reaching such a schema through the `$id` instead). [§7.5](#75-notes-and-examples-informative) tabulates cases.
 
 ### 7.4. Other references
 
-Dynamic resolution, references within identified schema resources, and external schema references follow JSON Schema 2020-12. Recognition uses only the static, document-resource pointer cases of §7.1; dynamic scope does not extend the schema inventory.
+Beyond what [§7.2](#72-the-document-as-embedding) and [§7.3](#73-same-document-references) define, references resolve as JSON Schema 2020-12 defines. Those references are:
 
-OBI-13 compares declared `$id`s only after RFC 3986 resolution (including dot-segment removal) and removal of an empty fragment. Other normalization, such as case-folding a host or decoding an unreserved character, is not applied for that rule. Whether other spellings identify one resource is for JSON Schema to determine.
+- dynamic references;
+- references within a schema resource that declares `$id` (its plain names included);
+- references to external schemas.
 
-Within an identified schema resource, these results are undefined (§5.2): a pointer reaching no schema; a plain name declared twice or nowhere in that resource; or a `$ref`, `$dynamicRef`, or `$id` that is not a well-formed URI-reference. Such a result alone does not make the OBI non-conformant. Recursive schemas are permitted; a cycle that consumes none of the instance has an undefined evaluation result (JSON Schema Core §9.4.1).
+[OBI-13](#10-conformance) compares `$id`s only after the resolution and empty-fragment removal it names, and that resolution removes dot segments. So spellings that RFC 3986 §6 normalization would equate but those steps leave different stay distinct for that rule. Examples are a host in another case and a percent-encoded unreserved character. [OBI-12](#10-conformance) uses the same comparison to decide whether a reference resolves into a resource the document contains: a reference spelled otherwise is, for that rule, a reference to an external schema. Whether such spellings name one resource is for JSON Schema to say.
 
-External schemas are not added to the document's inventory and do not affect document conformance. An absolute reference to an otherwise unrecognized stored `$id` is handled as an external reference unless another recognized local schema supplies that identifier. Whether external data permits value evaluation remains separate from conformance (§5.2).
+A reference that resolves into a schema resource the document contains, but identifies no schema the document contains there, violates OBI-12. Examples are a JSON Pointer that reaches no schema (JSON Schema Core §9.4.2) and a plain name declared twice in that resource (JSON Schema Core §8.2.2), or nowhere in it. Within a schema resource that declares `$id`, a `$ref`, `$dynamicRef`, or `$id` that is not a well-formed URI-reference has an undefined result ([§5.2](#52-schemas)).
+
+**Note.** Such a result does not make the document non-conformant.
+
+Schema reference cycles are permitted: recursive types (trees, linked lists, ASTs) are legitimate and widespread. A cycle that recurses without consuming any of the instance has an undefined result ([§5.2](#52-schemas); JSON Schema Core §9.4.1). An example is a schema whose only keyword is a `$ref` to itself.
 
 ### 7.5. Notes and examples (informative)
 
-This document stores both a schema and ordinary data. The operation's pointer establishes `Tree` as a schema; the unused `notes` value stays opaque.
+What each schema rule covers:
+
+| Rule | Covers | At a schema that declares `$id` |
+| ---- | ------ | -------------------------------- |
+| OBI-09 | `$schema` in every schema the document contains | Applies inside the resource |
+| OBI-10 | Each operation `input`/`output` and `schemas` entry, with its subschemas, against the meta-schemas | Applies inside the resource |
+| OBI-11 | `$ref` and `$dynamicRef` in the document resource; `$id` at OBI positions | That schema's `$id` only; its other keywords and contents belong to its resource |
+| OBI-12 | Same-document references in the document resource; every reference that resolves into a resource the document contains | Its own references too, where they resolve into a resource the document contains; a pointer may reach into it, but a plain name declared inside it does not count in the document resource |
+| OBI-13 | Plain names in the document resource; `$id` in every schema the document contains | Plain names inside it belong to its resource |
+| OBI-14 | `$dynamicAnchor` in the document resource | Does not apply inside the resource |
+
+**Same-document references (example).** Given this document:
+
+```json
+{
+  "openbindings": "0.2.0",
+  "operations": {},
+  "schemas": {
+    "Task": {
+      "$anchor": "task",
+      "type": "object",
+      "properties": {"my type": {"type": "string"}}
+    },
+    "Tree": {
+      "$id": "https://example.com/schemas/tree.json",
+      "$anchor": "tree",
+      "type": "object",
+      "properties": {
+        "children": {"type": "array", "items": {"$ref": "#"}}
+      }
+    }
+  },
+  "resources": {
+    "api": {
+      "openapi": "3.1.0",
+      "info": {"title": "Tasks", "version": "1"},
+      "components": {"schemas": {"Task": {"type": "object"}}}
+    }
+  }
+}
+```
+
+each reference below, written in the document resource (as the `$ref` of an operation added to it, `{"output": {"$ref": "…"}}`), has the outcome shown:
+
+| Reference | Read as | Outcome |
+| --------- | ------- | ------- |
+| `#` or the empty reference | The OBI document itself | Violates OBI-12: the document is not a schema |
+| `#/schemas/Task` | A pointer to `Task` | Meets OBI-11 and OBI-12 |
+| `#/schemas/Task/properties/my%20type` | A pointer, decoded to `/schemas/Task/properties/my type` | Meets OBI-11 and OBI-12 |
+| `#/schemas/Task/properties/my type` | Not a well-formed URI-reference | Violates OBI-11 |
+| `#/schemas/Task/properties/my%2520type` | Decoded once, to `/schemas/Task/properties/my%20type`, which reaches nothing | Violates OBI-12 |
+| `#%2Fschemas%2FTask` | Decoded to `/schemas/Task`, a pointer | Meets OBI-11 and OBI-12 |
+| `#/schemas/Task/type` | A pointer to the string `"object"` | Violates OBI-12: not a schema |
+| `#/operations` | A pointer to a map | Violates OBI-12: not a schema |
+| `#/schemas/Missing` | A pointer that reaches nothing | Violates OBI-12 |
+| `#/schemas/~2` | Not a valid JSON Pointer (`~2` is no escape) | Violates OBI-12 |
+| `#/resources/api/components/schemas/Task` | A pointer into `resources` | Violates OBI-12: nothing in `resources` is a schema the document contains |
+| `#/schemas/Tree` | A pointer landing on `Tree`, which declares `$id` | Meets OBI-11 and OBI-12 (JSON Schema Core §9.2.1 advises against this form for an embedded resource; reference `Tree` through its `$id`) |
+| `#/schemas/Tree/properties/children` | A pointer into Tree's resource | Meets OBI-11 and OBI-12: identifies `children` in Tree's resource, as `https://example.com/schemas/tree.json#/properties/children` does |
+| `#task` | A plain name declared in the document resource | Meets OBI-11 and OBI-12 |
+| `#t%61sk` | Decoded to the plain name `task` | Meets OBI-11 and OBI-12 (though a plain name never needs encoding: its grammar admits only characters a fragment allows) |
+| `#tree` | A plain name declared only inside Tree's resource | Violates OBI-12 |
+| `#%FF` | A fragment that does not decode to UTF-8 | Violates OBI-12 |
+| `tree.json#/properties/children` | A relative reference that is not same-document | Violates OBI-11 |
+| `https://example.com/schemas/tree.json#/properties/children` | An absolute URI that resolves into Tree's resource | Meets OBI-11 and OBI-12 |
+| `https://example.com/schemas/tree.json#/properties/missing` | An absolute URI that resolves into Tree's resource and reaches nothing | Violates OBI-12 |
+| `https://EXAMPLE.com/schemas/tree.json` | A spelling OBI-13's comparison keeps distinct | Meets OBI-11; for OBI-12 a reference to an external schema, and resolves as JSON Schema defines |
+
+The `{"$ref": "#"}` inside `Tree` resolves against Tree's `$id` and names `Tree` itself, which meets OBI-12.
+
+Schemas pasted in from standalone files are the usual source of mistakes. Such a schema often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`. Embedded without an `$id`, both are read from the OBI document root. The first then identifies the OBI document and the second nothing, and both violate OBI-12. There are two remedies:
+
+- **Rewrite the pointers.** Rewrite the pointers to the schema's place in the document (`#/schemas/Tree`, `#/schemas/Tree/$defs/Node`). A name that needs encoding, such as `my type`, is written percent-encoded (`#/schemas/Tree/$defs/my%20type`).
+- **Give it an `$id`.** Give the embedded schema an absolute `$id`. That keeps its internal references resolving as they did standalone, resolved as JSON Schema defines (pointers per RFC 6901 §6). A pointer inside it that reaches nothing still violates OBI-12, now against the schema's own base ([§7.4](#74-other-references)).
+
+The second remedy looks like this:
 
 ```json
 {
   "openbindings": "0.2.0",
   "operations": {
     "getTree": {
-      "output": {"$ref": "#/resources/Tree"}
+      "input": {"type": "object", "maxProperties": 0},
+      "output": {"$ref": "https://example.com/schemas/tree.json"}
     }
   },
-  "resources": {
+  "schemas": {
     "Tree": {
       "$id": "https://example.com/schemas/tree.json",
       "type": "object",
       "properties": {
-        "children": {
-          "type": "array",
-          "items": {"$ref": "#"}
-        }
+        "children": {"type": "array", "items": {"$ref": "#"}}
       }
-    },
-    "notes": {"type": 42, "$id": "https://example.com/not-a-schema"}
+    }
   }
 }
 ```
 
-The reference inside `Tree` resolves to Tree's identified resource. An additional operation may reference its absolute `$id`, because the pointer already establishes it locally. Replacing the only entry pointer with that absolute URI would leave Tree unrecognized in this document; the URI's resolution would then depend on an externally supplied schema. Recognition does not fetch or search for it.
+Copied schemas that refer to one another by `$id` resolve to each other once each sits in `schemas` under its own `$id`. A set copied from separate files keeps its references unchanged that way, as a JSON Schema bundle does (JSON Schema Core §9.3.1).
 
-Without `$id`, a shared schema belongs to the document resource. Its `#` would identify the OBI root. Recursive references in that form name their actual location, such as `#/resources/Tree`. Copying a standalone schema into resources therefore preserves its reference meaning only when its base and pointers are preserved, for example by retaining an absolute `$id`.
+Addressing works in one direction. The document's base URI is drawn from nowhere a reference can name ([§7.2](#72-the-document-as-embedding)). So a schema with its own `$id` cannot address by URI the schemas that belong to the document resource. Any shared schema it references must therefore be reachable through an identified resource. Either the shared schema has its own `$id`, or a pointer or anchor within a resource that has one reaches it. The same holds across documents: `$id` is the portable handle for a schema meant to be referenced from elsewhere. A reference into a document that is not a schema lands in a structure JSON Schema does not recognize. Its result there is undefined (JSON Schema Core §9.4.2). Examples are `#/components/schemas/Task` in an OpenAPI document and `#/schemas/Task` in another OBI. An author instead copies such a schema in, translating it as [§5.2](#52-schemas) describes, or references a schema published as a schema document of its own.
 
-| Case | Result under this specification |
-| --- | --- |
-| A schema-use pointer to `#/resources/Task` holding an object or boolean | Recognizes that value, then applies the schema rules |
-| The same pointer from an adopted kind content position | Looks up a shared value; does not add a schema to the document's inventory |
-| A resource contains `$schema`, `$id`, or `$anchor` but has no schema use | Those members remain ordinary data |
-| An operation schema points to `#/resources/Task/properties/id` | Recognizes the selected object/boolean; uninterpreted ancestors supply no base |
-| Both a parent schema with `$id` and its no-ID subschema are selected as entry points | Conflicting membership violates OBI-12 |
-| Two references select the same schema location | One declaration; no duplicate-ID or duplicate-anchor violation merely from reuse |
-| Two distinct recognized schema locations declare the same normalized `$id` | Violates OBI-13 |
-| `#/resources/api` selects an artifact as a shared value | Internal artifact references retain kind-defined meaning |
-| `#%FF`, a missing target, or a schema reference to an ordinary scalar | Does not identify a schema; violates OBI-11 or OBI-12 as applicable |
-
-All recognized no-ID schemas share the document resource. Adding a schema-use pointer can add anchors or reveal identifier conflicts, even if its operation is never invoked. The inventory is document-wide and fixed before value evaluation; it does not vary with an instance or selected binding. Dynamic resolution can reach a document-resource `$dynamicAnchor` from an identified resource when JSON Schema's dynamic scope permits it.
+Dynamic resolution can cross back into the document resource. A `$dynamicRef` inside an `$id` resource whose initially resolved fragment was created by `$dynamicAnchor` resolves, through the dynamic scope, to the outermost resource in that scope declaring the same name (JSON Schema Core §8.2.3.2). Every evaluation that begins at an operation's schema begins in the document resource. A `$dynamicAnchor` declared anywhere in the document resource would therefore capture such references in every operation, including through a `schemas` entry nothing uses. [OBI-14](#10-conformance) excludes it, so the schemas of a dynamic extension each declare an `$id`.
 
 ### 7.6. Shared-value references
 
-A kind MAY designate positions in its binding content that use a **shared-value reference**: an object with exactly one member, `$ref`, whose value is a string. The string is a well-formed URI fragment containing a JSON Pointer that identifies a `resources` entry or a location within one. For example:
+A kind MAY designate positions in its binding content that use a **shared-value reference**: an object with exactly one member, `$ref`, whose value is a string. The string is a well-formed URI fragment containing a JSON Pointer that identifies an entry of `resources` or `schemas`, or a location within one. For example:
 
 ```json
 {"$ref": "#/resources/tasksApi"}
 ```
 
-Decode and evaluate the pointer by §7.3 steps 1–3. Its decoded first token must be `resources`, and it must include a token naming an existing entry. An array index follows RFC 6901, including its leading-zero rule. Empty pointers, plain-name fragments, external URIs, malformed encoding, and missing targets do not identify a shared value. A target whose value is `null` is present and is a successful lookup.
+Decode and evaluate the pointer by [§7.3](#73-same-document-references) steps 1–3. Its decoded first token must be `resources` or `schemas`, and its second must name an existing entry of that map. An array index follows RFC 6901, including its leading-zero rule. Empty pointers, plain-name fragments, external URIs, malformed encoding, and missing targets do not identify a shared value. A target whose value is `null` is present and is a successful lookup.
 
 Lookup returns the JSON value at that location unchanged. It neither follows a `$ref` contained in that value nor merges siblings, substitutes strings, or performs a recursive expansion.
 
-The kind defines which positions use this form, any inline alternative and literal/reference disambiguation, and how a failed lookup affects use of the binding. This specification does not inspect kind content to discover such references; their failure does not by itself violate document conformance. Schema `$ref` keywords instead follow §7.1–§7.5, including their JSON Schema sibling and resource rules.
+The kind defines which positions use this form, any inline alternative and literal/reference disambiguation, and how a failed lookup affects use of the binding. This specification does not inspect kind content to discover such references; their failure does not by itself violate document conformance. Schema `$ref` keywords instead follow [§7.1](#71-reference-forms) to [§7.5](#75-notes-and-examples-informative), including their JSON Schema sibling and resource rules.
 
-Shared-value lookup establishes no artifact base URI. The kind determines the selected value's interpretation, including any internal references or base URI.
+A value in `resources` gets no base URI from lookup. The kind determines its interpretation, including any internal references or base URI. A value in `schemas` is one of the document's schemas: a kind that reads it as a JSON Schema reads the document's schema, its references resolving as [§7](#7-reference-resolution) defines and not relative to the binding content or the kind's artifacts.
 
-**Note.** Generic tools can perform a requested lookup. Enumerating every use of a resource requires knowing the reference-bearing positions of all relevant kinds. Scanning arbitrary JSON for `$ref`, or treating every unrecognized resource as unused, does not establish those facts.
+**Note.** Generic tools can perform a requested lookup. Enumerating every use of a shared value requires knowing the reference-bearing positions of all relevant kinds. Scanning arbitrary JSON for `$ref`, or treating a shared resource as unused because no known kind refers to it, does not establish those facts.
 
 ---
 
@@ -659,7 +736,7 @@ That value is the version it declares. Repeated names elsewhere do not stop a de
 | `{"openbindings":"0.2.0","openbindings":"0.3.0","operations":{}}` | None: the member is repeated | Violates OBI-01. |
 | `{"operations":{}}` | None | Violates OBI-02 and OBI-03. |
 
-**Release policy.** While pre-1.0, minor versions may include breaking changes, per pre-1.0 SemVer convention. Changes to the guarantees for kinds are breaking: kind comparison ([§6](#6-kinds)); content values and presence ([§5](#5-document-model), [§5.3](#53-bindings)); shared-value storage and lookup ([§5.4](#54-resources), [§7.6](#76-shared-value-references)); the boundary between kind interpretation and schema recognition ([§6](#6-kinds), [§7.1](#71-schema-recognition)); operation value representation ([§5](#5-document-model), invariant 1); and binding realization claims ([§5.3](#53-bindings)). Such changes are recorded as breaking in the changelog, whether or not a particular kind's definition is affected.
+**Release policy.** While pre-1.0, minor versions may include breaking changes, per pre-1.0 SemVer convention. Changes to the guarantees for kinds are breaking: kind comparison ([§6](#6-kinds)); content values and presence ([§5](#5-document-model), [§5.3](#53-bindings)); shared-value storage and lookup ([§5.4](#54-resources), [§7.6](#76-shared-value-references)); the boundary between kind interpretation and the document's schemas ([§6](#6-kinds), [§7](#7-reference-resolution)); operation value representation ([§5](#5-document-model), invariant 1); and binding realization claims ([§5.3](#53-bindings)). Such changes are recorded as breaking in the changelog, whether or not a particular kind's definition is affected.
 
 ### 8.2. `version` field (interface-version label)
 
@@ -699,11 +776,11 @@ The rules below govern these texts:
 - a text that declares a version of the 0.2 line (in a prerelease of this specification, instead, one that declares that prerelease);
 - a text that declares no version ([§8.1](#81-openbindings-field-specification-version)).
 
-A text declaring another line or prerelease is governed by the text of that line or prerelease. A text these rules govern conforms to this specification exactly when it meets every rule below. OBI-02 to OBI-13 apply only to the JSON value of a text that meets OBI-01.
+A text declaring another line or prerelease is governed by the text of that line or prerelease. A text these rules govern conforms to this specification exactly when it meets every rule below. OBI-02 to OBI-14 apply only to the JSON value of a text that meets OBI-01.
 
 For every text they govern, the rules use the terms the other sections define. Such terms include the version a text declares, a schema at an OBI position, what a same-document reference identifies, and a declared plain name. The meaning those sections give a document's members holds only for a conformant document. Text marked *Note* in a rule, which runs to the rule's end, explains it and adds no requirement.
 
-The prose defines the document model. The schema `openbindings.schema.json` expresses the model's structural part in JSON Schema, and the structural requirements of [§5](#5-document-model) take effect through OBI-02. The schema's `$id` names the line, and its title the release. The schema also expresses OBI-03, OBI-04, OBI-07, and the name syntax of the operation references that OBI-06 and OBI-08 concern. For OBI-05 it expresses only an alias repeated within one operation's `aliases`. For OBI-09 it expresses only the value of a `$schema` at the top of each operation `input` and `output`. It does not interpret stored resources; recognition and the remaining schema checks are separate. A document violating those parts of the rules violates OBI-02 as well. The other rules apply beyond what the schema expresses.
+The prose defines the document model. The schema `openbindings.schema.json` expresses the model's structural part in JSON Schema, and the structural requirements of [§5](#5-document-model) take effect through OBI-02. The schema's `$id` names the line, and its title the release. The schema also expresses OBI-03, OBI-04, OBI-07, and the name syntax of the operation references that OBI-06 and OBI-08 concern. For OBI-05 it expresses only an alias repeated within one operation's `aliases`. For OBI-09 it expresses only the value of a `$schema` at the top of each operation `input` and `output` and each `schemas` entry. It does not interpret `resources`, and the remaining schema checks are separate. A document violating those parts of the rules violates OBI-02 as well. The other rules apply beyond what the schema expresses.
 
 Each rule carries an identifier for test suites and errata to cite. A rule is cited under a line ([§8.1](#81-openbindings-field-specification-version)). An identifier means what that line's text says, and another line may number its rules differently. A patch release adds and renumbers no rule.
 
@@ -712,16 +789,16 @@ A conformant OBI document:
 - **OBI-01**: Is valid UTF-8 ([RFC 3629](https://www.rfc-editor.org/rfc/rfc3629)) encoded JSON per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259), with no leading byte-order mark, no member name or string value holding an escape that denotes an unpaired surrogate (RFC 8259 §8.2), and no object holding two members whose names are equal ([§5](#5-document-model)). *Note:* parsers differ on all three, so the same bytes could yield different values, or none. In `"\ud800"` the escape denotes a code point UTF-8 cannot encode (RFC 3629 §3), so excluding it applies the UTF-8 requirement to escaped text too. A surrogate pair such as `"\ud83d\ude00"` denotes one character, and noncharacters such as U+FFFF are read alike by parsers; both are permitted. The exclusions follow RFC 8259 §8.1, which forbids adding a byte-order mark, and interoperable-JSON practice ([RFC 7493](https://www.rfc-editor.org/rfc/rfc7493) §2.1, §2.3).
 - **OBI-02**: Is valid against the derived JSON Schema published with this text (`openbindings.schema.json`, `$id` `https://openbindings.com/schema/openbindings-0.2.json`), its `pattern` values read as ECMA-262 regular expressions. Where the schema and the prose disagree, the schema governs this rule until a patch release corrects the erratum. A patch release that corrects the schema republishes it under the same `$id`.
 - **OBI-03**: Has an `openbindings` field whose value is a valid [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string.
-- **OBI-04**: Has every map key this specification defines (operation, dependency, binding, resource, and example keys) and every entry of an operation's `aliases` array a string matching `^[A-Za-z0-9_][A-Za-z0-9_.-]*$`. The pattern is an ECMA-262 regular expression matched against the whole name. Property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.
+- **OBI-04**: Has every map key this specification defines (operation, dependency, binding, schema, resource, and example keys) and every entry of an operation's `aliases` array a string matching `^[A-Za-z0-9_][A-Za-z0-9_.-]*$`. The pattern is an ECMA-262 regular expression matched against the whole name. Property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.
 - **OBI-05**: Has no string occurring more than once among all operations' keys and `aliases` entries taken together.
 - **OBI-06**: Has every `bindings[*].operation` value present as a key in the document's `operations` map.
 - **OBI-07**: Has every `bindings[*].kind` value a non-empty string, compared exactly as §6 defines.
 - **OBI-08**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
 - **OBI-09**: Has every `$schema` keyword in a schema the document contains ([§3](#3-terminology)) equal to `https://json-schema.org/draft/2020-12/schema` or `https://json-schema.org/draft/2020-12/schema#`.
-- **OBI-10**: Has every operation `input` and `output` and every recognized shared-resource schema entry point valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). They also apply with their `pattern` values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
-- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§3](#3-terminology)) an absolute URI or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.3](#73-same-document-references)).
-- **OBI-12**: Has every same-document schema `$ref` and `$dynamicRef` in the document resource identifying a recognized schema at an OBI position, and no recognized schema location assigned conflicting resource membership ([§7.1](#71-schema-recognition), [§7.3](#73-same-document-references)).
-- **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two distinct schema locations the document contains. Repeated references to one location count its declarations once. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and at least one of these holds:
+- **OBI-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). They also apply with their `pattern` values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
+- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§3](#3-terminology)) an absolute URI or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
+- **OBI-12**: Has every same-document schema `$ref` and `$dynamicRef` in the document resource identifying a schema the document contains ([§7.3](#73-same-document-references)). Has every `$ref` and `$dynamicRef` in a schema the document contains that resolves into a schema resource the document contains identifying a schema the document contains in that resource ([§7.4](#74-other-references)). A reference resolves into such a resource when its URI, resolved as JSON Schema defines and without its fragment, equals that resource's `$id` as OBI-13 compares `$id`s.
+- **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two schemas the document contains. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and at least one of these holds:
   - it is an absolute URI;
   - it resolves against the `$id` of the nearest enclosing schema that declares one, and that `$id` is itself compared.
 
@@ -730,6 +807,7 @@ A conformant OBI document:
   1. resolved to an absolute URI per RFC 3986 §5.2 (which removes dot segments);
   2. stripped of any empty fragment;
   3. compared as a string ([§5](#5-document-model)).
+- **OBI-14**: Has no `$dynamicAnchor` in a schema that belongs to the document resource ([§7.2](#72-the-document-as-embedding)). *Note:* the document resource is outermost in the dynamic scope of every evaluation that begins at an operation's schema, so such an anchor would capture `$dynamicRef`s throughout the document, whether or not anything uses the schema that declares it ([§7.5](#75-notes-and-examples-informative)). A schema that uses `$dynamicAnchor` declares its own `$id`.
 
 **Note.** No rule depends on evaluating a value against the document's schemas.
 
@@ -750,7 +828,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - **Interoperability considerations:** see [§10. Conformance](#10-conformance)
 - **Published specification:** this specification
 - **Applications that use this media type:** tools that produce or consume OpenBindings documents
-- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` or `$dynamicAnchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation. The document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.2](#72-the-document-as-embedding))
+- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation. The document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.2](#72-the-document-as-embedding))
 - **Additional information:** deprecated alias names, magic numbers, file extensions, and Macintosh file type codes: none
 - **Person and email address to contact for further information:** the OpenBindings maintainers, hello@openbindings.com; see also [github.com/openbindings](https://github.com/openbindings)
 - **Intended usage:** COMMON
@@ -764,7 +842,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**. OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning this specification assigns to a field. Its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
 
-Keys inside the document's maps (`operations`, `dependencies`, `bindings`, `resources`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` such a key enters the identifier namespace (OBI-05).
+Keys inside the document's maps (`operations`, `dependencies`, `bindings`, `schemas`, `resources`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` such a key enters the identifier namespace (OBI-05).
 
 ---
 

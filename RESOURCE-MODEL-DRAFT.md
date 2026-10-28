@@ -11,15 +11,18 @@ implementation work still needed. It is not a new released version.
   fields on the binding. Content can be any JSON value, including `null`.
 - `sources` and `bindings[*].source` are removed. A kind decides whether its
   binding needs an artifact, a target selector, both, or neither.
-- Optional `resources` replaces both shared source storage and `schemas`.
-  Entries are arbitrary JSON values with no required wrapper or type tag.
-  The specification assigns meaning through use, not storage.
+- The `schemas` map stays, and optional `resources` replaces shared source
+  storage. Every `schemas` entry is one of the document's schemas, used or not.
+  `resources` entries are arbitrary JSON values with no required wrapper or type
+  tag, and OpenBindings never reads them as schemas.
 - A kind can adopt the shared-value reference form
-  `{"$ref":"#/resources/name"}` at specified content positions. Lookup returns
-  the selected value unchanged. There is no global reference expansion,
-  automatic merging, or scanning of unfamiliar content. Each kind determines
-  how inline and referenced material are interpreted; the draft no longer
-  requires those interpretations to be equivalent.
+  `{"$ref":"#/resources/name"}` or `{"$ref":"#/schemas/name"}` at specified
+  content positions. Lookup returns the selected value unchanged. There is no
+  global reference expansion, automatic merging, or scanning of unfamiliar
+  content. Each kind determines how inline and referenced material are
+  interpreted; the draft no longer requires those interpretations to be
+  equivalent. A kind that reads a `schemas` entry as JSON Schema reads the
+  document's schema.
 - Operation schemas use JSON Schema references. A kind's shared-value reference
   and a schema's `$ref` have different semantics even when their spelling is
   identical. Artifact reference roots and bases remain the kind's responsibility.
@@ -28,37 +31,46 @@ implementation work still needed. It is not a new released version.
 [inline.obi.json](examples/inline.obi.json) demonstrates the three-field shape:
 `openbindings`, `operations`, and `bindings`. An OBI publishing a set of operations
 can omit bindings. [shared-resources.obi.json](examples/shared-resources.obi.json)
-shows two bindings sharing an embedded OpenAPI artifact and operation schemas
-explicitly using shared schema values.
+shows two bindings sharing an embedded OpenAPI artifact, and operation schemas
+using a copy of its `Task` schema held in `schemas`.
 
-## Schema discovery choice
+## Schema placement
 
-[Section 7.1](openbindings.md#71-schema-recognition) starts with operation input
-and output schemas, traverses schema-valued keywords, and follows document-local
-schema pointers into `resources`. Recognition reaches a fixed inventory before
-value evaluation. Repeated references to one location do not duplicate its
-declarations; reference cycles terminate during inventory construction.
+Where a value sits decides how OpenBindings reads it. The document's schemas are
+each operation's `input` and `output`, each `schemas` entry, and their subschemas
+through the schema keywords (§7). Following a reference never adds to them.
 
-An unused resource is opaque. Its `$id`, `$schema`, anchors, and reference-looking
-data declare no schemas under OpenBindings. Kind use alone does not change that.
-This lets resources hold artifacts of different dialects without making the
-entire OBI subject to those artifacts' validation rules.
+An intermediate form of this revision dropped `schemas` and recognized a schema
+in `resources` when an operation schema pointed at it. That let an operation
+schema point into an embedded artifact, such as an OpenAPI component or an MCP
+tool's input schema. The artifact's own references were then read from the OBI
+root, and its dialect as 2020-12: `#/components/schemas/User` found nothing, a
+reference inside an OBI stored as a resource found the outer document's schema
+of the same name, and OpenAPI 3.0's `nullable` or draft-07's `dependencies`
+silently stopped applying. The procedure also needed ancestor and
+resource-membership rules that the typed map makes unnecessary.
 
-The cost is explicit discovery: an absolute-URI or anchor reference cannot find
-an otherwise unrecognized stored schema by searching its contents. A local
-pointer must establish it first, or the schema must be supplied externally.
-This is a deliberate change from the dedicated `schemas` map, where placing a
-schema in the map declared it even if no operation used it.
+With the map restored, a schema reference into `resources` identifies nothing,
+loudly (OBI-12), and an `$id` inside a resource identifies nothing to the
+document's schemas. An operation that wants a schema from an artifact holds a
+translated copy in `schemas`; §5.2 describes what the copy has to preserve.
 
-Selecting a nested stored value does not interpret its ancestors. If another
-schema use also recognizes an ancestor with `$id`, a no-ID child cannot belong
-both to that identified resource and to the anonymous document resource. The
-draft rejects that conflict rather than depending on traversal order. Selecting
-the root of a nested schema with its own absolute `$id` preserves its identity.
+Three rules come with placement:
 
-These discovery and embedding rules are the main part of the proposal that
-needs implementation review. Consolidating storage reduces the document model;
-it does not remove the need to specify schema boundaries.
+- A pointer may reach a schema inside a schema that declares `$id`, and
+  identifies it in that resource (§7.3). Membership is fixed by placement, so
+  the pointer cannot give the schema a second reading.
+- A reference that resolves into a schema resource the document contains must
+  identify a schema there (OBI-12), instead of having an undefined result.
+- A `$dynamicAnchor` in the document resource violates OBI-14. The document
+  resource is outermost in every evaluation's dynamic scope, so such an anchor
+  would capture `$dynamicRef`s throughout the document, including through a
+  `schemas` entry nothing uses.
+
+Placement has costs. An embedded artifact's schema is copied rather than reused
+in place, and the copy can drift from the artifact. Everything in `schemas` takes
+effect whether used or not, including `$id`s that replace published schemas, so
+unfinished or untranslated material waits in `resources`.
 
 ## Draft coverage and remaining migration
 
@@ -66,16 +78,17 @@ it does not remove the need to specify schema boundaries.
 | --- | --- |
 | Specification text and derived structural schema | Updated |
 | Top-level examples, overview, changelog, migration guide | Updated |
-| Focused structural, recognition, and shared-value lookup checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
-| Historical document corpus and its manifest | Still describe preceding 0.2 source/schema semantics |
+| Focused structural, schema-inventory, and shared-value lookup checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
+| Historical document corpus and its manifest | Still describe the preceding source model; its schema cases match the restored `schemas` map, except where OBI-12's extension or OBI-14 now differ |
 | Binding family candidates and their corpora | Still require individual content, reference, and base-preservation designs |
 | SDKs and conformance runner adapters | Not migrated or claimed compatible |
 | Released snapshots and published binding bundles | Unchanged |
 
 In particular, this draft changes OBI-07 from the old binding-source reference
-rule to the required binding-kind rule, and changes the scope of OBI-09 through
-OBI-13 through schema recognition. Existing corpus results do not prove these
-revised rules. The focused checks are an executable design aid, not a complete
+rule to the required binding-kind rule, extends OBI-12 to references that
+resolve into a schema resource the document contains and to pointers into
+schemas that declare `$id`, and adds OBI-14. Existing corpus results do not
+prove these revised rules. The focused checks are an executable design aid, not a complete
 conformance validator or proof that the illustrative kinds can execute.
 
 Before releasing this revision, migrate the document corpus and implementations,
