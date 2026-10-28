@@ -27,13 +27,16 @@ no longer part of the document model.
    `#/schemas/Name` references are unchanged. Every entry remains one of the
    document's schemas whether or not anything uses it, so its identifiers and
    anchors take effect by placement.
-4. **Copy schemas out of artifacts.** A schema reference cannot reach into
-   `resources`. An operation that used a schema inside an embedded artifact
-   holds a translated copy in `schemas` instead (§5.2): rewrite the copy's
-   artifact-relative references, and do not keep the artifact's `$id` on it.
+4. **Copy schemas out of artifacts you move into `resources`.** A schema
+   reference cannot reach into `resources`. Where an operation needs a schema
+   from an artifact now kept there, hold a translated copy in `schemas` (§5.2).
+   Rewrite the copy's references that are relative to the artifact's root.
+   Keep or assign an absolute `$id` for references relative to the schema's own
+   root, choosing one that does not displace a published schema unless that is
+   intended.
 5. **Move dynamic anchors into `$id` resources.** A `$dynamicAnchor` in a schema
-   with no enclosing `$id` now violates OBI-14; give the schemas of a dynamic
-   extension their own `$id`.
+   with no enclosing `$id` now violates OBI-14; place each one inside a schema
+   that declares `$id`.
 6. **Preserve reference context.** An absolute `$id` keeps a standalone schema's
    internal references scoped to its schema resource. When migrating an
    artifact, follow the kind's rules for its root, base, and references.
@@ -41,7 +44,21 @@ no longer part of the document model.
    shared representations have equivalent interpretation.
 
 A shared-value reference in binding content never adds a schema to the
-document. OpenBindings conformance does not require loading a kind definition
+document.
+
+## From the intermediate draft that stored schemas in `resources`
+
+An intermediate form of this revision dropped `schemas` and kept shared schemas
+in `resources`. For a document written to it:
+
+1. **Move shared schemas back to `schemas`,** and rewrite their
+   `#/resources/Name` references in operation and shared schemas to
+   `#/schemas/Name`. Leave references inside embedded artifacts alone.
+2. **Replace pointers into artifacts with copies.** An operation schema that
+   pointed into an artifact in `resources` now identifies no schema and violates
+   OBI-12; copy and translate the schema as step 4 above describes.
+3. **Check what placement now declares.** Every `schemas` entry is checked and
+   takes effect whether used or not, and OBI-14 and the extended OBI-12 apply. OpenBindings conformance does not require loading a kind definition
 or interpreting its content. Whether that kind accepts the content remains a
 separate question.
 

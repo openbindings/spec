@@ -50,9 +50,9 @@ of the same name, and OpenAPI 3.0's `nullable` or draft-07's `dependencies`
 silently stopped applying. The procedure also needed ancestor and
 resource-membership rules that the typed map makes unnecessary.
 
-With the map restored, a schema reference into `resources` identifies nothing,
-loudly (OBI-12), and an `$id` inside a resource identifies nothing to the
-document's schemas. An operation that wants a schema from an artifact holds a
+With the map restored, a schema reference into `resources` identifies no schema
+the document contains and so violates OBI-12, loudly, and an `$id` inside a
+resource identifies nothing to the document's schemas. An operation that wants a schema from an artifact holds a
 translated copy in `schemas`; §5.2 describes what the copy has to preserve.
 
 Three rules come with placement:
@@ -85,9 +85,9 @@ unfinished or untranslated material waits in `resources`.
 | Released snapshots and published binding bundles | Unchanged |
 
 In particular, this draft changes OBI-07 from the old binding-source reference
-rule to the required binding-kind rule, extends OBI-12 to references that
-resolve into a schema resource the document contains and to pointers into
-schemas that declare `$id`, and adds OBI-14. Existing corpus results do not
+rule to the required binding-kind rule, permits pointers into schemas that
+declare `$id`, extends OBI-12 to references that resolve into a schema resource
+the document contains, and adds OBI-14. Existing corpus results do not
 prove these revised rules. The focused checks are an executable design aid, not a complete
 conformance validator or proof that the illustrative kinds can execute.
 

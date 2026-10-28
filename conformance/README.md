@@ -13,9 +13,10 @@ A document given as a JSON value (`document`) stands for its serialization as UT
 source/schema model at specification commit `63e27e1`. The coverage table below
 records that preceding draft; it does not claim coverage of the revised working
 text. In particular, the old OBI-07 source-reference cases do not cover the new
-binding-kind rule, the OBI-12 cases predate its extension to references that
-resolve into a schema resource the document contains and to pointers into schemas
-that declare `$id`, and OBI-14 has no cases yet. The schema fixtures' explicit
+binding-kind rule, and the OBI-12 cases predate both the permission for pointers
+into schemas that declare `$id` (one former negative now conforms) and the
+extension to references that resolve into a schema resource the document
+contains (two former positives now violate it). OBI-14 has no cases yet. The schema fixtures' explicit
 `schemas` declarations match the revised text.
 
 [resource-model-draft/](resource-model-draft/README.md) contains focused cases for

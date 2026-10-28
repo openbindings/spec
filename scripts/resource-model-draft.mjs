@@ -6,6 +6,9 @@ const schema = value => typeof value === "boolean" || object(value);
 const own = (value, key) => Object.hasOwn(value, key);
 const pointer = tokens => tokens.length ? "/" + tokens.map(t => t.replaceAll("~", "~0").replaceAll("/", "~1")).join("/") : "";
 const documentResource = "document";
+// JSON Schema Core §8.2.2's plain-name grammar, and RFC 3986 URI-reference characters.
+const plainName = /^[A-Za-z_][-A-Za-z0-9._]*$/;
+const uriReference = /^(?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?#\[\]]|%[0-9A-Fa-f]{2})*$/;
 
 export function fragmentPointer(reference) {
   // RFC 3986 fragment characters; decode percent encoding exactly once.
@@ -79,7 +82,10 @@ export function schemaInventory(document) {
   const documentDynamicAnchors = [];
   for (const [path, { value, resource }] of schemas) {
     if (!object(value) || resource !== documentResource) continue;
-    if (typeof value.$anchor === "string") anchors.set(value.$anchor, [...(anchors.get(value.$anchor) ?? []), path]);
+    for (const keyword of ["$anchor", "$dynamicAnchor"]) {
+      const name = value[keyword];
+      if (typeof name === "string" && plainName.test(name)) anchors.set(name, [...(anchors.get(name) ?? []), path]);
+    }
     if (own(value, "$dynamicAnchor")) documentDynamicAnchors.push(path);
   }
   const unresolved = [];
@@ -87,14 +93,16 @@ export function schemaInventory(document) {
     if (!object(value) || resource !== documentResource) continue;
     for (const keyword of ["$ref", "$dynamicRef"]) {
       const reference = value[keyword];
+      // Only same-document references (§7.1); a malformed string is no reference at all (OBI-11's business).
       if (typeof reference !== "string" || !reference.startsWith("#") && reference !== "") continue;
+      if (!uriReference.test(reference) || (reference.match(/#/g) ?? []).length > 1) continue;
       const tokens = fragmentPointer(reference);
       let identified;
       if (tokens) identified = schemas.has(pointer(tokens));
       else {
         let name;
         try { name = decodeURIComponent(reference.slice(1)); } catch { name = ""; }
-        identified = name !== "" && !name.startsWith("/") && anchors.get(name)?.length === 1;
+        identified = name !== "" && !name.startsWith("/") && new Set(anchors.get(name) ?? []).size === 1;
       }
       if (!identified) unresolved.push(`${path}#${keyword}`);
     }

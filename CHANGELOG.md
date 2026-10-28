@@ -22,7 +22,8 @@ carry their own required `kind`; `sources` and `bindings[*].source` are removed.
 Optional `resources` stores any JSON value a kind uses, without a wrapper, and
 the `schemas` map stays: where a value sits decides how OpenBindings reads it.
 Every `schemas` entry is one of the document's schemas; nothing in `resources`
-is, and a schema reference into `resources` identifies nothing (OBI-12).
+is, and a schema reference into `resources` identifies no schema the document
+contains, which violates OBI-12.
 OpenBindings §7.6 provides opt-in shared-value lookup into either map for kinds,
 without scanning or expanding arbitrary content. OBI-07 now constrains binding
 kinds. OBI-12 also covers references that resolve into a schema resource the
@@ -50,8 +51,8 @@ replaced `schemas` with `resources` and recognized schemas by following local
 pointers into it. An operation schema could then point into an embedded
 artifact, whose own references and dialect were read by OpenBindings rules and
 gave failed or wrong readings. Restoring the `schemas` map removes that
-recognition procedure: a pointer into `resources` identifies nothing, and an
-`$id` there identifies nothing to the document's schemas. A pointer may reach a
+recognition procedure: a pointer into `resources` identifies no schema the
+document contains, and an `$id` there identifies nothing to the document's schemas. A pointer may reach a
 schema inside a schema that declares `$id` (§7.3).
 
 ### Added
@@ -121,7 +122,8 @@ schema inside a schema that declares `$id` (§7.3).
 - **Shared values use `resources`.** A name-to-value map replaces optional
   source-content factoring and holds whatever kinds use, such as an embedded API
   description. OpenBindings never reads it as schemas: a schema reference into it
-  identifies nothing, and identifiers in it are not registered. Kinds may adopt
+  identifies no schema the document contains, and identifiers in it are not
+  registered. Kinds may adopt
   shared-value lookup into `resources` or `schemas` at explicit content positions
   (§§5.4, 7.6); internal artifact references retain their own context.
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
@@ -157,7 +159,7 @@ schema inside a schema that declares `$id` (§7.3).
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
-- **Names have a grammar.** Operation, dependency, binding, resource,
+- **Names have a grammar.** Operation, dependency, binding, schema, resource,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
   compare as exact strings (OBI-04); strings are equal when their UTF-16 code
   units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.

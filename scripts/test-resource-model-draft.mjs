@@ -50,7 +50,7 @@ shape({ ...base(), resources: { "invalid/key": {} } }, false, "resource entry ke
 shape({ ...base(), resources: { valid: { "unconstrained/key": true } } }, true, "stored member names are data");
 shape({ ...base(), resources: { valid: { type: 42 } } }, true, "structure does not interpret stored schemas");
 
-const cases = parse("conformance/resource-model-draft/recognition.json");
+const cases = parse("conformance/resource-model-draft/inventory.json");
 for (const test of cases) {
   shape(test.document, true, test.name);
   const expected = { entries: test.entries, schemas: test.schemas, unresolved: test.unresolved, documentDynamicAnchors: test.documentDynamicAnchors };

@@ -19,7 +19,7 @@ same-document references OBI-12 covers in the document resource, the
 They also check the example files and complete OBIs in the core, overview, and
 migration guide's JSON blocks.
 
-[recognition.json](recognition.json) supplies documents and expected inventories.
+[inventory.json](inventory.json) supplies documents and expected inventories.
 Its paths are decoded JSON Pointers, not URI fragments. `entries` lists each
 operation `input` and `output` and each `schemas` entry; `schemas` lists every
 schema the document contains; `unresolved` lists the same-document references in
@@ -42,7 +42,8 @@ each case with operations and map entries in both orders.
 [The helper](../../scripts/resource-model-draft.mjs) is informative draft code.
 It is not a general JSON Schema implementation or a full OBI validator. These
 checks do not cover absolute-URI references or OBI-12's extension to them,
-URI/identifier equality rules, anchor uniqueness,
+URI/identifier equality rules, OBI-11's reference forms (a malformed string is
+skipped, not reported), anchor uniqueness under OBI-13,
 dynamic evaluation, validation of operation values, exact JSON numbers, duplicate
 JSON members, or kind execution. Those remain work for the revised corpus and
 SDKs described in [the draft status](../../RESOURCE-MODEL-DRAFT.md).

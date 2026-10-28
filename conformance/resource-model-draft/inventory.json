@@ -636,5 +636,90 @@
     "unresolved": [],
     "documentDynamicAnchors": [],
     "metaValid": true
+  },
+  {
+    "name": "a $dynamicAnchor in the document resource declares a plain name and is reported",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#node"
+          }
+        }
+      },
+      "schemas": {
+        "Node": {
+          "$dynamicAnchor": "node",
+          "type": "object"
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Node"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Node"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [
+      "/schemas/Node"
+    ],
+    "metaValid": true
+  },
+  {
+    "name": "an anchor outside the plain-name grammar declares nothing",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#1x"
+          }
+        }
+      },
+      "schemas": {
+        "Bad": {
+          "$anchor": "1x"
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output",
+      "/schemas/Bad"
+    ],
+    "schemas": [
+      "/operations/get/output",
+      "/schemas/Bad"
+    ],
+    "unresolved": [
+      "/operations/get/output#$ref"
+    ],
+    "documentDynamicAnchors": [],
+    "metaValid": false
+  },
+  {
+    "name": "a string that is no URI-reference is left to OBI-11",
+    "document": {
+      "openbindings": "0.2.0",
+      "operations": {
+        "get": {
+          "output": {
+            "$ref": "#a b"
+          }
+        }
+      }
+    },
+    "entries": [
+      "/operations/get/output"
+    ],
+    "schemas": [
+      "/operations/get/output"
+    ],
+    "unresolved": [],
+    "documentDynamicAnchors": [],
+    "metaValid": true
   }
 ]
