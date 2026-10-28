@@ -53,7 +53,7 @@ resource-membership rules that the typed map makes unnecessary.
 With the map restored, a schema reference into `resources` identifies no schema
 the document contains and so violates OBI-12, loudly, and an `$id` inside a
 resource identifies nothing to the document's schemas. An operation that wants a schema from an artifact holds a
-translated copy in `schemas`; §5.2 describes what the copy has to preserve.
+translated copy in `schemas`; §5.2 notes how a schema from another document is read there.
 
 Three rules come with placement:
 

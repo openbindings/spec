@@ -409,12 +409,11 @@ Where every way gives the same validity, that validity stands: a value that sati
 
 Where `input` or `output` is absent, no corresponding schema is stated ([§5.1](#51-operations)), and a value neither satisfies nor fails one.
 
-**Copying schemas (informative).** A schema inside an API description in `resources`, such as an OpenAPI component, is not one of the document's schemas. An operation that needs it holds a copy, usually in `schemas`, and the copy is a translation into 2020-12:
+**Schemas from other documents (informative).** A schema means what this specification and JSON Schema 2020-12 give it at its position in this document, whatever document it was written for. A schema inside a value in `resources`, such as an OpenAPI component, is none of the document's schemas.
 
-- **Dialect.** Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores. So a `null` the service returns fails `{"type": "string", "nullable": true}`. Draft-07's array form of `items` violates OBI-10, and its `dependencies` is not evaluated. Translating such schemas to 2020-12 when bringing them in keeps their meaning.
-- **References.** A copy's same-document references name places in this document. `#/components/schemas/User` copied from an OpenAPI document identifies nothing here, and `#/schemas/Owner` copied from another OBI identifies this document's `Owner`, whatever that is. Rewriting them to the copies they mean keeps their meaning. An absolute `$id` preserves the meaning of only the references relative to the schema's own root, such as a standalone file's `#/$defs/Node` ([§7.5](#75-notes-and-examples-informative)); references relative to the root of the artifact the schema came from still have to be rewritten.
-- **Identifiers.** A copy that keeps the `$id` of the schema it came from takes that URI within this document, while the original in `resources` can change independently. Everything in `schemas` takes effect whether or not it is used: an entry that declares a published `$id` replaces that schema throughout the document. Material that is unfinished, untranslated, or kept only for a kind belongs in `resources`.
-- **Whole-document tools.** A tool that hands the whole document to a JSON Schema implementation also exposes the schemas, `$id`s, and references inside `resources` and binding content, which this specification does not read.
+- **Dialect.** It is read as 2020-12. OpenAPI 3.0's `nullable: true` is an unknown keyword there, so `{"type": "string", "nullable": true}` admits no `null`. Draft-07's array form of `items` violates OBI-10, and its `dependencies` is not evaluated.
+- **References.** Its same-document references are read from the OBI root unless it or an enclosing schema declares `$id`. `#/components/schemas/User` identifies nothing in an OBI, and `#/schemas/Owner` identifies this document's `Owner`.
+- **Declarations.** Its `$id`s and anchors are declared where it sits, whether or not anything references it. A `schemas` entry whose `$id` names a schema published elsewhere is the document's schema for that URI. The same schema at two positions makes its declarations at both, so one that declares any `$id`, or an anchor in the document resource, violates OBI-13.
 
 ### 5.3. Bindings
 
@@ -644,12 +643,7 @@ each reference below, written in the document resource (as the `$ref` of an oper
 
 The `{"$ref": "#"}` inside `Tree` resolves against Tree's `$id` and names `Tree` itself, which meets OBI-12.
 
-Schemas pasted in from standalone files are the usual source of mistakes. Such a schema often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`. Embedded without an `$id`, both are read from the OBI document root. The first then identifies the OBI document and the second nothing, and both violate OBI-12. There are two remedies:
-
-- **Rewrite the pointers.** Rewrite the pointers to the schema's place in the document (`#/schemas/Tree`, `#/schemas/Tree/$defs/Node`). A name that needs encoding, such as `my type`, is written percent-encoded (`#/schemas/Tree/$defs/my%20type`).
-- **Give it an `$id`.** Give the embedded schema an absolute `$id`. That keeps its internal references resolving as they did standalone, resolved as JSON Schema defines (pointers per RFC 6901 §6). A pointer inside it that reaches nothing still violates OBI-12, now against the schema's own base ([§7.4](#74-other-references)).
-
-The second remedy looks like this:
+A schema written as a standalone file often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`. In the document resource, both are read from the OBI root: the first identifies the OBI document and the second nothing, so both violate OBI-12. From the document resource, such a schema's parts are named by their place in the document, as in `#/schemas/Tree/$defs/Node`. A schema that declares an absolute `$id` resolves its own references against that `$id`, as it did standalone, with pointers per RFC 6901 §6; a pointer inside it that reaches nothing still violates OBI-12 ([§7.4](#74-other-references)). In this document, `Tree` declares one:
 
 ```json
 {
@@ -672,7 +666,7 @@ The second remedy looks like this:
 }
 ```
 
-Copied schemas that refer to one another by `$id` resolve to each other once each sits in `schemas` under its own `$id`. A set copied from separate files keeps its references unchanged that way, as a JSON Schema bundle does (JSON Schema Core §9.3.1).
+Schemas in `schemas` that declare `$id`s resolve one another's references by those `$id`s, as the embedded resources of a JSON Schema bundle do (JSON Schema Core §9.3.1).
 
 Addressing works in one direction. The document's base URI is drawn from nowhere a reference can name ([§7.2](#72-the-document-as-embedding)). So a schema with its own `$id` cannot address by URI the schemas that belong to the document resource. Any shared schema it references must therefore be reachable through an identified resource. Either the shared schema has its own `$id`, or a pointer or anchor within a resource that has one reaches it. The same holds across documents: `$id` is the portable handle for a schema meant to be referenced from elsewhere. A reference into a document that is not a schema lands in a structure JSON Schema does not recognize. Its result there is undefined (JSON Schema Core §9.4.2). Examples are `#/components/schemas/Task` in an OpenAPI document and `#/schemas/Task` in another OBI. An author instead copies such a schema in, translating it as [§5.2](#52-schemas) describes, or references a schema published as a schema document of its own.
 
