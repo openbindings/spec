@@ -620,7 +620,7 @@
       ]
     },
     {
-      "description": "A pointer reaches schema-shaped source data, which is never a schema the document contains (§§5.4, 7.3).",
+      "description": "A pointer reaches schema-shaped source data, which is never a schema the document contains (§§5.5, 7.3).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1419,7 +1419,7 @@
       "valid": true
     },
     {
-      "description": "An $id in a source's data does not identify a contained schema resource; its URI remains external (§§5.4, 7.2).",
+      "description": "An $id in a source's data does not identify a contained schema resource; its URI remains external (§§5.5, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1441,7 +1441,7 @@
       "valid": true
     },
     {
-      "description": "An anchor declared only in a source's data identifies no document-resource schema (§§5.4, 7.2).",
+      "description": "An anchor declared only in a source's data identifies no document-resource schema (§§5.5, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

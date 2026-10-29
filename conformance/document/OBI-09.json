@@ -21,7 +21,7 @@
       "valid": true
     },
     {
-      "description": "a 2020-12 $schema on an input that declares no $id, where JSON Schema does not permit $schema, meets the rule (section 5.2)",
+      "description": "a 2020-12 $schema on an input that declares no $id, where JSON Schema does not permit $schema, meets the rule (section 5.5)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

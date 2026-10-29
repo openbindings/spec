@@ -107,7 +107,7 @@
     "valueResult": {
       "oneOf": [
         {
-          "description": "satisfies or fails: the value satisfies or fails the schema (section 5.2). undefined: whether it satisfies the schema is undefined. external: the result rests on a resource the document does not contain and the case does not supply. no-schema: no schema is stated, so the value neither satisfies nor fails one.",
+          "description": "satisfies or fails: the value satisfies or fails the schema (section 5.5). undefined: whether it satisfies the schema is undefined. external: the result rests on a resource the document does not contain and the case does not supply. no-schema: no schema is stated, so the value neither satisfies nor fails one.",
           "enum": [
             "satisfies",
             "fails",
@@ -240,7 +240,7 @@
       }
     },
     "validateValues": {
-      "description": "Whether each value satisfies or fails an operation's input or output schema, or is undefined, external, or meets no contract (section 5.2).",
+      "description": "Whether each value satisfies or fails an operation's input or output schema, or is undefined, external, or meets no contract (section 5.5).",
       "type": "object",
       "allOf": [
         {
@@ -279,7 +279,7 @@
               "minItems": 1
             },
             "resources": {
-              "description": "Schema documents the case supplies for external references, each at its absolute URI without a fragment; the expected results are what JSON Schema gives with them (section 5.2). Software that does not accept supplied resources declares supplied-resources unsupported.",
+              "description": "Schema documents the case supplies for external references, each at its absolute URI without a fragment; the expected results are what JSON Schema gives with them (section 5.5). Software that does not accept supplied resources declares supplied-resources unsupported.",
               "type": "array",
               "minItems": 1,
               "items": {
@@ -322,7 +322,7 @@
       }
     },
     "checkDependencyKind": {
-      "description": "Whether a binding meets a dependency's kinds constraint (sections 5.5 and 6).",
+      "description": "Whether a binding meets a dependency's kinds constraint (sections 5.4 and 6).",
       "type": "object",
       "allOf": [
         {

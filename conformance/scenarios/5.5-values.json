@@ -1,7 +1,7 @@
 {
   "format": "openbindings.core-scenarios@4",
-  "section": "5.2",
-  "description": "Whether a value satisfies or fails an operation's input or output schema, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, references resolved as section 7 defines, and a schema document whose root declares no $schema read as 2020-12; or whether the result is undefined, rests on a resource the document does not contain, or has no schema to meet because none is stated (section 5.2, Schema evaluation).",
+  "section": "5.5",
+  "description": "Whether a value satisfies or fails an operation's input or output schema, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, references resolved as section 7 defines, and a schema document whose root declares no $schema read as 2020-12; or whether the result is undefined, rests on a resource the document does not contain, or has no schema to meet because none is stated (section 5.5, Schema evaluation).",
   "scenarios": [
     {
       "id": "VALUES-01",
@@ -38,7 +38,7 @@
     },
     {
       "id": "VALUES-02",
-      "description": "A pattern is part of the input schema: a string of digits satisfies it and a string of letters fails it (section 5.2).",
+      "description": "A pattern is part of the input schema: a string of digits satisfies it and a string of letters fails it (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -68,7 +68,7 @@
     },
     {
       "id": "VALUES-03",
-      "description": "unevaluatedProperties: false is part of the input schema: an object with an undeclared member fails it (section 5.2).",
+      "description": "unevaluatedProperties: false is part of the input schema: an object with an undeclared member fails it (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -362,7 +362,7 @@
     },
     {
       "id": "VALUES-09",
-      "description": "A value valid against the input schema satisfies the schema (section 5.2).",
+      "description": "A value valid against the input schema satisfies the schema (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -390,7 +390,7 @@
     },
     {
       "id": "VALUES-10",
-      "description": "A value invalid against the input schema fails the schema (section 5.2).",
+      "description": "A value invalid against the input schema fails the schema (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -417,7 +417,7 @@
     },
     {
       "id": "VALUES-11",
-      "description": "format is an annotation in a schema (section 5.2), so a string that is not an email address satisfies format: email.",
+      "description": "format is an annotation in a schema (section 5.5), so a string that is not an email address satisfies format: email.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -445,7 +445,7 @@
     },
     {
       "id": "VALUES-12",
-      "description": "A schema applies to each value separately, never to several values taken together (section 5.2).",
+      "description": "A schema applies to each value separately, never to several values taken together (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -581,7 +581,7 @@
     },
     {
       "id": "VALUES-15",
-      "description": "An absent input states no schema, so a value neither satisfies nor fails one (section 5.2).",
+      "description": "An absent input states no schema, so a value neither satisfies nor fails one (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -612,7 +612,7 @@
     },
     {
       "id": "VALUES-16",
-      "description": "An absent output states no schema, so a value neither satisfies nor fails one (section 5.2).",
+      "description": "An absent output states no schema, so a value neither satisfies nor fails one (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -695,7 +695,7 @@
     },
     {
       "id": "VALUES-19",
-      "description": "Where a value's result depends on a resource the document does not contain, the document alone does not settle it (section 5.2).",
+      "description": "Where a value's result depends on a resource the document does not contain, the document alone does not settle it (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -724,7 +724,7 @@
     },
     {
       "id": "VALUES-20",
-      "description": "A string satisfies anyOf through its first branch whatever the external branch gives; a number's result rests on the external resource (section 5.2). Software that evaluates the whole schema may decline the first.",
+      "description": "A string satisfies anyOf through its first branch whatever the external branch gives; a number's result rests on the external resource (section 5.5). Software that evaluates the whole schema may decline the first.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -863,7 +863,7 @@
     },
     {
       "id": "VALUES-24",
-      "description": "An inline modifier group is not an ECMA-262 (11th edition) pattern, so the result is undefined (section 5.2).",
+      "description": "An inline modifier group is not an ECMA-262 (11th edition) pattern, so the result is undefined (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -893,7 +893,7 @@
     },
     {
       "id": "VALUES-25",
-      "description": "An identity escape the u flag forbids is not a valid pattern, so the result is undefined (section 5.2).",
+      "description": "An identity escape the u flag forbids is not a valid pattern, so the result is undefined (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -921,7 +921,7 @@
     },
     {
       "id": "VALUES-26",
-      "description": "An invalid patternProperties name makes the result undefined wherever it applies (section 5.2).",
+      "description": "An invalid patternProperties name makes the result undefined wherever it applies (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1152,7 +1152,7 @@
     },
     {
       "id": "VALUES-33",
-      "description": "A Unicode property escape matches under the u flag (section 5.2).",
+      "description": "A Unicode property escape matches under the u flag (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1185,7 +1185,7 @@
     },
     {
       "id": "VALUES-34",
-      "description": "OpenAPI 3.0's nullable is an unknown keyword under 2020-12 (section 5.2).",
+      "description": "OpenAPI 3.0's nullable is an unknown keyword under 2020-12 (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1461,7 +1461,7 @@
     },
     {
       "id": "VALUES-42",
-      "description": "An array schema applies to each value, never to the values as one array (section 5.2).",
+      "description": "An array schema applies to each value, never to the values as one array (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1493,7 +1493,7 @@
     },
     {
       "id": "VALUES-43",
-      "description": "With the external resource the case supplies, the result is what JSON Schema gives with that resource (section 5.2).",
+      "description": "With the external resource the case supplies, the result is what JSON Schema gives with that resource (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1662,7 +1662,7 @@
     },
     {
       "id": "VALUES-48",
-      "description": "anyOf's result rests on the first branch's type alone, whatever the second branch's invalid pattern gives: a string satisfies it and a number fails it (section 5.2). Software that evaluates the whole schema may decline.",
+      "description": "anyOf's result rests on the first branch's type alone, whatever the second branch's invalid pattern gives: a string satisfies it and a number fails it (section 5.5). Software that evaluates the whole schema may decline.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1705,7 +1705,7 @@
     },
     {
       "id": "VALUES-49",
-      "description": "A value that lacks the property satisfies the schema whatever the property schema's invalid pattern gives (section 5.2). Software that evaluates the whole schema may decline.",
+      "description": "A value that lacks the property satisfies the schema whatever the property schema's invalid pattern gives (section 5.5). Software that evaluates the whole schema may decline.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1776,7 +1776,7 @@
     },
     {
       "id": "VALUES-51",
-      "description": "multipleOf is decided on exact decimal values, the arbitrary-precision numbers of JSON Schema's data model (section 5.2; JSON Schema Core section 4.2.1).",
+      "description": "multipleOf is decided on exact decimal values, the arbitrary-precision numbers of JSON Schema's data model (section 5.5; JSON Schema Core section 4.2.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1814,7 +1814,7 @@
     },
     {
       "id": "VALUES-52",
-      "description": "An external schema follows the dialect JSON Schema assigns it (section 5.2): the supplied resource declares draft-07, where dependencies asserts.",
+      "description": "An external schema follows the dialect JSON Schema assigns it (section 5.5): the supplied resource declares draft-07, where dependencies asserts.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -1908,7 +1908,7 @@
     },
     {
       "id": "VALUES-54",
-      "description": "A modifier group (?i:...) is not a pattern under the pinned ECMA-262 11th edition (section 13.1), so the result is undefined (section 5.2), even where a newer engine accepts it.",
+      "description": "A modifier group (?i:...) is not a pattern under the pinned ECMA-262 11th edition (section 13.1), so the result is undefined (section 5.5), even where a newer engine accepts it.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2045,7 +2045,7 @@
     },
     {
       "id": "VALUES-58",
-      "description": "\\p{EBase} names no property in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 section 21.2.1.1, Table 56): the pattern is invalid, so the result is undefined (section 5.2).",
+      "description": "\\p{EBase} names no property in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 section 21.2.1.1, Table 56): the pattern is invalid, so the result is undefined (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2072,7 +2072,7 @@
     },
     {
       "id": "VALUES-59",
-      "description": "Script=Kawi is not a script value in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 Table 58): the pattern is invalid, so the result is undefined (section 5.2).",
+      "description": "Script=Kawi is not a script value in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 Table 58): the pattern is invalid, so the result is undefined (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2271,7 +2271,7 @@
     },
     {
       "id": "VALUES-65",
-      "description": "A 2020-12 $schema at an input that declares no $id, where JSON Schema does not permit $schema, names the dialect the schema is already read in and has no other effect (section 5.2).",
+      "description": "A 2020-12 $schema at an input that declares no $id, where JSON Schema does not permit $schema, names the dialect the schema is already read in and has no other effect (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2301,7 +2301,7 @@
     },
     {
       "id": "VALUES-66",
-      "description": "Validity can depend on an undefined result through annotations: unevaluatedProperties counts b as evaluated only if the branch holding the invalid pattern is valid, so an object with a and b has an undefined result. Without b, or with a property no branch evaluates, every way the pattern could come out gives the same validity (section 5.2). Software that evaluates the whole schema may decline those.",
+      "description": "Validity can depend on an undefined result through annotations: unevaluatedProperties counts b as evaluated only if the branch holding the invalid pattern is valid, so an object with a and b has an undefined result. Without b, or with a property no branch evaluates, every way the pattern could come out gives the same validity (section 5.5). Software that evaluates the whole schema may decline those.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2366,7 +2366,7 @@
     },
     {
       "id": "VALUES-67",
-      "description": "Annotations from a supplied resource count: the resource's properties evaluate a, so unevaluatedProperties holds for an object with a alone and fails for one that adds b (section 5.2).",
+      "description": "Annotations from a supplied resource count: the resource's properties evaluate a, so unevaluatedProperties holds for an object with a alone and fails for one that adds b (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2420,7 +2420,7 @@
     },
     {
       "id": "VALUES-68",
-      "description": "Without the resource, whether its annotations evaluate a is unknown, so the result rests on the resource (section 5.2).",
+      "description": "Without the resource, whether its annotations evaluate a is unknown, so the result rests on the resource (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2454,7 +2454,7 @@
     },
     {
       "id": "VALUES-69",
-      "description": "The four schema-evaluation provisions hold inside a supplied resource: format is an annotation, a pattern is read with Unicode semantics, so the dot matches one code point outside the Basic Multilingual Plane, and the resource's own reference resolves as JSON Schema defines (section 5.2).",
+      "description": "The four schema-evaluation provisions hold inside a supplied resource: format is an annotation, a pattern is read with Unicode semantics, so the dot matches one code point outside the Basic Multilingual Plane, and the resource's own reference resolves as JSON Schema defines (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2503,7 +2503,7 @@
     },
     {
       "id": "VALUES-70",
-      "description": "Under oneOf, a string's validity depends on the invalid pattern whatever the absent resource holds, so its result is undefined; a number, which the pattern ignores, depends on the resource alone, so its result rests on it (section 5.2).",
+      "description": "Under oneOf, a string's validity depends on the invalid pattern whatever the absent resource holds, so its result is undefined; a number, which the pattern ignores, depends on the resource alone, so its result rests on it (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2539,7 +2539,7 @@
     },
     {
       "id": "VALUES-71",
-      "description": "Under allOf, the absent resource could reject the string whatever the invalid pattern gives, so the result is not undefined for every resource and rests on the resource (section 5.2).",
+      "description": "Under allOf, the absent resource could reject the string whatever the invalid pattern gives, so the result is not undefined for every resource and rests on the resource (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2573,7 +2573,7 @@
     },
     {
       "id": "VALUES-72",
-      "description": "With the resource supplied and rejecting the string, the invalid pattern no longer matters, so the string fails (section 5.2). Software that evaluates the whole schema may decline.",
+      "description": "With the resource supplied and rejecting the string, the invalid pattern no longer matters, so the string fails (section 5.5). Software that evaluates the whole schema may decline.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2621,7 +2621,7 @@
     },
     {
       "id": "VALUES-73",
-      "description": "With the resource supplied and accepting the string, validity depends on the invalid pattern, so the result is undefined (section 5.2).",
+      "description": "With the resource supplied and accepting the string, validity depends on the invalid pattern, so the result is undefined (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2666,7 +2666,7 @@
     },
     {
       "id": "VALUES-74",
-      "description": "A supplied resource whose root declares no $schema is read as 2020-12, so its dependentRequired, which draft-07 does not define, applies: a value with a but not b fails (section 5.2).",
+      "description": "A supplied resource whose root declares no $schema is read as 2020-12, so its dependentRequired, which draft-07 does not define, applies: a value with a but not b fails (section 5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2715,7 +2715,7 @@
     },
     {
       "id": "VALUES-75",
-      "description": "An embedded resource without $schema takes its enclosing resource's dialect, as JSON Schema defines (Core section 9.3.2); only where JSON Schema leaves the dialect to the implementation is it read as 2020-12 (section 5.2). Here the supplied root declares draft-07, so the embedded resource's dependencies asserts and a value with a but not b fails.",
+      "description": "An embedded resource without $schema takes its enclosing resource's dialect, as JSON Schema defines (Core section 9.3.2); only where JSON Schema leaves the dialect to the implementation is it read as 2020-12 (section 5.5). Here the supplied root declares draft-07, so the embedded resource's dependencies asserts and a value with a but not b fails.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2906,7 +2906,7 @@
     },
     {
       "id": "VALUES-79",
-      "description": "A malformed reference inside an $id resource stays undefined, without violating OBI-12 (§7.4, §5.2).",
+      "description": "A malformed reference inside an $id resource stays undefined, without violating OBI-12 (§7.4, §5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2934,7 +2934,7 @@
     },
     {
       "id": "VALUES-80",
-      "description": "A source's data cannot supply an external schema merely by storing its $id (§5.4, §7.2, §5.2).",
+      "description": "A source's data cannot supply an external schema merely by storing its $id (§5.2, §7.2, §5.5).",
       "action": "validate-operation-values",
       "given": {
         "document": {

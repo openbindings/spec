@@ -21,7 +21,7 @@ This unreleased revision returns `sources` to the document and removes
 `resources` and the binding `kind` (breaking relative to the preceding working
 draft). A source carries `kind` and optional `data`; a binding carries
 `operation`, `source`, and optional `data`; both data values are read under the
-source's kind, which also defines how they combine (§§5.3, 5.4, 6). `content`
+source's kind, which also defines how they combine (§§5.2, 5.3, 6). `content`
 becomes `data` on both. OBI-07 is again the binding's `source` reference, and a
 source's kind being a non-empty string is structural under OBI-02. The
 specification still reads no data and makes no claim about what data refers to
@@ -35,10 +35,10 @@ with the definitions in their sections, gains a Schema entry, and defines in
 full only the three terms no other section defines: caller-facing, field, and
 absolute URI. A review pass then made explicit that an alias is never an
 operation reference (§5.1), that a `$schema` anywhere in a contained schema
-violates no rule (§5.2), that the latest release of a line governs every
+violates no rule (§5.5), that the latest release of a line governs every
 document declaring it (§8.1), that source and binding data travel with the
 document (§9), and that the meta-schemas exclude a non-empty fragment from
-`$id` (OBI-11); it condensed the undefined-result rules (§5.2), dropped a
+`$id` (OBI-11); it condensed the undefined-result rules (§5.5), dropped a
 sentence on copying bindings between documents that the model no longer
 supports (§6), and renamed `examples/inline.obi.json` to
 `kind-only.obi.json`.
@@ -59,7 +59,7 @@ from the document resource. No released snapshot is changed. Its draft note,
 [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md).
 
 The glossary omits ordinary-language terms and duplicate definitions. Undefined
-results, plain names, and version declarations are defined in §§5.2, 7.3, and
+results, plain names, and version declarations are defined in §§5.5, 7.3, and
 8.1. Schema references in the document resource are named directly.
 
 **Kind interpretation boundary (breaking relative to the preceding working
@@ -88,7 +88,7 @@ binding declares its realization (§§3, 6). The fields keep their names, `kind`
 stays required, and what absent content means stays the kind's to define. The
 specification makes no claim about what content may refer to, or how. Content
 is read in its document and refers to shared resources as its kind defines
-(§§5.4, 6). Shared-value references and their lookup (§7.6) are removed. Lookup
+(§§5.2, 6). Shared-value references and their lookup (§7.6) are removed. Lookup
 was one of §8.1's guarantees for kinds, so its removal is breaking; §8.1 keeps
 storage in the `resources` map. A kind that used the form defines its own
 references, citing RFC 6901 for JSON Pointer. The core corpus drops
@@ -104,7 +104,7 @@ covers any meaning it gives the document, not only the meaning of fields, which
   availability, bounded interpretation, location-independent references,
   self-contained conformance, and decentralized naming.
 - **Named operation dependencies.** The optional `dependencies` map
-  ([§5.5](openbindings.md#55-dependencies)) declares named points where the
+  ([§5.4](openbindings.md#54-dependencies)) declares named points where the
   software described by the OBI consumes a realization of an operation. An entry
   has a required `operation` (an operation key, not an alias; OBI-08), optional
   `kinds`, and `description`. `kinds` is a non-empty, unique, unordered any-of
@@ -125,7 +125,7 @@ covers any meaning it gives the document, not only the meaning of fields, which
   (examples, a binding's realization claim and its `idempotent`, a
   dependency's consumption claim, and correspondence); their truth is outside
   conformance.
-- **Evaluating a value against a schema.** [§5.2](openbindings.md#52-schemas)
+- **Evaluating a value against a schema.** [§5.5](openbindings.md#55-schemas)
   defines when a value satisfies or fails an operation schema: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
   expressions with Unicode semantics, references resolved as §7 defines, and
@@ -161,15 +161,15 @@ covers any meaning it gives the document, not only the meaning of fields, which
   carries `operation`, `source`, naming a key in `sources` (OBI-07), and
   optional `data`. A binding has no kind of its own. The source's kind names how
   its data and the data of the bindings naming it are read, and how they
-  combine; through that meaning each binding declares its realization (§§5.3,
-  5.4). Target identification, value adaptation, and interaction mechanics are
+  combine; through that meaning each binding declares its realization (§§5.2,
+  5.3). Target identification, value adaptation, and interaction mechanics are
   declared through source and binding data, read under the kind.
 - **`data` replaces `location`, `content`, and `ref`.** Source data holds
   whatever the kind reads from the source: an embedded artifact, an address, a
   descriptor, or nothing, where the kind needs only the source's name. Binding
   data holds what the kind reads from the binding. OpenBindings never reads
   either as schemas: a schema reference into `sources` identifies no schema the
-  document contains, and identifiers in data are not registered (§§5.4, 7).
+  document contains, and identifiers in data are not registered (§§5.2, 7).
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
@@ -222,8 +222,8 @@ covers any meaning it gives the document, not only the meaning of fields, which
   is a 2020-12 schema in object or boolean form, valid against the 2020-12
   meta-schemas with `format` as an annotation (OBI-10). A `$schema`, where
   present, names 2020-12 (OBI-09), and every schema the document contains is
-  read as 2020-12 ([§5.2](openbindings.md#52-schemas)), so a `$schema` has no
-  other effect, even where JSON Schema does not permit one. Beyond §5.2 and §7, JSON
+  read as 2020-12 ([§5.5](openbindings.md#55-schemas)), so a `$schema` has no
+  other effect, even where JSON Schema does not permit one. Beyond §5.5 and §7, JSON
   Schema governs meaning, resolution, and evaluation; OpenBindings defines no
   keyword or evaluation of its own. In 0.1, tools declared the dialects they
   supported, with 2020-12 the recommended default.

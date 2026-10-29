@@ -1,9 +1,9 @@
 {
-  "section": "5.4",
-  "description": "A source's data is arbitrary JSON that this specification never reads as schemas (§5.4).",
+  "section": "5.2",
+  "description": "A source's data is arbitrary JSON that this specification never reads as schemas (§5.2).",
   "tests": [
     {
-      "description": "This specification never reads schema-shaped values with invalid schema keywords in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads schema-shaped values with invalid schema keywords in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -20,7 +20,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads $schema dialect declarations in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads $schema dialect declarations in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -36,7 +36,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads repeated $id declarations in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads repeated $id declarations in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -57,7 +57,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads repeated anchors and dynamic anchors in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads repeated anchors and dynamic anchors in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -81,7 +81,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads dangling and malformed references in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads dangling and malformed references in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -98,7 +98,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads nested schema keywords in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads nested schema keywords in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -120,7 +120,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads a nested OBI document in a source's data as schemas (§5.4, §7.2).",
+      "description": "This specification never reads a nested OBI document in a source's data as schemas (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -143,7 +143,7 @@
       "valid": true
     },
     {
-      "description": "This specification never reads any JSON value in a source's data as a schema (§5.4, §7.2).",
+      "description": "This specification never reads any JSON value in a source's data as a schema (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -164,7 +164,7 @@
       "valid": true
     },
     {
-      "description": "Declarations in a source's data cannot collide with the document's schema declarations (§5.4, §7.2).",
+      "description": "Declarations in a source's data cannot collide with the document's schema declarations (§5.2, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},

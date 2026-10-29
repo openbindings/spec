@@ -19,7 +19,7 @@
 //      no-schema and no-claim exactly where no schema is stated, complete
 //      example expectations, which operation a string identifies and whether
 //      a binding meets a kinds constraint as the document says (sections 5.1,
-//      5.5, and 6), and violates only on a non-conformant outcome.
+//      5.4, and 6), and violates only on a non-conformant outcome.
 //   5. The README's coverage table has one row per cited rule or section,
 //      listing exactly the files that cite it; every rule has a row, and a
 //      rule row without files is marked deferred.
@@ -224,7 +224,7 @@ function identify(d, name) {
   return { outcome: "resolved", operationKey: key, bindingKeys: Object.keys(bindings).filter((b) => bindings[b]?.operation === key) };
 }
 
-// Whether a binding meets a dependency's kinds constraint: its source's kind is listed (sections 5.5 and 6).
+// Whether a binding meets a dependency's kinds constraint: its source's kind is listed (sections 5.4 and 6).
 function meets(d, dependency, binding) {
   const dep = d.dependencies[dependency];
   if (!own(dep, "kinds")) return true;
@@ -270,7 +270,7 @@ function verifyScenarios(file, relPath, ctx) {
         }
         const stated = own(operations[g.operation], g.side);
         for (const [j, r] of (e.results || []).entries()) {
-          if ((r === "no-schema") === stated) err(`${label}: result ${j} is ${JSON.stringify(r)}, but the operation ${stated ? "states" : "states no"} ${g.side} schema (section 5.2)`);
+          if ((r === "no-schema") === stated) err(`${label}: result ${j} is ${JSON.stringify(r)}, but the operation ${stated ? "states" : "states no"} ${g.side} schema (section 5.5)`);
         }
         break;
       }
@@ -301,7 +301,7 @@ function verifyScenarios(file, relPath, ctx) {
           break;
         }
         const want = meets(d, g.dependency, g.binding) ? "meets" : "does-not-meet";
-        if (e.outcome !== want) err(`${label}: expected ${e.outcome}, but the document says ${want} (sections 5.5 and 6)`);
+        if (e.outcome !== want) err(`${label}: expected ${e.outcome}, but the document says ${want} (sections 5.4 and 6)`);
         break;
       }
       case "resolve-operation": {

@@ -36,7 +36,7 @@
     },
     "sources": {
       "type": "object",
-      "description": "Map of source keys to source objects (§5.4).",
+      "description": "Map of source keys to source objects (§5.2).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -56,7 +56,7 @@
     },
     "dependencies": {
       "type": "object",
-      "description": "Map of dependency keys to dependency objects (§5.5).",
+      "description": "Map of dependency keys to dependency objects (§5.4).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -66,7 +66,7 @@
     },
     "schemas": {
       "type": "object",
-      "description": "Map of schema names to JSON Schemas (§5.2).",
+      "description": "Map of schema names to JSON Schemas (§5.5).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -79,7 +79,7 @@
   "additionalProperties": false,
   "$defs": {
     "JSONSchema": {
-      "description": "A JSON Schema 2020-12 schema, object or boolean (§5.2).",
+      "description": "A JSON Schema 2020-12 schema, object or boolean (§5.5).",
       "anyOf": [
         {
           "type": "object",
@@ -172,7 +172,7 @@
         "operation": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-          "description": "Key into the document's operations map (§5.5)."
+          "description": "Key into the document's operations map (§5.4)."
         },
         "kinds": {
           "type": "array",
@@ -182,11 +182,11 @@
             "type": "string",
             "minLength": 1
           },
-          "description": "Kinds acceptable at this consumption point (§5.5)."
+          "description": "Kinds acceptable at this consumption point (§5.4)."
         },
         "description": {
           "type": "string",
-          "description": "Human-readable description (§5.5)."
+          "description": "Human-readable description (§5.4)."
         }
       },
       "patternProperties": { "^x-": true },
@@ -241,11 +241,11 @@
           "description": "Exact, opaque name of how this source's data and its bindings' data are read (§6)."
         },
         "data": {
-          "description": "Source data, read under the source's kind (§5.4)."
+          "description": "Source data, read under the source's kind (§5.2)."
         },
         "description": {
           "type": "string",
-          "description": "Human-readable description (§5.4)."
+          "description": "Human-readable description (§5.2)."
         }
       },
       "patternProperties": { "^x-": true },

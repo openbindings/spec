@@ -50,7 +50,7 @@ const editText = (p, f) => (root) => writeFileSync(join(root, p), f(readFileSync
 const scenario = (file, id) => file.scenarios.find((s) => s.id === id);
 const NAMES = "conformance/scenarios/5.1-names.json";
 const EXAMPLES = "conformance/scenarios/5.1-examples.json";
-const VALUES = "conformance/scenarios/5.2-values.json";
+const VALUES = "conformance/scenarios/5.5-values.json";
 const KINDS = "conformance/scenarios/6-kinds.json";
 const CONFORMANCE = "conformance/scenarios/10-conformance.json";
 const OBI02 = "conformance/document/OBI-02.json";

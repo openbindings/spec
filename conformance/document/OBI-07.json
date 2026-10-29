@@ -116,7 +116,7 @@
       ]
     },
     {
-      "description": "two bindings reference one source, and a source no binding references is permitted (section 5.3, section 5.4)",
+      "description": "two bindings reference one source, and a source no binding references is permitted (section 5.3, section 5.2)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
