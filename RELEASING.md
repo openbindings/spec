@@ -83,6 +83,11 @@ A release snapshot captures the normative core spec at the time of release:
        - `conformance/document/`
        - `conformance/scenarios/`
        - `conformance/runners/`
+   - Set the `$id` of `openbindings.schema.json` to
+     `https://openbindings.com/schema/openbindings-<next>.json` before copying;
+     each release's schema carries its own `$id`, and
+     `https://openbindings.com/schema/openbindings-<major.minor>.json` serves
+     the latest release of the line (OBI-02).
    - Update `versions/README.md` to include the new version.
    - (Optional) Use the helper script: `scripts/release.sh <next>`
 
