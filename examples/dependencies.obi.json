@@ -36,21 +36,24 @@
       "output": {"type": "object"}
     }
   },
-  "dependencies": {
-    "completedExportDelivery": {
-      "operation": "exports.deliver",
-      "kinds": ["example.openapi@1", "example.grpc@1"],
-      "description": "Where completed exports are sent for delivery."
+  "sources": {
+    "exportsApi": {
+      "kind": "example.openapi@1",
+      "data": {"location": "https://exports.example.com/openapi.json"}
     }
   },
   "bindings": {
     "exports.create.http": {
       "operation": "exports.create",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"location": "https://exports.example.com/openapi.json"},
-        "target": "#/paths/~1exports/post"
-      }
+      "source": "exportsApi",
+      "data": {"target": "#/paths/~1exports/post"}
+    }
+  },
+  "dependencies": {
+    "completedExportDelivery": {
+      "operation": "exports.deliver",
+      "kinds": ["example.openapi@1", "example.grpc@1"],
+      "description": "Where completed exports are sent for delivery."
     }
   }
 }

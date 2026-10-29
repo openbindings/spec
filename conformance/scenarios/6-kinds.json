@@ -1,11 +1,11 @@
 {
   "format": "openbindings.core-scenarios@4",
   "section": "6",
-  "description": "Whether a binding meets a dependency's kinds constraint: exactly when its own kind is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
+  "description": "Whether a binding meets a dependency's kinds constraint: exactly when the kind of its source is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
   "scenarios": [
     {
       "id": "KINDS-01",
-      "description": "An identical kind string meets the constraint (section 6).",
+      "description": "The kind of the binding's source, identical to a listed kind, meets the constraint (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -13,10 +13,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "example.openapi@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -37,7 +42,7 @@
     },
     {
       "id": "KINDS-02",
-      "description": "A kind differing only in letter case is a different kind (section 6).",
+      "description": "A source kind differing from the listed kind only in letter case is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -45,10 +50,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "Example.OpenAPI@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "Example.OpenAPI@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -69,7 +79,7 @@
     },
     {
       "id": "KINDS-03",
-      "description": "Trailing white space is part of the kind, so the kinds differ (section 6).",
+      "description": "Trailing white space is part of the source's kind, so the kinds differ (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -77,10 +87,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1 "
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "example.openapi@1 "
+              "source": "s"
             }
           },
           "dependencies": {
@@ -101,7 +116,7 @@
     },
     {
       "id": "KINDS-04",
-      "description": "Canonically equivalent Unicode spellings (NFC and NFD) are different kinds (section 6).",
+      "description": "Canonically equivalent Unicode spellings (NFC and NFD) of the source's kind and the listed kind are different kinds (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -109,10 +124,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "café@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "café@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -133,7 +153,7 @@
     },
     {
       "id": "KINDS-05",
-      "description": "A finer version spelling is a different kind, not a compatible one (section 6).",
+      "description": "A source kind with a finer version spelling is a different kind, not a compatible one (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -141,10 +161,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1.0"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "example.openapi@1.0"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -165,7 +190,7 @@
     },
     {
       "id": "KINDS-06",
-      "description": "No part of a kind's spelling implies order: a version suffix read as higher is a different kind (section 6).",
+      "description": "No part of a kind's spelling implies order: a source kind whose version suffix reads as higher is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -173,10 +198,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@2"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "example.openapi@2"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -197,7 +227,7 @@
     },
     {
       "id": "KINDS-07",
-      "description": "A kind is compared whole: its base name without the version suffix is a different kind (section 6).",
+      "description": "A kind is compared whole: the source's kind without the version suffix is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -205,10 +235,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "example.openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -229,7 +264,7 @@
     },
     {
       "id": "KINDS-08",
-      "description": "A URI-shaped kind is a string, not a URI: a trailing slash makes a different kind (section 6).",
+      "description": "A URI-shaped source kind is a string, not a URI: a trailing slash makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -237,10 +272,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "https://kinds.example.test/openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "https://kinds.example.test/openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -261,7 +301,7 @@
     },
     {
       "id": "KINDS-09",
-      "description": "A URI-shaped kind is a string, not a URI: case in the scheme and host makes a different kind (section 6).",
+      "description": "A URI-shaped source kind is a string, not a URI: case in the scheme and host makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -269,10 +309,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "HTTPS://KINDS.EXAMPLE.TEST/openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "HTTPS://KINDS.EXAMPLE.TEST/openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -293,7 +338,7 @@
     },
     {
       "id": "KINDS-10",
-      "description": "A kind is not an address, even when it is an http URI: it meets a constraint that lists the identical string (section 6).",
+      "description": "A kind is not an address, even when it is an http URI: the binding's source meets a constraint that lists the identical string (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -301,10 +346,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "http://kinds.example.test/openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "http://kinds.example.test/openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -325,7 +375,7 @@
     },
     {
       "id": "KINDS-11",
-      "description": "A URN-shaped kind is a string, not a URN: case in the namespace identifier makes a different kind (section 6).",
+      "description": "A URN-shaped source kind is a string, not a URN: case in the namespace identifier makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -333,10 +383,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "urn:example:kind:openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "urn:example:kind:openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -357,7 +412,7 @@
     },
     {
       "id": "KINDS-12",
-      "description": "An unfamiliar kind compares like any other (section 6).",
+      "description": "An unfamiliar source kind compares like any other (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -365,10 +420,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "totally-fictional-format@9.9.9"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "totally-fictional-format@9.9.9"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -389,7 +449,7 @@
     },
     {
       "id": "KINDS-13",
-      "description": "Without kinds, the dependency places no constraint on kind (section 5.5).",
+      "description": "Without kinds, the dependency places no constraint on the kind of the binding's source (section 5.5).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -397,10 +457,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "anything@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "anything@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -418,7 +483,7 @@
     },
     {
       "id": "KINDS-14",
-      "description": "kinds is an any-of constraint: one exact match suffices (section 5.5).",
+      "description": "kinds is an any-of constraint: one exact match with the source's kind suffices (section 5.5).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -426,10 +491,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "b@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -451,7 +521,7 @@
     },
     {
       "id": "KINDS-15",
-      "description": "A kind is not an address, even when it is a file URI: it meets a constraint that lists the identical string (section 6).",
+      "description": "A kind is not an address, even when it is a file URI: the binding's source meets a constraint that lists the identical string (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -459,10 +529,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "file:///kinds/openapi"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "file:///kinds/openapi"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -483,7 +558,7 @@
     },
     {
       "id": "KINDS-16",
-      "description": "No part of a kind's spelling implies order: a version suffix read as lower is a different kind (section 6).",
+      "description": "No part of a kind's spelling implies order: a source kind whose version suffix reads as lower is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -491,10 +566,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "x@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "x@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -515,7 +595,7 @@
     },
     {
       "id": "KINDS-17",
-      "description": "An x-kinds extension on a dependency imposes no kind constraint (section 12).",
+      "description": "An x-kinds extension on a dependency imposes no constraint on the source's kind (section 12).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -523,10 +603,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "op",
-              "kind": "b@1"
+              "source": "s"
             }
           },
           "dependencies": {
@@ -543,6 +628,88 @@
       },
       "expected": {
         "outcome": "meets"
+      }
+    },
+    {
+      "id": "KINDS-18",
+      "description": "The constraint is compared with the kind of the source the binding names, not with another source's kind (section 6): b names s, so it does not meet a constraint only t's kind satisfies.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1"
+            },
+            "t": {
+              "kind": "example.grpc@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            },
+            "c": {
+              "operation": "op",
+              "source": "t"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.grpc@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "KINDS-19",
+      "description": "An x-kind extension on a binding is not a kind: the constraint is compared with the kind of the binding's source (sections 6 and 12).",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s",
+              "x-kind": "a@1"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "a@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
       }
     }
   ]

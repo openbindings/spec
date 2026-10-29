@@ -153,8 +153,8 @@ const NEGATIVE = [
     editJSON(KINDS, (f) => { scenario(f, "KINDS-02").expected.outcome = "meets"; })],
   ["a named dependency the document lacks", "the named dependency or binding is not in the document",
     editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.dependency = "missing"; })],
-  ["dependency kinds read binding.kind directly", "but the document says does-not-meet",
-    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.document.bindings.b.kind = "different"; })],
+  ["dependency kinds read the kind of the binding's source", "but the document says does-not-meet",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.document.sources.s.kind = "different"; })],
   // README coverage table
   ["a coverage row listing a file that does not cite it", "README coverage table: 5.1 lists",
     editText("conformance/README.md", (t) => t.replace("| 5.1 | `scenarios/5.1-names.json`, `scenarios/5.1-examples.json` |", "| 5.1 | `scenarios/5.1-names.json` |"))],

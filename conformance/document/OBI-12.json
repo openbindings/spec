@@ -2,7 +2,7 @@
   "rule": "OBI-12",
   "section": "10",
   "description": "Has every same-document schema $ref and $dynamicRef in the document resource identify a schema the document contains (§7.3), and every reference resolving into a contained schema resource identify a schema there (§7.4). For $dynamicRef this uses initial resolution; resource identity uses OBI-13's exact comparison.",
-  "notes": "Pointers may enter schemas that declare $id, preserving the target resource's base. Resource data, binding content, examples, extensions, const and unknown keywords never add schemas. Malformed references within identified resources have undefined results rather than violating OBI-12 (§7.4).",
+  "notes": "Pointers may enter schemas that declare $id, preserving the target resource's base. Source data, binding data, examples, extensions, const and unknown keywords never add schemas. Malformed references within identified resources have undefined results rather than violating OBI-12 (§7.4).",
   "tests": [
     {
       "description": "a same-document pointer to a schemas entry",
@@ -620,20 +620,23 @@
       ]
     },
     {
-      "description": "A pointer reaches schema-shaped resource data, which is never a schema the document contains (§§5.4, 7.3).",
+      "description": "A pointer reaches schema-shaped source data, which is never a schema the document contains (§§5.4, 7.3).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "f": {
             "input": {
-              "$ref": "#/resources/s/schema"
+              "$ref": "#/sources/s/data/schema"
             }
           }
         },
-        "resources": {
+        "sources": {
           "s": {
-            "schema": {
-              "type": "object"
+            "kind": "example.local@1",
+            "data": {
+              "schema": {
+                "type": "object"
+              }
             }
           }
         }
@@ -850,25 +853,30 @@
       ]
     },
     {
-      "description": "a pointer into a binding's content, which is read under the binding's kind",
+      "description": "a pointer into a binding's data, which is read under its source's kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "f": {
             "input": {
-              "$ref": "#/bindings/b/content/schema"
+              "$ref": "#/bindings/b/data/schema"
             }
+          }
+        },
+        "sources": {
+          "local": {
+            "kind": "example.k@1"
           }
         },
         "bindings": {
           "b": {
             "operation": "f",
-            "content": {
+            "source": "local",
+            "data": {
               "schema": {
                 "type": "string"
               }
-            },
-            "kind": "example.k@1"
+            }
           }
         }
       },
@@ -1411,7 +1419,7 @@
       "valid": true
     },
     {
-      "description": "An $id in resources does not identify a contained schema resource; its URI remains external (§§5.4, 7.2).",
+      "description": "An $id in a source's data does not identify a contained schema resource; its URI remains external (§§5.4, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1421,16 +1429,19 @@
             }
           }
         },
-        "resources": {
-          "data": {
-            "$id": "https://e.test/data.json"
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$id": "https://e.test/data.json"
+            }
           }
         }
       },
       "valid": true
     },
     {
-      "description": "An anchor declared only in resources identifies no document-resource schema (§§5.4, 7.2).",
+      "description": "An anchor declared only in a source's data identifies no document-resource schema (§§5.4, 7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1440,9 +1451,12 @@
             }
           }
         },
-        "resources": {
-          "data": {
-            "$anchor": "data"
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$anchor": "data"
+            }
           }
         }
       },

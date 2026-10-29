@@ -2,42 +2,48 @@
   "rule": "OBI-11",
   "section": "10",
   "description": "Has every schema $ref and $dynamicRef in the document resource (§3) an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI. All of them are also well-formed URI-references per RFC 3986 §4.1 (§7.1).",
-  "notes": "Nothing within resource values or binding content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the binding's kind, and the positives below pin that no core rule governs it.",
+  "notes": "Nothing within a source's data or a binding's data is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the source's kind, and the positives below pin that no core rule governs it.",
   "tests": [
     {
-      "description": "a relative address inside a resource value is read under the binding's kind (outside OBI-11)",
+      "description": "a relative address inside a source's data is read under the source's kind (outside OBI-11)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "createTask": {}
         },
-        "resources": {
+        "sources": {
           "httpApi": {
-            "location": "openapi.json"
+            "kind": "example.openapi@1",
+            "data": {
+              "location": "openapi.json"
+            }
           }
         }
       },
       "valid": true
     },
     {
-      "description": "a member named $ref inside resource values or binding content is not a schema reference (outside OBI-11)",
+      "description": "a member named $ref inside a source's data or a binding's data is not a schema reference (outside OBI-11)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "createTask": {}
         },
+        "sources": {
+          "httpApi": {
+            "kind": "example.test@1",
+            "data": {
+              "$ref": "other.json#Task"
+            }
+          }
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
-            "content": {
+            "source": "httpApi",
+            "data": {
               "$ref": "#Task"
-            },
-            "kind": "example.test@1"
-          }
-        },
-        "resources": {
-          "httpApi": {
-            "$ref": "other.json#Task"
+            }
           }
         }
       },

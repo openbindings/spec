@@ -1,84 +1,71 @@
-# Migrating to the 0.2 binding/resources draft
+# Migrating to the 0.2 sources draft
 
-Version 0.2.0 remains unreleased. This guide covers both released 0.1 documents
-and the preceding 0.2 working draft that used `sources`. Changing
-only the version string is insufficient. Released snapshots are unchanged.
+Version 0.2.0 remains unreleased. This guide covers released 0.1 documents and
+the two preceding 0.2 working drafts: the earlier source model, whose sources
+and bindings carried `content`, and the binding/resources draft of 2026-10-26
+to 2026-10-28, which removed sources. Changing only the version string is
+insufficient. Released snapshots are unchanged.
 
 ## Current shape
 
-An OBI requires `openbindings` and `operations`. Each binding requires an
-`operation` key and its own non-empty `kind`. Kind-specific content remains
-nested in optional `content`, which accepts any JSON value. `dependencies`,
-`schemas`, and `resources` are optional. Root `sources` and binding `source` are
-no longer part of the document model.
+An OBI requires `openbindings` and `operations`. Each source requires a
+non-empty `kind` and may carry `data`, any JSON value. Each binding requires an
+`operation` key and a `source` key and may carry `data` of its own. A source's
+kind governs both its data and the data of the bindings naming it, and defines
+how they combine. `sources`, `bindings`, `dependencies`, and `schemas` are optional. There
+is no `resources` map and no binding `kind` or `content`.
 
-## From the preceding 0.2 draft
+## From the binding/resources draft
 
-1. **Choose the binding's kind.** Move the intended interpretation onto each
-   binding. The old source's kind interpreted two separate content values;
-   a new kind definition must explicitly describe how its single binding
-   content replaces them. Reusing a name does not establish compatibility.
-2. **Reorganize content under that kind.** Inline material used once, or place
-   shared material in `resources` and reference it from a position the kind
-   defines. A generic tool cannot safely merge two arbitrary JSON values.
-   Preserve absence versus explicit `null`, descriptions, and extension data
-   through a documented kind-specific migration.
-3. **Keep shared schemas in `schemas`.** The `schemas` map and its
-   `#/schemas/Name` references are unchanged. Every entry remains one of the
-   document's schemas whether or not anything uses it, so its identifiers and
-   anchors take effect by placement.
-4. **Copy schemas out of artifacts you move into `resources`.** A schema
-   reference cannot reach into `resources`. Where an operation needs a schema
-   from an artifact now kept there, hold a translated copy in `schemas` (§5.2).
-   Rewrite the copy's references that are relative to the artifact's root.
-   Keep or assign an absolute `$id` for references relative to the schema's own
-   root, choosing one that does not displace a published schema unless that is
-   intended.
-5. **Move dynamic anchors into `$id` resources.** A `$dynamicAnchor` in a schema
-   with no enclosing `$id` now violates OBI-14; place each one inside a schema
-   that declares `$id`.
-6. **Preserve reference context.** An absolute `$id` keeps a standalone schema's
-   internal references scoped to its schema resource. When migrating an
-   artifact, follow the kind's rules for its root, base, and references.
+1. **Make a source for each artifact and kind.** Where bindings of one kind
+   referred to one `resources` entry, create one source carrying that kind and
+   the entry's value as `data`. Where a binding inlined its document descriptor
+   in its content, move that descriptor into a source of its own. Bindings of
+   one kind that referred to nothing shared may share a source only where the
+   kind reads them that way.
+2. **Point each binding at its source.** Replace the binding's `kind` with
+   `source`, naming the source made for it, and rename `content` to `data`,
+   keeping in it only what the kind reads from the binding rather than from the
+   source, such as a target. The kind's definition says what moves; a generic
+   tool cannot split one JSON value into two.
+3. **Remove `resources`.** Every entry has become a source's data. An artifact
+   that bindings of two kinds shared becomes two sources.
+4. **Keep shared schemas in `schemas`.** The map and its `#/schemas/Name`
+   references are unchanged, and every entry stays one of the document's
+   schemas whether or not anything uses it.
+5. **Keep copies of artifact schemas as copies.** A schema reference still
+   cannot reach into a source's data (§5.4, OBI-12). Translated copies held in
+   `schemas` are unchanged.
 
-Nothing binding content refers to becomes one of the document's schemas.
+## From the earlier 0.2 source model
 
-## From the intermediate draft that stored schemas in `resources`
+Rename `content` to `data` on sources and bindings. The shape is otherwise the
+same: a source carrying a kind, and bindings naming it. A kind name given to
+that draft keeps its standing only where its definition is reissued for this
+one; reusing a name does not establish compatibility.
 
-An intermediate form of this revision dropped `schemas` and kept shared schemas
-in `resources`. For a document written to it:
-
-1. **Move shared schemas back to `schemas`,** and rewrite their
-   `#/resources/Name` references in operation and shared schemas to
-   `#/schemas/Name`. Leave references inside embedded artifacts alone.
-2. **Replace pointers into artifacts with copies.** An operation schema that
-   pointed into an artifact in `resources` now identifies no schema and violates
-   OBI-12; copy and translate the schema as step 4 above describes.
-3. **Check what placement now declares.** Every `schemas` entry is checked and
-   takes effect whether used or not, and OBI-14 and the extended OBI-12 apply. OpenBindings conformance does not require loading a kind definition
-or interpreting its content. Whether that kind accepts the content remains a
-separate question.
-
-## Additional changes from 0.1
+## From 0.1
 
 | 0.1 shape | Current 0.2 draft |
 | --- | --- |
-| Source `format` | Exact `kind` on each binding |
-| Source `location` / `content`, binding `ref` | Kind-defined binding `content`, referring to shared values as its kind defines |
-| Root `schemas` | Root `schemas`, unchanged; other shared values in `resources` |
+| Source `format` | Exact `kind` on the source |
+| Source `location` / `content` | Source `data`, in the shape the kind defines; the core has no `location` member |
+| Binding `ref` | Binding `data`, read under the source's kind |
+| Root `schemas` | Root `schemas`, unchanged |
 | Source/binding `priority`, lower preferred | Binding-only `preference`, higher preferred; no selection algorithm |
 | Operation-level `idempotent` | Binding-level repetition claim |
 | `input: null` / `output: null` to state no schema | Omit the schema field |
 | Root `roles`, operation `satisfies` | Qualified aliases for correspondence where intended |
-| Transforms and security fields | Kind-defined content; OpenBindings supplies neither transform language nor invocation API |
+| Transforms and security fields | Kind-defined data; OpenBindings supplies neither transform language nor invocation API |
 | Retrieval-relative schema references | Document-local or absolute references under §7 |
 
 Removed unprefixed fields cause structural nonconformance. `x-` fields remain
 extensions, but moving old data there does not preserve its old meaning.
 `dependencies` declare consumption points and do not replace old correspondence
-fields. Their `kinds` constraints now compare directly with each binding's kind.
+fields. Their `kinds` constraints compare with the kind of each binding's
+source.
 
-## Recheck input and output schemas
+## Recheck schemas and references
 
 Schemas govern individual caller-facing values. Interaction cardinality and
 lifecycle belong to the kind. Omitting a schema leaves nothing to evaluate for
@@ -86,7 +73,12 @@ that direction; `true` and `{}` admit every value; `false` admits none; a null-o
 schema admits `null`. The output schema, when present, covers every caller-facing
 output, including error-shaped values when the kind exposes them. Other dialects
 require meaning-preserving translation before becoming OpenBindings operation
-schemas.
+schemas (§5.2).
+
+A `$dynamicAnchor` in a schema with no enclosing `$id` violates OBI-14; place
+each one inside a schema that declares `$id`. An absolute `$id` keeps a
+standalone schema's internal references scoped to its schema resource. Nothing
+in a source's or a binding's data becomes one of the document's schemas.
 
 Aliases share one namespace with operation keys. Correspondence, realization,
 consumption, examples, and binding idempotency remain author claims. Neither
@@ -94,43 +86,43 @@ conformance nor a matching kind establishes runtime availability or trust.
 
 ## Worked shape
 
-For an illustrative kind accepting a `document` descriptor and `target`, a
-binding may carry:
+For an illustrative kind whose source data carries a `location` and whose
+binding data carries a `target`, a document may carry:
 
 ```json
 {
   "openbindings": "0.2.0",
   "operations": { "getPet": {} },
+  "sources": {
+    "petApi": {
+      "kind": "example.openapi@1",
+      "data": { "location": "https://api.example.com/openapi.json" }
+    }
+  },
   "bindings": {
     "getPet.http": {
       "operation": "getPet",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": { "$ref": "#/resources/petApi" },
-        "target": "#/paths/~1pets/get"
-      }
+      "source": "petApi",
+      "data": { "target": "#/paths/~1pets/get" }
     }
-  },
-  "resources": {
-    "petApi": { "location": "https://api.example.com/openapi.json" }
   }
 }
 ```
 
-The resource above is a shared descriptor whose `location` the kind interprets.
-[The embedded example](examples/shared-resources.obi.json)
-instead shares a complete OpenAPI document.
+The source's `location` is read under its kind.
+[The embedded example](examples/embedded-source.obi.json) instead carries a
+complete OpenAPI document as source data.
 
 ## Validation and implementation status
 
 First check the JSON text for invalid UTF-8, malformed JSON, duplicate member
 names, a leading byte-order mark, and escapes that denote unpaired surrogates
 (OBI-01). Then run structural validation and the meta-schema, reference,
-identity, and dynamic-anchor checks defined by OpenBindings. Check kind content
-separately and verify the kind-defined interpretation of any inline or shared
-material.
+identity, and dynamic-anchor checks defined by OpenBindings, and check that
+each binding names a source (OBI-07). Check source and binding data separately,
+under the source's kind.
 The focused draft checks are documented
-in [conformance/resource-model-draft/README.md](conformance/resource-model-draft/README.md).
-Existing SDKs, family candidates, and the earlier corpus are not presumed to
-support this revision; [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) tracks the
+in [conformance/draft-checks/README.md](conformance/draft-checks/README.md).
+Existing SDKs, family candidates, and earlier corpora are not presumed to
+support this revision; [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) tracks the
 remaining migrations. No current-schema pass alone establishes full conformance.

@@ -10,11 +10,16 @@
         "operations": {
           "createTask": {}
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "createTask.api": {
             "operation": "createTask",
-            "idempotent": true,
-            "kind": "example.openapi@1"
+            "source": "tasksApi",
+            "idempotent": true
           }
         }
       },
@@ -27,11 +32,16 @@
         "operations": {
           "listTasks": {}
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "listTasks.api": {
             "operation": "listTasks",
-            "idempotent": false,
-            "kind": "example.openapi@1"
+            "source": "tasksApi",
+            "idempotent": false
           }
         }
       },
@@ -44,11 +54,16 @@
         "operations": {
           "deleteAllRecords": {}
         },
+        "sources": {
+          "recordsApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "deleteAllRecords.api": {
             "operation": "deleteAllRecords",
-            "idempotent": true,
-            "kind": "example.openapi@1"
+            "source": "recordsApi",
+            "idempotent": true
           }
         }
       },
@@ -93,7 +108,7 @@
       "valid": true
     },
     {
-      "description": "a binding whose opaque content looks, to a heuristic, like another operation's target is an unverified realization claim",
+      "description": "a binding whose opaque data looks, to a heuristic, like another operation's target is an unverified realization claim",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -101,13 +116,18 @@
             "description": "Delete a task."
           }
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "deleteTask.api": {
             "operation": "deleteTask",
-            "content": {
+            "source": "tasksApi",
+            "data": {
               "target": "#/paths/~1tasks/post"
-            },
-            "kind": "example.openapi@1"
+            }
           }
         }
       },

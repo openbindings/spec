@@ -224,11 +224,12 @@ function identify(d, name) {
   return { outcome: "resolved", operationKey: key, bindingKeys: Object.keys(bindings).filter((b) => bindings[b]?.operation === key) };
 }
 
-// Whether a binding meets a dependency's kinds constraint (sections 5.5 and 6).
+// Whether a binding meets a dependency's kinds constraint: its source's kind is listed (sections 5.5 and 6).
 function meets(d, dependency, binding) {
   const dep = d.dependencies[dependency];
   if (!own(dep, "kinds")) return true;
-  const kind = d.bindings[binding].kind;
+  const source = d.bindings[binding].source;
+  const kind = isObject(d.sources) && own(d.sources, source) ? d.sources[source].kind : undefined;
   return dep.kinds.some((k) => k === kind);
 }
 

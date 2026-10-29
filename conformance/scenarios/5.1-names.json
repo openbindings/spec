@@ -17,14 +17,19 @@
               ]
             }
           },
+          "sources": {
+            "s": {
+              "kind": "k@1"
+            }
+          },
           "bindings": {
             "b1": {
               "operation": "op",
-              "kind": "k@1"
+              "source": "s"
             },
             "b2": {
               "operation": "op",
-              "kind": "k@1"
+              "source": "s"
             }
           }
         },
@@ -69,10 +74,15 @@
               "deprecated": true
             }
           },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
             "legacy": {
               "operation": "legacyTask",
-              "kind": "example.test@1"
+              "source": "s"
             }
           }
         },
@@ -88,7 +98,7 @@
     },
     {
       "id": "NAMES-04",
-      "description": "A binding's deprecated, preference, and content members do not remove it from its operation's bindings (section 5.3): deprecation recommends migrating away, preference expresses author preference among them, and content's presence and value carry no core meaning.",
+      "description": "A binding's deprecated, preference, and data members do not remove it from its operation's bindings (section 5.3): deprecation recommends migrating away, preference expresses author preference among them, and data's presence and value carry no core meaning.",
       "action": "resolve-operation",
       "given": {
         "document": {
@@ -96,35 +106,40 @@
           "operations": {
             "createTask": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
             "deprecated": {
               "operation": "createTask",
-              "deprecated": true,
-              "kind": "example.test@1"
+              "source": "s",
+              "deprecated": true
             },
-            "nullContent": {
+            "nullData": {
               "operation": "createTask",
-              "content": null,
-              "kind": "example.test@1"
+              "source": "s",
+              "data": null
             },
-            "noContent": {
+            "noData": {
               "operation": "createTask",
-              "kind": "example.test@1"
+              "source": "s"
             },
             "zeroPreference": {
               "operation": "createTask",
-              "preference": 0,
-              "kind": "example.test@1"
+              "source": "s",
+              "preference": 0
             },
             "negativePreference": {
               "operation": "createTask",
-              "preference": -5,
-              "kind": "example.test@1"
+              "source": "s",
+              "preference": -5
             },
             "preferred": {
               "operation": "createTask",
-              "preference": 10,
-              "kind": "example.test@1"
+              "source": "s",
+              "preference": 10
             }
           }
         },
@@ -136,8 +151,8 @@
         "bindingKeys": [
           "deprecated",
           "negativePreference",
-          "noContent",
-          "nullContent",
+          "noData",
+          "nullData",
           "preferred",
           "zeroPreference"
         ]
@@ -175,11 +190,16 @@
             "createTask": {},
             "other": {}
           },
+          "sources": {
+            "s": {
+              "kind": "k@1"
+            }
+          },
           "bindings": {
             "b": {
               "operation": "createTask",
-              "x-operation": "other",
-              "kind": "k@1"
+              "source": "s",
+              "x-operation": "other"
             }
           }
         },
@@ -201,10 +221,15 @@
           "operations": {
             "createTask": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
             "primary": {
               "operation": "createTask",
-              "kind": "example.test@1"
+              "source": "s"
             }
           }
         },
@@ -233,10 +258,15 @@
               ]
             }
           },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
             "canonical": {
               "operation": "createTask",
-              "kind": "example.test@1"
+              "source": "s"
             }
           }
         },
@@ -449,10 +479,15 @@
           "operations": {
             "createTask": {}
           },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
             "tasks.http": {
               "operation": "createTask",
-              "kind": "example.test@1"
+              "source": "s"
             }
           }
         },
@@ -486,7 +521,7 @@
     },
     {
       "id": "NAMES-21",
-      "description": "Resource and schema keys are not operation identifiers: a string equal to both identifies no operation (§5.1).",
+      "description": "Source and schema keys are not operation identifiers: a string equal to both identifies no operation (§5.1).",
       "action": "resolve-operation",
       "given": {
         "document": {
@@ -494,13 +529,16 @@
           "operations": {
             "createTask": {}
           },
+          "sources": {
+            "Task": {
+              "kind": "example.local@1",
+              "data": {}
+            }
+          },
           "schemas": {
             "Task": {
               "type": "object"
             }
-          },
-          "resources": {
-            "Task": {}
           }
         },
         "name": "Task"

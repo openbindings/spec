@@ -1,5 +1,5 @@
 // Informative design aid for core §7; not a conformance validator.
-// See conformance/resource-model-draft/README.md for the deliberate limits.
+// See conformance/draft-checks/README.md for the deliberate limits.
 
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const schema = value => typeof value === "boolean" || object(value);

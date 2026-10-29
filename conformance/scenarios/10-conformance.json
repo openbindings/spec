@@ -63,7 +63,7 @@
     },
     {
       "id": "CONFORMANCE-05",
-      "description": "A binding naming a missing operation and carrying an empty kind violates OBI-06, OBI-07 and OBI-02 (§§5.3, 10).",
+      "description": "A binding naming a missing operation and a missing source, in a document whose one source has an empty kind, violates OBI-06, OBI-07 and OBI-02 (§§5.3, 5.4, 10).",
       "action": "validate-document",
       "given": {
         "document": {
@@ -71,10 +71,15 @@
           "operations": {
             "op": {}
           },
+          "sources": {
+            "s": {
+              "kind": ""
+            }
+          },
           "bindings": {
             "b": {
               "operation": "missing",
-              "kind": ""
+              "source": "missing"
             }
           }
         }

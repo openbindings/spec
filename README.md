@@ -22,25 +22,26 @@
 
 OpenBindings describes operations, their author-declared realizations,
 and named consumption points independently of protocols. Operations state what
-a component does. Each binding carries the kind of its content.
-Dependencies state which operations the software described by the OBI consumes.
+a component does. Sources name what realizes them, each read under its kind.
+Bindings relate an operation to a source. Dependencies state which operations
+the software described by the OBI consumes.
 
-An OBI can be as small as `openbindings`, `operations`, and `bindings`. A document
-that only declares operations needs only `openbindings` and `operations`.
-Schemas and binding content can be inline. An optional `schemas` map holds
-shared schemas, and an optional `resources` map holds other shared values that
-binding content refers to, such as an API description.
+An OBI can be as small as `openbindings`, `operations`, `bindings`, and
+`sources`. A document that only declares operations needs only `openbindings`
+and `operations`. A source's data can embed an artifact such as an API
+description, address one or a running service, or be absent where its kind
+needs nothing beyond the source's name. An optional `schemas` map holds shared
+schemas.
 
 ```json
 {
   "openbindings": "0.2.0",
   "operations": { "echo": {} },
+  "sources": {
+    "local": { "kind": "example.echo@1" }
+  },
   "bindings": {
-    "echo.local": {
-      "operation": "echo",
-      "kind": "example.echo@1",
-      "content": {}
-    }
+    "echo.local": { "operation": "echo", "source": "local" }
   }
 }
 ```
@@ -53,16 +54,17 @@ behavior.
 - **Operations** are named capabilities with optional JSON Schema 2020-12
   input and output schemas, each applying to one value at a time. An operation's
   presence does not assert availability.
-- **Bindings** declare realizations. Each requires `operation` and `kind`, with
-  optional kind-interpreted `content`. The kind can describe a live surface, an
-  artifact and target, a complete graph, or another realization.
+- **Sources** name what bindings realize operations through. Each requires a
+  `kind` and may carry `data`: an embedded artifact, an address, a descriptor,
+  or nothing. The kind names how the source's data and its bindings' data are
+  read. OpenBindings never reads data as schemas.
+- **Bindings** declare realizations. Each requires `operation` and `source`,
+  with optional `data` read under the source's kind: a target in an artifact,
+  a method name, an adaptation of values, or nothing.
 - **Dependencies** are named consumption points referencing local operation
   keys, optionally constrained to acceptable kinds.
 - **Schemas** are optional named JSON Schema 2020-12 schemas that operation
   schemas share. Every entry is one of the document's schemas, used or not.
-- **Resources** are optional named JSON values that binding content refers to:
-  embedded artifacts, graphs, configuration. OpenBindings never reads them as
-  schemas.
 - **Aliases** give an operation additional names, including names adopted
   from published sets of operations. Correspondence is an author claim, with no
   trust or compatibility proof attached.
@@ -71,18 +73,17 @@ behavior.
 
 An operation schema uses a shared schema with `{"$ref":"#/schemas/Task"}`.
 Where a value sits decides how OpenBindings reads it: a schema reference cannot
-reach into `resources`, so an embedded artifact's own schemas, identifiers, and
-references are never read as the document's. What binding content refers to,
-such as an entry of `resources` or `schemas`, is its kind's to define.
-OpenBindings never scans content or stored artifacts for references, and never
-expands them.
+reach into `sources`, so an embedded artifact's own schemas, identifiers, and
+references are never read as the document's. What source and binding data refer
+to is the kind's to define. OpenBindings never scans data for references, and
+never expands them.
 
 The [reference chapter](openbindings.md#7-reference-resolution) defines the
 document's schemas and resource boundaries. The
-[embedded-artifact example](examples/shared-resources.obi.json) stores one
-OpenAPI document for two bindings and a copy of its `Task` schema for the
-operations. The
-[inline example](examples/inline.obi.json) uses only the three fields above.
+[embedded-source example](examples/embedded-source.obi.json) carries one
+OpenAPI document as a source's data, shared by two bindings, and a copy of its
+`Task` schema for the operations. The
+[inline example](examples/inline.obi.json) uses only the four fields above.
 
 ## The specification
 
@@ -95,27 +96,27 @@ credential handling are outside it.
 | --- | --- |
 | [openbindings.md](openbindings.md) | Working 0.2.0 specification |
 | [openbindings.schema.json](openbindings.schema.json) | Derived structural schema |
-| [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) | This revision's decisions, validation, and migration boundaries |
-| [MIGRATING-0.1-TO-0.2.md](MIGRATING-0.1-TO-0.2.md) | Migration from 0.1 and the earlier 0.2 source model |
+| [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) | This revision's decisions, validation, and migration boundaries |
+| [MIGRATING-0.1-TO-0.2.md](MIGRATING-0.1-TO-0.2.md) | Migration from 0.1 and the preceding 0.2 drafts |
 | [examples/](examples/) | Illustrative documents using the current draft |
-| [conformance/resource-model-draft/](conformance/resource-model-draft/README.md) | Focused structural and schema-inventory cases for this revision |
+| [conformance/draft-checks/](conformance/draft-checks/README.md) | Focused structural and schema-inventory cases for this revision |
 | [binding-specs/](binding-specs/README.md) | Separately scoped kind candidates |
 | [versions/](versions/) | Immutable released snapshots |
 
 ## Status
 
-The current specification is the **unreleased 0.2.0 binding/resources draft**;
-0.1.0 remains the latest release. This revision removes the preceding draft's
-`sources` map, adds `resources` for values that binding content refers to, keeps
-`schemas`, and moves `kind` onto bindings.
+The current specification is the **unreleased 0.2.0 sources draft**; 0.1.0
+remains the latest release. This revision returns the `sources` map, with each
+source carrying `kind` and optional `data`, has each binding name its source
+and carry optional `data`, keeps `schemas`, and removes `resources`.
 
-The [core conformance corpus](conformance/README.md) now tests this document
-model, including binding kinds, resources, contained schema references and
-OBI-14. No SDK qualification result is asserted for this baseline. The Go
-adapter and its recorded failures describe the historical source model; family
-candidates and SDK adapters still require migration. The focused draft checks
-remain a design aid. See
-[the draft status](RESOURCE-MODEL-DRAFT.md) for implementation boundaries.
+The [core conformance corpus](conformance/README.md) tests this document
+model, including the binding's source reference (OBI-07), source data,
+contained schema references and OBI-14. No SDK qualification result is asserted
+for this baseline. The Go adapter and its recorded failures describe an earlier
+source model; family candidates and SDK adapters still require migration. The
+focused draft checks remain a design aid. See
+[the draft status](SOURCE-MODEL-DRAFT.md) for implementation boundaries.
 
 ## Contributing
 

@@ -49,15 +49,20 @@
         "operations": {
           "deliverEvent": {}
         },
-        "dependencies": {
-          "forwardDelivery": {
-            "operation": "deliverEvent"
+        "sources": {
+          "local": {
+            "kind": "example.delivery@1"
           }
         },
         "bindings": {
           "deliverEvent.local": {
             "operation": "deliverEvent",
-            "kind": "example.delivery@1"
+            "source": "local"
+          }
+        },
+        "dependencies": {
+          "forwardDelivery": {
+            "operation": "deliverEvent"
           }
         }
       },

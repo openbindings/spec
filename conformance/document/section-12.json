@@ -28,11 +28,16 @@
             "x-rate-limit-per-minute": 100
           }
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
-            "x-retry-policy": "exponential",
-            "kind": "example.openapi@1"
+            "source": "tasksApi",
+            "x-retry-policy": "exponential"
           }
         }
       },

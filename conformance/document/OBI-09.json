@@ -110,7 +110,7 @@
       ]
     },
     {
-      "description": "a $schema member inside an example value or a resource value is data, not a schema keyword",
+      "description": "a $schema member inside an example value or a source's data is data, not a schema keyword",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -127,9 +127,12 @@
             }
           }
         },
-        "resources": {
+        "sources": {
           "s": {
-            "$schema": "http://json-schema.org/draft-07/schema#"
+            "kind": "example.local@1",
+            "data": {
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            }
           }
         }
       },

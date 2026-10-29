@@ -2934,7 +2934,7 @@
     },
     {
       "id": "VALUES-80",
-      "description": "Resources cannot supply an external schema merely by storing its $id (§5.4, §7.2, §5.2).",
+      "description": "A source's data cannot supply an external schema merely by storing its $id (§5.4, §7.2, §5.2).",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2946,10 +2946,13 @@
               }
             }
           },
-          "resources": {
-            "data": {
-              "$id": "https://e.test/stored.json",
-              "type": "string"
+          "sources": {
+            "artifact": {
+              "kind": "example.local@1",
+              "data": {
+                "$id": "https://e.test/stored.json",
+                "type": "string"
+              }
             }
           }
         },

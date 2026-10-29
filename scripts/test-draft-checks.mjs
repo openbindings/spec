@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
-import { fragmentPointer, select, schemaInventory } from "./resource-model-draft.mjs";
+import { fragmentPointer, select, schemaInventory } from "./draft-checks.mjs";
 
 const require = createRequire(new URL("../.github/package.json", import.meta.url));
 const Ajv2020 = require("ajv/dist/2020.js");
@@ -22,16 +22,21 @@ const entriesValid = (document, inventory) => inventory.entries.every(path => {
 });
 const shape = (document, expected, name) => assert.equal(structure(document), expected, `${name}: ${ajv.errorsText(structure.errors)}`);
 
-const base = () => ({ openbindings: "0.2.0", operations: { run: {} }, bindings: { local: { operation: "run", kind: "example.local@1" } } });
-shape(base(), true, "inline-only binding");
+const base = () => ({
+  openbindings: "0.2.0",
+  operations: { run: {} },
+  sources: { local: { kind: "example.local@1" } },
+  bindings: { local: { operation: "run", source: "local" } },
+});
+shape(base(), true, "a source with only a kind, and a binding naming it");
 shape({ openbindings: "0.2.0", operations: {} }, true, "document containing only operations");
-for (const content of [null, false, 3, "text", [], {}, { operation: "kind-owned", kind: "kind-owned", source: "kind-owned" }]) {
+for (const data of [null, false, 3, "text", [], {}, { operation: "kind-owned", kind: "kind-owned", source: "kind-owned" }]) {
   const document = base();
-  document.bindings.local.content = content;
-  document.resources = { value: content };
-  shape(document, true, "arbitrary content and resource values");
+  document.bindings.local.data = data;
+  document.sources.local.data = data;
+  shape(document, true, "arbitrary binding and source data");
 }
-shape({ ...base(), sources: {} }, false, "removed sources");
+shape({ ...base(), resources: {} }, false, "removed resources");
 shape({ ...base(), schemas: {} }, true, "empty schemas map");
 shape({ ...base(), schemas: { Task: { type: "object" }, Never: false } }, true, "schemas entries in object and boolean form");
 for (const entry of [null, 3, "text", []]) shape({ ...base(), schemas: { bad: entry } }, false, "schemas entries are schemas");
@@ -39,18 +44,30 @@ shape({ ...base(), schemas: { "invalid/key": {} } }, false, "schema entry key sy
 shape({ ...base(), schemas: { old: { $schema: "http://json-schema.org/draft-07/schema#" } } }, false, "a schemas entry's top-level $schema names 2020-12");
 for (const kind of [undefined, null, "", 1]) {
   const document = base();
-  if (kind === undefined) delete document.bindings.local.kind;
-  else document.bindings.local.kind = kind;
-  shape(document, false, "kind must be present and nonempty");
+  if (kind === undefined) delete document.sources.local.kind;
+  else document.sources.local.kind = kind;
+  shape(document, false, "a source's kind must be present and nonempty");
 }
-const oldBinding = base();
-oldBinding.bindings.local.source = "legacy";
-shape(oldBinding, false, "removed binding source");
-shape({ ...base(), resources: { "invalid/key": {} } }, false, "resource entry key syntax");
-shape({ ...base(), resources: { valid: { "unconstrained/key": true } } }, true, "stored member names are data");
-shape({ ...base(), resources: { valid: { type: 42 } } }, true, "structure does not interpret stored schemas");
+for (const field of ["kind", "content"]) {
+  const document = base();
+  document.bindings.local[field] = field === "kind" ? "example.local@1" : {};
+  shape(document, false, `removed binding ${field}`);
+}
+const noSource = base();
+delete noSource.bindings.local.source;
+shape(noSource, false, "a binding's source is required");
+for (const source of [null, "", 1, "invalid/key"]) {
+  const document = base();
+  document.bindings.local.source = source;
+  shape(document, false, "a binding's source is a name");
+}
+shape({ ...base(), sources: { ...base().sources, "invalid/key": { kind: "k" } } }, false, "source entry key syntax");
+shape({ ...base(), sources: { local: { kind: "example.local@1", data: { "unconstrained/key": true } } } }, true, "member names inside data are data");
+shape({ ...base(), sources: { local: { kind: "example.local@1", data: { type: 42 } } } }, true, "structure does not interpret schemas inside data");
+shape({ ...base(), sources: { local: { kind: "example.local@1", description: "A local tool." } } }, true, "a source may carry a description");
+shape({ ...base(), sources: { local: { kind: "example.local@1", location: "x" } } }, false, "a source carries only its listed fields");
 
-const cases = parse("conformance/resource-model-draft/inventory.json");
+const cases = parse("conformance/draft-checks/inventory.json");
 for (const test of cases) {
   shape(test.document, true, test.name);
   const expected = { entries: test.entries, schemas: test.schemas, unresolved: test.unresolved, documentDynamicAnchors: test.documentDynamicAnchors };
@@ -59,7 +76,7 @@ for (const test of cases) {
   assert.equal(entriesValid(test.document, actual), test.metaValid, `${test.name}: entry meta-schema validity`);
   const reordered = structuredClone(test.document);
   reordered.operations = Object.fromEntries(Object.entries(reordered.operations).reverse());
-  for (const map of ["schemas", "resources"]) if (reordered[map]) reordered[map] = Object.fromEntries(Object.entries(reordered[map]).reverse());
+  for (const map of ["schemas", "sources"]) if (reordered[map]) reordered[map] = Object.fromEntries(Object.entries(reordered[map]).reverse());
   assert.deepEqual(schemaInventory(reordered), expected, `${test.name}: order independence`);
 }
 
@@ -72,6 +89,9 @@ function example(document, name) {
   assert.deepEqual(inventory.unresolved, [], `${name}: same-document references identify schemas`);
   assert.deepEqual(inventory.documentDynamicAnchors, [], `${name}: no $dynamicAnchor in the document resource`);
   assert.equal(entriesValid(document, inventory), true, `${name}: meta-schema validity`);
+  for (const [key, binding] of Object.entries(document.bindings ?? {})) {
+    assert.ok(Object.hasOwn(document.sources ?? {}, binding.source), `${name}: binding ${key} names a source (OBI-07)`);
+  }
   checked++;
 }
 for (const file of readdirSync(new URL("examples/", root)).filter(file => file.endsWith(".obi.json"))) example(parse(`examples/${file}`), file);

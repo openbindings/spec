@@ -19,16 +19,17 @@ import { readFileSync } from "node:fs";
 const CANON = {
   Interface: [
     "openbindings", "name", "version", "description",
-    "operations", "dependencies", "bindings", "schemas", "resources",
+    "operations", "sources", "bindings", "dependencies", "schemas",
   ],
   Operation: [
     "description", "deprecated", "tags", "aliases",
     "input", "output", "examples",
   ],
   BindingEntry: [
-    "operation", "kind", "content", "idempotent", "preference",
+    "operation", "source", "data", "idempotent", "preference",
     "description", "deprecated",
   ],
+  SourceEntry: ["kind", "data", "description"],
   OperationExample: ["description", "input", "output"],
   DependencyEntry: ["operation", "kinds", "description"],
 };
@@ -74,6 +75,10 @@ function walk(doc, errors, path = "$") {
 
   for (const [k, b] of Object.entries(doc.bindings ?? {})) {
     checkOrder("BindingEntry", b, `${path}.bindings[${JSON.stringify(k)}]`, errors);
+  }
+
+  for (const [k, s] of Object.entries(doc.sources ?? {})) {
+    checkOrder("SourceEntry", s, `${path}.sources[${JSON.stringify(k)}]`, errors);
   }
 }
 

@@ -98,31 +98,34 @@
     "metaValid": false
   },
   {
-    "name": "a pointer into resources identifies nothing",
+    "name": "a pointer into sources identifies nothing",
     "document": {
       "openbindings": "0.2.0",
       "operations": {
         "get": {
           "output": {
-            "$ref": "#/resources/api/components/schemas/Task"
+            "$ref": "#/sources/api/data/components/schemas/Task"
           }
         }
       },
-      "resources": {
+      "sources": {
         "api": {
-          "openapi": "3.1.0",
-          "components": {
-            "schemas": {
-              "Task": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "id"
-                ]
+          "kind": "example.openapi@1",
+          "data": {
+            "openapi": "3.1.0",
+            "components": {
+              "schemas": {
+                "Task": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
               }
             }
           }
@@ -142,27 +145,30 @@
     "metaValid": true
   },
   {
-    "name": "a schema-shaped resource is data",
+    "name": "schema-shaped source data is data",
     "document": {
       "openbindings": "0.2.0",
       "operations": {
         "get": {
           "output": {
-            "$ref": "#/resources/Task"
+            "$ref": "#/sources/Task/data"
           }
         }
       },
-      "resources": {
+      "sources": {
         "Task": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id"
-          ]
+          "kind": "example.local@1",
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
         }
       }
     },
@@ -179,7 +185,7 @@
     "metaValid": true
   },
   {
-    "name": "identifiers and anchors inside resources declare nothing",
+    "name": "identifiers and anchors inside source data declare nothing",
     "document": {
       "openbindings": "0.2.0",
       "operations": {
@@ -194,12 +200,15 @@
           }
         }
       },
-      "resources": {
+      "sources": {
         "stored": {
-          "$id": "https://example.com/stored.json",
-          "$anchor": "stored",
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "type": 42
+          "kind": "example.local@1",
+          "data": {
+            "$id": "https://example.com/stored.json",
+            "$anchor": "stored",
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": 42
+          }
         }
       }
     },
@@ -218,7 +227,7 @@
     "metaValid": true
   },
   {
-    "name": "binding content and examples are not traversed",
+    "name": "binding data and examples are not traversed",
     "document": {
       "openbindings": "0.2.0",
       "operations": {
@@ -245,11 +254,16 @@
           }
         }
       },
+      "sources": {
+        "local": {
+          "kind": "example.local@1"
+        }
+      },
       "bindings": {
         "run.local": {
           "operation": "run",
-          "kind": "example.local@1",
-          "content": {
+          "source": "local",
+          "data": {
             "schema": {
               "$ref": "#/nowhere",
               "type": 42

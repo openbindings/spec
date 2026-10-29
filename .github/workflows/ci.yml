@@ -44,8 +44,8 @@ jobs:
         run: |
           node scripts/check-canonical-order.mjs examples/*.obi.json
 
-      - name: Check binding/resources draft semantics
-        run: node scripts/test-resource-model-draft.mjs
+      - name: Check source-model draft semantics
+        run: node scripts/test-draft-checks.mjs
 
       - name: Validate authority pin manifest JSON
         run: python3 -m json.tool binding-specs/AUTHORITY-PINS.json > /dev/null

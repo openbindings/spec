@@ -15,7 +15,24 @@ transforms, and HTTP discovery leave this specification; kinds, dependencies,
 per-value schemas, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
 
-### Binding/resources revision (2026-10-26)
+### Sources revision (2026-10-29)
+
+This unreleased revision returns `sources` to the document and removes
+`resources` and the binding `kind` (breaking relative to the preceding working
+draft). A source carries `kind` and optional `data`; a binding carries
+`operation`, `source`, and optional `data`; both data values are read under the
+source's kind, which also defines how they combine (§§5.3, 5.4, 6). `content`
+becomes `data` on both. OBI-07 is again the binding's `source` reference, and a
+source's kind being a non-empty string is structural under OBI-02. The
+specification still reads no data and makes no claim about what data refers to
+(invariant 4), and nothing in `sources` or in binding data is one of the
+document's schemas (§7). Of the preceding revision, described below, the typed
+`schemas` map and the removal of §7.6 stand; its binding-owned kinds and
+`resources` do not. The core corpus, examples, and the focused draft checks
+follow. [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) records the decisions
+and migration status.
+
+### Binding/resources revision (2026-10-26, superseded)
 
 This unreleased revision replaces the preceding 0.2 source model. Bindings
 carry their own required `kind`; `sources` and `bindings[*].source` are removed.
@@ -26,9 +43,9 @@ nothing in `resources` is, and a schema reference into `resources` identifies
 no schema the document contains, which violates OBI-12. OBI-07 now constrains
 binding kinds. OBI-12 also covers references that resolve into a schema
 resource the document contains, and the new OBI-14 excludes `$dynamicAnchor`
-from the document resource. No released snapshot is changed. Earlier corpus
-and kind migrations are tracked separately in
-[RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
+from the document resource. No released snapshot is changed. Its draft note,
+`RESOURCE-MODEL-DRAFT.md`, is replaced by
+[SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md).
 
 The glossary omits ordinary-language terms and duplicate definitions. Undefined
 results, plain names, and version declarations are defined in §§5.2, 7.3, and
@@ -127,20 +144,21 @@ covers any meaning it gives the document, not only the meaning of fields, which
 
 ### Changed
 
-- **Bindings carry their own `kind` and `content`.** Kind strings are exact,
-  opaque, non-empty names, with no normalization, version algebra, or address
-  meaning (§6). A kind names how the binding's `content` is read, and the
-  binding declares its realization through that content. `operation` and
-  `kind` are required; `content` is optional and can be any JSON value. Source
-  objects and the binding `source` member leave the document model. Target
-  identification, value adaptation, and interaction mechanics are declared
-  through each binding's content, read under its kind (§5.3).
-- **Shared values use `resources`.** A name-to-value map replaces optional
-  source-content factoring and holds whatever binding content refers to, such as
-  an embedded API description. OpenBindings never reads it as schemas: a schema
-  reference into it identifies no schema the document contains, and identifiers
-  in it are not registered. Binding content refers to its entries as its kind
-  defines (§5.4); internal artifact references retain their own context.
+- **Sources carry kinds; bindings name their sources.** Each source carries a
+  required `kind`, an exact, opaque, non-empty name with no normalization,
+  version algebra, or address meaning (§6), and optional `data`. Each binding
+  carries `operation`, `source`, naming a key in `sources` (OBI-07), and
+  optional `data`. A binding has no kind of its own. The source's kind names how
+  its data and the data of the bindings naming it are read, and how they
+  combine; through that meaning each binding declares its realization (§§5.3,
+  5.4). Target identification, value adaptation, and interaction mechanics are
+  declared through source and binding data, read under the kind.
+- **`data` replaces `location`, `content`, and `ref`.** Source data holds
+  whatever the kind reads from the source: an embedded artifact, an address, a
+  descriptor, or nothing, where the kind needs only the source's name. Binding
+  data holds what the kind reads from the binding. OpenBindings never reads
+  either as schemas: a schema reference into `sources` identifies no schema the
+  document contains, and identifiers in data are not registered (§§5.4, 7).
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
@@ -174,7 +192,7 @@ covers any meaning it gives the document, not only the meaning of fields, which
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
-- **Names have a grammar.** Operation, dependency, binding, schema, resource,
+- **Names have a grammar.** Operation, dependency, binding, schema, source,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
   compare as exact strings (OBI-04); strings are equal when their UTF-16 code
   units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.
@@ -262,8 +280,8 @@ covers any meaning it gives the document, not only the meaning of fields, which
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
 - **Transforms**: transform objects, named transforms, and the JSONata
-  requirement. Value adaptation is read under the binding's kind, typically
-  from binding `content`; OpenBindings defines no transform or expression
+  requirement. Value adaptation is read under the source's kind, typically
+  from binding `data`; OpenBindings defines no transform or expression
   language.
 - **Source addressing rules**: the requirement of exactly one of `location`
   or `content`, and resolution of a relative `location` against the
