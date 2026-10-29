@@ -1,7 +1,7 @@
 {
   "format": "openbindings.core-scenarios@4",
   "section": "6",
-  "description": "Whether a binding meets a dependency's kinds constraint: exactly when the kind of its source is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
+  "description": "Whether a binding meets a dependency's kinds constraint: exactly when the kind of its source is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.4; section 6, Comparison).",
   "scenarios": [
     {
       "id": "KINDS-01",
@@ -449,7 +449,7 @@
     },
     {
       "id": "KINDS-13",
-      "description": "Without kinds, the dependency places no constraint on the kind of the binding's source (section 5.5).",
+      "description": "Without kinds, the dependency places no constraint on the kind of the binding's source (section 5.4).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -483,7 +483,7 @@
     },
     {
       "id": "KINDS-14",
-      "description": "kinds is an any-of constraint: one exact match with the source's kind suffices (section 5.5).",
+      "description": "kinds is an any-of constraint: one exact match with the source's kind suffices (section 5.4).",
       "action": "check-dependency-kind",
       "given": {
         "document": {

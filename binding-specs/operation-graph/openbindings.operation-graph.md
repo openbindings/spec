@@ -257,7 +257,7 @@ An operation graph MUST have exactly one `input` node. The `input` node MUST NOT
 { "type": "output" }
 ```
 
-The graph's caller-facing output side, surfaced as a node. Every event that reaches this node is emitted to the caller as one output of the graph-bound operation. Per the core specification, output validation applies per item at the operation boundary when a consumer claims it (core [§5.2](../../openbindings.md#52-schemas)) — a validation-claim concern, not this specification's.
+The graph's caller-facing output side, surfaced as a node. Every event that reaches this node is emitted to the caller as one output of the graph-bound operation. Per the core specification, output validation applies per item at the operation boundary when a consumer claims it (core [§5.2](../../openbindings.md#55-schemas)) — a validation-claim concern, not this specification's.
 
 An operation graph MUST have exactly one `output` node. The `output` node MUST NOT have any outgoing edges.
 
@@ -431,7 +431,7 @@ If a transform expression evaluates to `undefined` (no result), the node fails w
 
 ### Embedded schemas
 
-Wherever a node embeds a JSON Schema (`filter.schema`, `buffer.until`, `buffer.through`), this format rules the schema's form itself ([OG-V-18](#19-validation-rules)): JSON Schema 2020-12 in object form; `$schema`, when present, equal to `https://json-schema.org/draft/2020-12/schema`; and no `$vocabulary` anywhere within it. Embedded schemas are **self-contained**: no keyword within an embedded schema references anything outside it (OG-V-18) — a graph is a movable unit, and a schema reaching outside itself would need a resolution scope no host is obliged to provide. This is stricter than Core, which permits schema `$ref` at OBI positions under its own reference rules ([§5.2](../../openbindings.md#52-schemas), OBI-11). Here, `$ref`, `$dynamicRef`, `$dynamicAnchor`, and `$anchor`-fragment references all appear nowhere within an embedded schema. At evaluation, `format` is an annotation, never an assertion: an engine MUST NOT gate an event on `format` (aligned with the core specification's treatment of `format` in embedded 2020-12 schemas, but independently ruled). The shared dialect constraints and the graph-specific self-containment rule are independently specified here, so a graph engine validates a graph with no core-spec lookup.
+Wherever a node embeds a JSON Schema (`filter.schema`, `buffer.until`, `buffer.through`), this format rules the schema's form itself ([OG-V-18](#19-validation-rules)): JSON Schema 2020-12 in object form; `$schema`, when present, equal to `https://json-schema.org/draft/2020-12/schema`; and no `$vocabulary` anywhere within it. Embedded schemas are **self-contained**: no keyword within an embedded schema references anything outside it (OG-V-18) — a graph is a movable unit, and a schema reaching outside itself would need a resolution scope no host is obliged to provide. This is stricter than Core, which permits schema `$ref` at OBI positions under its own reference rules ([§5.2](../../openbindings.md#55-schemas), OBI-11). Here, `$ref`, `$dynamicRef`, `$dynamicAnchor`, and `$anchor`-fragment references all appear nowhere within an embedded schema. At evaluation, `format` is an annotation, never an assertion: an engine MUST NOT gate an event on `format` (aligned with the core specification's treatment of `format` in embedded 2020-12 schemas, but independently ruled). The shared dialect constraints and the graph-specific self-containment rule are independently specified here, so a graph engine validates a graph with no core-spec lookup.
 
 ## 15. Edge definition
 
@@ -460,7 +460,7 @@ When a graph-bound operation is invoked, the implementation first opens the one 
 
 The graph binding then surfaces the invocation through the boundary nodes: each value the caller writes is accepted (subject to [Input-side closure](#input-side-closure-back-closure)) and emitted as one event at the `input` node, in write order, each rooting a lineage; each event reaching the `output` node is emitted to the caller as one output. The caller closing the input side completes the `input` node's output stream.
 
-A binding that selects an operation-graph source MAY carry the pre-kind draft's binding-level `inputTransform`/`outputTransform`. In that draft, they apply per item at the operation boundary, outside the graph: `inputTransform` reshapes each caller write before it becomes an event at the `input` node, and `outputTransform` reshapes each event the `output` node emits before output validation (core [§5.2](../../openbindings.md#52-schemas)). The graph itself never sees untransformed input or emits untransformed output when those fields are declared.
+A binding that selects an operation-graph source MAY carry the pre-kind draft's binding-level `inputTransform`/`outputTransform`. In that draft, they apply per item at the operation boundary, outside the graph: `inputTransform` reshapes each caller write before it becomes an event at the `input` node, and `outputTransform` reshapes each event the `output` node emits before output validation (core [§5.2](../../openbindings.md#55-schemas)). The graph itself never sees untransformed input or emits untransformed output when those fields are declared.
 
 ### Per-event processing
 

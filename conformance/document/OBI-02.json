@@ -100,7 +100,7 @@
       ]
     },
     {
-      "description": "A source's kind must be non-empty (§5.4): an empty kind violates OBI-02 alone, since OBI-07 concerns the binding's source reference, which names a key.",
+      "description": "A source's kind must be non-empty (§5.2): an empty kind violates OBI-02 alone, since OBI-07 concerns the binding's source reference, which names a key.",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -127,7 +127,7 @@
       ]
     },
     {
-      "description": "A binding needs only operation and source, and a source only kind; data is optional on both (§5.3, §5.4).",
+      "description": "A binding needs only operation and source, and a source only kind; data is optional on both (§5.3, §5.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -148,7 +148,7 @@
       "valid": true
     },
     {
-      "description": "Source data holds any JSON value, including present null (§5.4).",
+      "description": "Source data holds any JSON value, including present null (§5.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -941,7 +941,7 @@
       ]
     },
     {
-      "description": "Sources must be an object map (§5.4, OBI-02).",
+      "description": "Sources must be an object map (§5.2, OBI-02).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -1096,7 +1096,7 @@
       ]
     },
     {
-      "description": "Sources cannot be null in place of an object map (§5.4, OBI-02).",
+      "description": "Sources cannot be null in place of an object map (§5.2, OBI-02).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
@@ -1108,7 +1108,7 @@
       ]
     },
     {
-      "description": "A source's kind must be a string (§5.4): a numeric kind violates OBI-02 alone, since OBI-07 concerns the binding's source reference, which names a key.",
+      "description": "A source's kind must be a string (§5.2): a numeric kind violates OBI-02 alone, since OBI-07 concerns the binding's source reference, which names a key.",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1544,7 +1544,7 @@
       ]
     },
     {
-      "description": "A source entry must be an object, not a kind string (§5.4, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A source entry must be an object, not a kind string (§5.2, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1569,7 +1569,7 @@
       ]
     },
     {
-      "description": "A source missing its required kind violates OBI-02 (§5.4); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A source missing its required kind violates OBI-02 (§5.2); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1594,7 +1594,7 @@
       ]
     },
     {
-      "description": "A null source kind is not a non-empty string (§5.4, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A null source kind is not a non-empty string (§5.2, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1621,7 +1621,7 @@
       ]
     },
     {
-      "description": "A false source kind is not a non-empty string (§5.4, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A false source kind is not a non-empty string (§5.2, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1648,7 +1648,7 @@
       ]
     },
     {
-      "description": "A [] source kind is not a non-empty string (§5.4, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A [] source kind is not a non-empty string (§5.2, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1675,7 +1675,7 @@
       ]
     },
     {
-      "description": "A {} source kind is not a non-empty string (§5.4, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
+      "description": "A {} source kind is not a non-empty string (§5.2, OBI-02); OBI-07 holds, since the binding's source names a key (§10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1702,7 +1702,7 @@
       ]
     },
     {
-      "description": "A source description must be a string (§5.4, OBI-02).",
+      "description": "A source description must be a string (§5.2, OBI-02).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1727,7 +1727,7 @@
       ]
     },
     {
-      "description": "An unprefixed location member on a source is unknown; where an artifact lives is for its data (§5.4, OBI-02).",
+      "description": "An unprefixed location member on a source is unknown; where an artifact lives is for its data (§5.2, OBI-02).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1752,7 +1752,7 @@
       ]
     },
     {
-      "description": "A source key outside the name grammar fails the derived schema, which expresses OBI-04 (§5.4, §10).",
+      "description": "A source key outside the name grammar fails the derived schema, which expresses OBI-04 (§5.2, §10).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},

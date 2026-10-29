@@ -79,7 +79,7 @@ const controls = [
   ["a keyed failure that falls short instead", results([...ordinary, as("CONFORMANCE-06", "SHORTFALL", SIG)]), corpus, ["expected FAIL, got SHORTFALL"]],
   ["a keyed SHORTFALL that fails instead", results([...without("VALUES-01"), fail("VALUES-01", "value 0: got fails"), fail("CONFORMANCE-06", SIG)]),
     corpus, ["expected SHORTFALL, got FAIL"], { pin: PIN, corpusDigest: DIGEST, failures: [...expected.failures, { case: "VALUES-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
-  ["a reconciliation problem", results([...ordinary, fail("CONFORMANCE-06", SIG)], { reconciliation: ["scenarios/5.2-values.json: the manifest counts 64 cases, the file holds 63"] }), corpus, ["reconciliation: scenarios/5.2-values.json"]],
+  ["a reconciliation problem", results([...ordinary, fail("CONFORMANCE-06", SIG)], { reconciliation: ["scenarios/5.5-values.json: the manifest counts 64 cases, the file holds 63"] }), corpus, ["reconciliation: scenarios/5.5-values.json"]],
   ["results without a reconciliation", { pin: PIN, corpusDigest: DIGEST, cases: [...ordinary, fail("CONFORMANCE-06", SIG)] }, corpus, ["carry no reconciliation"]],
 ];
 

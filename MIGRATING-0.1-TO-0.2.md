@@ -34,7 +34,7 @@ is no `resources` map and no binding `kind` or `content`.
    references are unchanged, and every entry stays one of the document's
    schemas whether or not anything uses it.
 5. **Keep copies of artifact schemas as copies.** A schema reference still
-   cannot reach into a source's data (§5.4, OBI-12). Translated copies held in
+   cannot reach into a source's data (§5.2, OBI-12). Translated copies held in
    `schemas` are unchanged.
 
 ## From the earlier 0.2 source model
@@ -73,7 +73,7 @@ that direction; `true` and `{}` admit every value; `false` admits none; a null-o
 schema admits `null`. The output schema, when present, covers every caller-facing
 output, including error-shaped values when the kind exposes them. Other dialects
 require meaning-preserving translation before becoming OpenBindings operation
-schemas (§5.2).
+schemas (§5.5).
 
 A `$dynamicAnchor` in a schema with no enclosing `$id` violates OBI-14; place
 each one inside a schema that declares `$id`. An absolute `$id` keeps a

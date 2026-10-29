@@ -65,7 +65,7 @@ document's schema of the same name, and OpenAPI 3.0's `nullable` or draft-07's
 A schema reference into `sources` identifies no schema the document contains
 and so violates OBI-12, loudly, and an `$id` inside a source's data identifies
 nothing to the document's schemas. An operation that wants a schema from an
-artifact holds a translated copy in `schemas`; §5.2 notes how a schema from
+artifact holds a translated copy in `schemas`; §5.5 notes how a schema from
 another document is read there.
 
 Three rules come with placement:
