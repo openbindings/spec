@@ -83,7 +83,7 @@ document's schemas and resource boundaries. The
 [embedded-source example](examples/embedded-source.obi.json) carries one
 OpenAPI document as a source's data, shared by two bindings, and a copy of its
 `Task` schema for the operations. The
-[inline example](examples/inline.obi.json) uses only the four fields above.
+[kind-only example](examples/kind-only.obi.json) uses only the four fields above.
 
 ## The specification
 

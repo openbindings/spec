@@ -33,7 +33,15 @@ follow. [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) records the decisions
 and migration status. §3 identifies the model's core nouns in one line each,
 with the definitions in their sections, gains a Schema entry, and defines in
 full only the three terms no other section defines: caller-facing, field, and
-absolute URI.
+absolute URI. A review pass then made explicit that an alias is never an
+operation reference (§5.1), that a `$schema` anywhere in a contained schema
+violates no rule (§5.2), that the latest release of a line governs every
+document declaring it (§8.1), that source and binding data travel with the
+document (§9), and that the meta-schemas exclude a non-empty fragment from
+`$id` (OBI-11); it condensed the undefined-result rules (§5.2), dropped a
+sentence on copying bindings between documents that the model no longer
+supports (§6), and renamed `examples/inline.obi.json` to
+`kind-only.obi.json`.
 
 ### Binding/resources revision (2026-10-26, superseded)
 

@@ -2,7 +2,7 @@
 
 ## Abstract
 
-OpenBindings is a portable interface description format; its documents are OBIs (OpenBindings interface documents). An OBI declares each operation once, as a protocol-independent capability with optional per-value input and output schemas, then relates it to concrete realizations through bindings and to named consumption points through dependencies.
+OpenBindings is a portable interface description format; its documents are OBIs (OpenBindings interface documents). An OBI declares each operation once, as a protocol-independent capability with optional per-value input and output schemas; names the sources through which it is realized; relates the two with bindings; and names its consumption points with dependencies.
 
 ```json
 {
@@ -40,7 +40,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
 }
 ```
 
-The kinds in this document's examples (`example.openapi@1`, `example.mcp@1`, `example.grpc@1`, `my-cli.usage@1`) and the shapes of their `data`, such as `{ "location": … }` on a source and `{ "target": … }` on a binding, are illustrative; only a kind gives `data` meaning ([§6](#6-kinds)).
+The kinds in this document's examples (`example.openapi@1`, `example.mcp@1`, `example.grpc@1`, `example.echo@1`, `my-cli.usage@1`) and the shapes of their `data`, such as `{ "location": … }` on a source and `{ "target": … }` on a binding, are illustrative; only a kind gives `data` meaning ([§6](#6-kinds)).
 
 New readers may prefer the [§4. Overview](#4-overview-informative) walkthrough. The notational conventions below, and the text from [§1. Positioning and scope](#1-positioning-and-scope) on, are normative except where marked informative. Conformance is defined by the numbered rules of [§10](#10-conformance).
 
@@ -113,7 +113,7 @@ OpenBindings sits one layer above protocol-specific interface specifications suc
 
 ### 1.1. Out of scope
 
-This specification defines the document model and the input and output schemas governing each operation's caller-facing values. A source's kind determines how its data and the data of the bindings naming it are read ([§6](#6-kinds)), without changing any meaning this specification gives the document. Naming a kind does not assert that a definition exists.
+This specification defines the document model, including where an operation states the input and output schemas governing its caller-facing values. A source's kind determines how its data and the data of the bindings naming it are read ([§6](#6-kinds)), without changing any meaning this specification gives the document. Naming a kind does not assert that a definition exists.
 
 This specification does not define invocation or call management, select bindings, or supply realizations for dependencies. Acquisition, publication, authoring workflows, and registries are outside its scope.
 
@@ -165,7 +165,7 @@ Additional terms are defined where they are used.
 
 ## 4. Overview (informative)
 
-OpenBindings separates operations (capabilities with per-value schemas) from the sources that realize them (each read under its kind), the bindings that relate the two, and named consumption points (dependencies). A single OBI can bind an operation over multiple protocols, depend on an operation, or do both without redefining the operation.
+OpenBindings separates operations (capabilities with per-value schemas) from the sources through which bindings realize them (each read under its kind), the bindings that relate the two, and named consumption points (dependencies). A single OBI can bind an operation over multiple protocols, depend on an operation, or do both without redefining the operation.
 
 Every OBI declares a specification version and an operations map. The minimal conformant document is just those two fields:
 
@@ -341,7 +341,7 @@ An operation object's fields are all optional:
 | `description` | string                | Human-readable description of the capability, which bindings claim to carry out ([§5.3](#53-bindings)). |
 | `deprecated`  | boolean               | Author recommends migration away from the operation.               |
 | `tags`        | array of strings      | Documentation labels for grouping and filtering, in no meaningful order; a repeated tag adds nothing. |
-| `aliases`     | array of strings      | Additional names, in no meaningful order. A string equal to one identifies the operation exactly as its key does (**Aliases**, below). |
+| `aliases`     | array of strings      | Additional names, in no meaningful order. A string equal to one identifies the operation exactly as its key does, though only the key serves as its reference (**Aliases**, below). |
 | `input`       | JSON Schema or absent | Schema governing each caller-facing input value. |
 | `output`      | JSON Schema or absent | Schema governing each caller-facing output value. |
 | `examples`    | object                | Map of example names to example objects; see below.                |
@@ -357,7 +357,7 @@ An operation object's fields are all optional:
 
 Input and output schemas constrain values that occur; they do not determine whether or how many values occur (invariant 1).
 
-**Aliases.** An operation's **identifiers** are its key and its aliases, one flat, document-unique namespace ([OBI-05](#10-conformance)). A string identifies an operation exactly when it equals the operation's key or one of its aliases ([§5](#5-document-model)). The operation's bindings are those whose `operation` holds its key. The key is the primary name, used in the `operation` references bindings and dependencies carry. Beyond that, choosing a key or an alias carries no meaning. Aliases commonly keep a prior name after a rename, carry a vendor-specific name some readers know it by, or adopt an operation name from a published set.
+**Aliases.** An operation's **identifiers** are its key and its aliases, one flat, document-unique namespace ([OBI-05](#10-conformance)). A string identifies an operation exactly when it equals the operation's key or one of its aliases ([§5](#5-document-model)). Identification is one thing and reference another: the `operation` field of a binding or a dependency holds the operation's key, never an alias ([OBI-06](#10-conformance), [OBI-08](#10-conformance)), and the operation's bindings are those whose `operation` holds its key. Beyond that, choosing a key or an alias carries no meaning. Aliases commonly keep a prior name after a rename, carry a vendor-specific name some readers know it by, or adopt an operation name from a published set.
 
 **Correspondence.** Authors may publish sets of operations for adoption, including as interfaces described by OBIs. The keys and aliases published for those operations are **published names**. By carrying a published name as its key or an alias, an operation **claims correspondence with** the operation that name identifies. A reader may read the operation as asserting that it is that name's operation in each published set the reader holds that includes the name. The claim is an author claim ([§5](#5-document-model)) made by carrying the name, whatever the author intended.
 
@@ -381,7 +381,7 @@ Operation `input` and `output` hold schemas inline. The top-level `schemas` map 
 
 Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) schema in object or boolean form, valid against the 2020-12 meta-schemas ([OBI-10](#10-conformance)). An invalid schema the document contains, such as `{"type": 42}`, violates that rule.
 
-**Dialect.** Each schema the document contains is read as JSON Schema 2020-12. A `$schema` other than 2020-12 violates [OBI-09](#10-conformance). Wherever a `$schema` the document contains appears, it names the dialect the schema is already read in and has no other effect: a value's validity is the same as without it.
+**Dialect.** Each schema the document contains is read as JSON Schema 2020-12. A `$schema` other than 2020-12 violates [OBI-09](#10-conformance). Wherever a `$schema` the document contains appears, it names the dialect the schema is already read in and has no other effect: a value's validity is the same as without it. That holds at every schema the document contains, resource root or not, so a `$schema` placed where JSON Schema Core §8.1.1 would not allow one violates no rule here, whatever a tool applying that section reports.
 
 JSON Schema permits `$schema` only at a resource root (JSON Schema Core §8.1.1). In an OBI, the resource roots that are themselves schemas are exactly the schemas that declare `$id` ([§7.2](#72-the-document-as-embedding)). A schema reached through an external URI follows the dialect JSON Schema assigns it (JSON Schema Core §8.1.1). Where JSON Schema leaves its dialect to the implementation, such a schema is read as 2020-12 (**Schema evaluation**, below).
 
@@ -401,14 +401,10 @@ An operation's input or output schema applies to each value separately, never to
 An **undefined result** is any of these:
 
 - one JSON Schema leaves undefined, such as evaluating a cycle that recurses without consuming any of the instance (JSON Schema Core §9.4.1);
-- one [§7.4](#74-other-references) names;
+- the one [§7.4](#74-other-references) names: a `$ref`, `$dynamicRef`, or `$id` within a schema resource that declares `$id` that is not a well-formed URI-reference;
 - one that depends on a keyword value the four provisions make invalid, such as a pattern that is invalid with Unicode semantics.
 
-A value's validity depends on an undefined result exactly when that validity would differ between two ways the result could come out. Such ways include a keyword valid or invalid, and a property name matching a pattern or not. A value's validity depends on a resource the document does not contain exactly when that validity would differ between two contents the resource could have. In both tests, the annotations JSON Schema collects follow each way.
-
-Where a value's validity depends on an undefined result, whether the value satisfies the schema is undefined. But where its validity also depends on a resource the document does not contain, from the document alone whether it satisfies that schema is undefined only if it would be undefined whatever that resource holds. Where its validity depends on such a resource and whether it satisfies is not undefined, the document alone does not settle it: it is what JSON Schema, read with the four provisions, gives with that resource. With that resource, whether the value satisfies the schema follows these same rules, so it can still be undefined.
-
-Where every way gives the same validity, that validity stands: a value that satisfies one branch of an `anyOf` satisfies it whatever another branch's undefined result would be.
+A value's validity **depends on** an undefined result, or on a resource the document does not contain, exactly when it would differ between two ways the result could come out (a keyword valid or invalid, a property name matching a pattern or not) or between two contents the resource could have, the annotations JSON Schema collects following each way. Where validity depends on an undefined result, whether the value satisfies the schema is undefined. Where it depends on a resource the document does not contain, the document alone does not settle it: with that resource, satisfaction is what JSON Schema, read with the four provisions, gives under these same rules, so it can still be undefined; from the document alone it is undefined only where it would be undefined whatever the resource holds. Where every way gives the same validity, that validity stands: a value that satisfies one branch of an `anyOf` satisfies it whatever another branch's undefined result would be.
 
 Where `input` or `output` is absent, no corresponding schema is stated ([§5.1](#51-operations)), and a value neither satisfies nor fails one.
 
@@ -497,7 +493,7 @@ A source's `kind` ([§3](#3-terminology)) names how its `data` and the `data` of
 
 What data refers to, and any reading of data as schemas, is the kind's to define. Neither makes a value in source or binding data one of the document's schemas ([§7](#7-reference-resolution)).
 
-**Data in its document (informative).** Data is read in its document, so a source or binding copied into another document resolves its references there. A kind is as durable across lines of this specification as the parts of the document it relies on are covered by the guarantees for kinds in [§8.1](#81-openbindings-field-specification-version). A kind that relies on nothing outside source and binding data is the most durable.
+**Kinds across lines (informative).** A kind is as durable across lines of this specification as the parts of the document it relies on are covered by the guarantees for kinds in [§8.1](#81-openbindings-field-specification-version). A kind that relies on nothing outside source and binding data is the most durable.
 
 **Sharing a kind (informative).** Portability extends as far as a kind's meaning is shared. Authors can describe that meaning in writing, qualify public names under a namespace they control, and give an incompatible interpretation a new name. This specification requires neither publication nor registration. The project's candidate definitions (§14) have no special standing here.
 
@@ -550,7 +546,7 @@ Nothing else in the document is a schema it contains: no value in `sources`, in 
 
 ### 7.1. Reference forms
 
-The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#72-the-document-as-embedding). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#72-the-document-as-embedding). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference fits neither form.
 
 ### 7.2. The document as embedding
 
@@ -570,7 +566,7 @@ In the document resource, a same-document reference identifies as follows:
 1. **Decoding.** Its fragment is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
 2. **Empty reference or fragment.** An empty reference or an empty fragment, such as `#`, identifies the OBI document itself, not the schema that contains it.
 3. **JSON Pointer.** A decoded fragment that begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer evaluated per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §4 from the document root. A valid pointer identifies the location it reaches. One that is not valid, or reaches no location, identifies nothing.
-4. **Plain name.** Any other fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)).
+4. **Plain name.** Any other decoded fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)).
 
 An `$anchor` or `$dynamicAnchor` declares a plain name only when its value is a string matching, as a whole, the grammar of JSON Schema Core §8.2.2. One whose value does not match violates [OBI-10](#10-conformance).
 
@@ -710,7 +706,7 @@ The `openbindings` field identifies the version of this specification the docume
 
 **Lines.** A document's members mean what a release of the line its declared version names (its `major.minor`) says they mean. Where a document declares a prerelease, its members mean instead what that prerelease's text says (below). Until a line's first release, its working draft stands in for that release wherever this text speaks of a release of the line. Each line or prerelease is its own document model.
 
-A patch release corrects errors in its line's text and adds no field. A document that conforms under an earlier and a later release of its line means the same under each. But a correction can change which documents conform (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning. For instance, `0.2.0` and `0.2.1` are read alike, under any release of the 0.2 line.
+A patch release corrects errors in its line's text and adds no field. A document that conforms under an earlier and a later release of its line means the same under each. But a correction can change which documents conform (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning, and the latest release of a line governs every document declaring that line. For instance, `0.2.0` and `0.2.1` are read alike, under any release of the 0.2 line.
 
 From 1.0.0 onward, a document that conforms to one minor would conform to the next if it declared it, and keep its meaning. Pre-1.0 minors may break (release policy, below).
 
@@ -759,6 +755,7 @@ Processing OBI documents involves parsing potentially untrusted JSON and may inv
 - **Schema `$ref` cycles.** Permitted by [§7](#7-reference-resolution); naive resolvers can exhaust the stack or loop indefinitely.
 - **Identifier shadowing.** An `$id` can claim any URI, including a meta-schema's or one another document declares. A tool might register the schema resources of every document it reads in one shared registry. One document can then change how another's references, or its meta-schema lookups, resolve (JSON Schema Core §13).
 - **Kind-specific processing.** A kind may interpret data as references or executable material. Risks from that interpretation and appropriate safeguards depend on the kind and execution environment.
+- **Data travels with the document.** Source and binding data are published with the document, so a credential, a private address, or an internal artifact placed there reaches every reader of it.
 - **Dependencies are not trust claims.** A matching operation name or kind establishes neither the authenticity nor the authorization of whatever supplies a realization. A realization found that way, and the values it supplies, stay untrusted until other means establish trust in them.
 - **Integrity is out of scope.** Authenticity and integrity are established by external means (transport security, content signing, out-of-band attestation) or not at all. [Appendix A](#appendix-a-canonical-serialization-informative) names a deterministic serialization such systems can build on.
 
@@ -768,7 +765,8 @@ Common measures against these exposures, where documents come from untrusted ori
 - capping the size of documents and fetched schemas;
 - bounding the cost of regular-expression matching;
 - keeping each document's schema resources apart from other documents' and from the meta-schemas;
-- bounding traversal through recursive schemas and schema references.
+- bounding traversal through recursive schemas and schema references;
+- keeping credentials and other secrets out of source and binding data.
 
 ---
 
@@ -799,7 +797,7 @@ A conformant OBI document:
 - **OBI-08**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
 - **OBI-09**: Has every `$schema` keyword in a schema the document contains ([§7](#7-reference-resolution)) equal to `https://json-schema.org/draft/2020-12/schema` or `https://json-schema.org/draft/2020-12/schema#`.
 - **OBI-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). They also apply with their `pattern` values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
-- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§7.2](#72-the-document-as-embedding)) an absolute URI ([§3](#3-terminology)) or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
+- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§7.2](#72-the-document-as-embedding)) an absolute URI ([§3](#3-terminology)) or a same-document reference, and every schema `$id` at an OBI position an absolute URI (the meta-schemas OBI-10 applies further exclude a non-empty fragment from `$id`). All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
 - **OBI-12**: Has every same-document schema `$ref` and `$dynamicRef` in the document resource identifying a schema the document contains ([§7.3](#73-same-document-references)). Has every `$ref` and `$dynamicRef`, in any schema the document contains, that resolves into a schema resource the document contains identify a schema the document contains when its fragment is resolved in that resource as JSON Schema defines ([§7.4](#74-other-references)). A reference resolves into such a resource when its value, resolved against its base URI and without its fragment, equals that resource's `$id` as OBI-13 compares `$id`s; for `$dynamicRef` this is its initial resolution, before any dynamic-scope replacement.
 - **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two schemas the document contains. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and at least one of these holds:
   - it is an absolute URI;

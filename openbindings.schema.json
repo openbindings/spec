@@ -34,14 +34,14 @@
         "$ref": "#/$defs/Operation"
       }
     },
-    "dependencies": {
+    "sources": {
       "type": "object",
-      "description": "Map of dependency keys to dependency objects (§5.5).",
+      "description": "Map of source keys to source objects (§5.4).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
       "additionalProperties": {
-        "$ref": "#/$defs/DependencyEntry"
+        "$ref": "#/$defs/SourceEntry"
       }
     },
     "bindings": {
@@ -54,6 +54,16 @@
         "$ref": "#/$defs/BindingEntry"
       }
     },
+    "dependencies": {
+      "type": "object",
+      "description": "Map of dependency keys to dependency objects (§5.5).",
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/DependencyEntry"
+      }
+    },
     "schemas": {
       "type": "object",
       "description": "Map of schema names to JSON Schemas (§5.2).",
@@ -62,16 +72,6 @@
       },
       "additionalProperties": {
         "$ref": "#/$defs/JSONSchema"
-      }
-    },
-    "sources": {
-      "type": "object",
-      "description": "Map of source keys to source objects (§5.4).",
-      "propertyNames": {
-        "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/SourceEntry"
       }
     }
   },
