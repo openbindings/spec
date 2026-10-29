@@ -41,7 +41,11 @@ document (§9), and that the meta-schemas exclude a non-empty fragment from
 `$id` (OBI-11); it condensed the undefined-result rules (§5.5), dropped a
 sentence on copying bindings between documents that the model no longer
 supports (§6), and renamed `examples/inline.obi.json` to
-`kind-only.obi.json`.
+`kind-only.obi.json`. A further pass gave each release's schema an `$id` of
+its own, with the line URL serving the latest (OBI-02, §10); noted that an
+implementation may mint a private base URI for the document's schemas
+(§7.2); and noted that anchors inside an `$id` resource follow JSON Schema
+(OBI-13).
 
 ### Binding/resources revision (2026-10-26, superseded)
 
@@ -259,12 +263,14 @@ covers any meaning it gives the document, not only the meaning of fields, which
   ordering, compatibility, or identity meaning
   ([§8.2](openbindings.md#82-version-field-interface-version-label)); 0.1
   recommended SemVer.
-- **The derived schema governs OBI-02.** `openbindings.schema.json` has the
-  `$id` `https://openbindings.com/schema/openbindings-0.2.json`, which names
-  the line (0.1: `openbindings-0.1.0.json`), and a title naming the patch
-  release. Where it and the prose disagree, it governs OBI-02 until a patch
-  release corrects it under the same `$id`. In 0.1 the schema was descriptive
-  and the prose governed. Its descriptions are short labels that cite the
+- **The derived schema governs OBI-02.** `openbindings.schema.json` has an
+  `$id` naming the release that publishes it
+  (`https://openbindings.com/schema/openbindings-0.2.0.json` for 0.2.0; 0.1:
+  `openbindings-0.1.0.json`), and
+  `https://openbindings.com/schema/openbindings-0.2.json` serves the latest
+  release of the line's schema. Where it and the prose disagree, it governs
+  OBI-02 until a patch release corrects it under an `$id` of its own. In 0.1
+  the schema was descriptive and the prose governed. Its descriptions are short labels that cite the
   section defining each member.
 - **Examples are author claims.** Each example `input` and `output` is one
   caller-facing value the author claims satisfies the corresponding schema,
