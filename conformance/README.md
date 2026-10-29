@@ -10,15 +10,15 @@ A document given as a JSON value (`document`) stands for its serialization as UT
 
 The core files in `document/` and `scenarios/` test the current unreleased
 binding/resources text, including binding-owned kinds, resource data, contained
-schema references, OBI-14, and §7.6 shared-value lookup. The manifest indexes
-these cases. This is a qualification baseline, not a claim that any SDK passes it.
+schema references, and OBI-14. The manifest indexes these cases. This is a
+qualification baseline, not a claim that any SDK passes it.
 
 [resource-model-draft/](resource-model-draft/README.md) retains focused design
 checks. The [Go adapter](runners/go/README.md) and its recorded failures are
 historical source-model evidence, restricted to their original corpus; they do
 not qualify an implementation against this baseline. A current adapter must run
-the complete manifest, including `lookup-shared-value`, and report its actual
-results. [RESOURCE-MODEL-DRAFT.md](../RESOURCE-MODEL-DRAFT.md) records the remaining
+the complete manifest and report its actual results.
+[RESOURCE-MODEL-DRAFT.md](../RESOURCE-MODEL-DRAFT.md) records the remaining
 implementation and family-candidate work.
 
 ## Coverage
@@ -32,7 +32,6 @@ Each row names a rule of §10 or a section of `openbindings.md`, the files that 
 | 5.2 | `scenarios/5.2-values.json` | Values against schemas under JSON Schema 2020-12: format annotations, pinned ECMA-262 Unicode regexes, recursion, exact numbers, supplied external schemas and dialects, no contract, and dependence on undefined or external results through applicators and annotations. Pointers into identified and nested relative resources preserve their bases. Malformed references within identified resources stay undefined. Former missing-target, ambiguous-name and document dynamic-anchor value scenarios now assert document nonconformance under OBI-12 or OBI-14. |
 | 5.4 | `document/section-5.4.json` | Resources are arbitrary JSON values. Schema-shaped values, dialects, IDs, duplicate anchors, dynamic anchors, malformed or dangling references and nested OBI documents never enter the schema inventory or affect conformance. |
 | 6 | `scenarios/6-kinds.json` | Whether a binding meets a `kinds` constraint: kinds are exact strings, with no case folding, trimming, Unicode normalization, URI or URN normalization, decomposition, or inferred order; URI-shaped kinds are names, not addresses; `kinds` is an any-of constraint, and without it a dependency places no constraint on kind. |
-| 7.6 | `scenarios/7.6-shared-values.json` | Designated shared-value lookup: exactly one string $ref member; resources and schemas only; one UTF-8 percent-decoding pass; RFC 6901 escapes, object members and array indices; selected null, false and boolean schemas; no reference following or string substitution; malformed, external and missing references fail lookup without violating document conformance. |
 | 10 | `scenarios/10-conformance.json` | Whether a text conforms, beside the rule fixtures: the `version` field and an `x-openbindings` extension do not change the declared version, the patch number carries no meaning, a violating document violates the rules it breaks, and an escape that denotes an unpaired surrogate makes a text non-conformant. |
 | OBI-01 | `document/OBI-01.json` | Complete. The fixture format's mutually exclusive `documentText` and `documentBase64` carriages preserve exact input text and bytes, covering malformed JSON (a truncation, a `NaN` literal, a trailing comma), malformed UTF-8, a leading UTF-8 BOM, and duplicate keys at root and nested positions, including a key that repeats another only once its escape is decoded (RFC 8259 §8.3), and escapes that denote unpaired surrogates in string values and member names, inside an embedded schema too, with a surrogate pair and an escaped noncharacter as positives, in addition to ordinary positives. A text that declares no version (§8.1, Version declaration: one that is not UTF-8, has a leading byte-order mark, does not parse as JSON, or repeats its `openbindings` member) is governed by these rules, whatever version it looks like it holds; an ill-formed byte anywhere in a text means it declares no version, so a text reading `0.3.0` with an ill-formed byte in another member violates OBI-01. A text that violates OBI-01 is non-conformant through it alone: OBI-02 to OBI-14 apply only to the JSON value of a text that meets OBI-01 (§10). |
 | OBI-02 | `document/OBI-02.json` | Structural constraints and optional members of current OBI-defined objects. Missing kind violates OBI-02; present wrong-type or empty kinds overlap OBI-07; removed root sources and binding source are unknown fields. Resources must be a map whose values may be any JSON. Operation reference name syntax overlaps OBI-06 and OBI-08; an unfamiliar kind is valid. Preference covers type, both bounds and the spelling 1.0. |
@@ -89,7 +88,6 @@ conformance/
     5.2-values.json
     6-kinds.json
     10-conformance.json
-    7.6-shared-values.json
   runners/
     go/                         (historical Go harness; see its status note)
   binding-specs/                (per-family D-rule fixtures and portable P-rule scenarios; own README + verifier)
@@ -152,7 +150,6 @@ Each scenario carries `id` (its file's prefix and a number, such as `VALUES-07`,
 | `check-examples` | §5.1 | `document`, `operation` | per example and side the example supplies, the claim's truth: `true`, `false`, `undefined`, `external`, or `no-claim` |
 | `validate-operation-values` | §5.2 | `document`, `operation`, `side`, `values`; optional `resources` | one result per value; optional `dependsOn` |
 | `check-dependency-kind` | §5.5, §6 | `document`, `dependency`, `binding` | `meets` or `does-not-meet` |
-| `lookup-shared-value` | §7.6 | `document`, `reference` at a kind-designated position | `found` with required `value` (including null), or `not-found` |
 | `validate-document` | §10 | exactly one of `document`, `documentText`, `documentBase64` | `conformant`, or `non-conformant` with optional `violates` (a minimum set); optional `dependsOn` |
 
 **Value results.** A value result is one of:
@@ -164,8 +161,6 @@ Each scenario carries `id` (its file's prefix and a number, such as `VALUES-07`,
 - `{"result": ..., "dependsOn": [...]}`: that result, with a per-value dependence that replaces the case's `dependsOn` (an empty array: this value depends on no feature).
 
 **Example results.** `true` and `false` state the example's claim for a value (§5.1); `undefined` and `external` follow the value's result, as above; `no-claim` marks a value where no schema is stated.
-
-**Shared-value lookup.** The action represents one position a kind has designated. It does not scan binding content, interpret the selected value, merge siblings, follow references, or expand strings. `found` returns the selected JSON value unchanged; JSON object member order is immaterial. A malformed input form or unsuccessful selection returns `not-found`.
 
 **Supplied external schemas.** `given.resources` supplies schema documents for external references, each at its absolute URI; the expected results are what JSON Schema gives with them (§5.2), including the dialect JSON Schema assigns an external schema, and 2020-12 for a schema document whose root declares no `$schema`. This scenario input is separate from `given.document.resources`, which is always ordinary data.
 

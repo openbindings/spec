@@ -19,8 +19,7 @@
 //      no-schema and no-claim exactly where no schema is stated, complete
 //      example expectations, which operation a string identifies and whether
 //      a binding meets a kinds constraint as the document says (sections 5.1,
-//      5.5, and 6), shared-value lookup returns the selected value unchanged
-//      (section 7.6), and violates only on a non-conformant outcome.
+//      5.5, and 6), and violates only on a non-conformant outcome.
 //   5. The README's coverage table has one row per cited rule or section,
 //      listing exactly the files that cite it; every rule has a row, and a
 //      rule row without files is marked deferred.
@@ -34,8 +33,6 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { isDeepStrictEqual } from "node:util";
-import { sharedValue } from "./resource-model-draft.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let SPEC_ROOT = resolve(__dirname, "..");
@@ -315,16 +312,6 @@ function verifyScenarios(file, relPath, ctx) {
           if (e.operationKey !== got.operationKey) err(`${label}: expected operation ${e.operationKey}, but the string identifies ${got.operationKey}`);
           const a = [...(e.bindingKeys || [])].sort(), b = [...got.bindingKeys].sort();
           if (JSON.stringify(a) !== JSON.stringify(b)) err(`${label}: expected bindings ${a.join(", ")}; the operation's bindings are ${b.join(", ")}`);
-        }
-        break;
-      }
-      case "lookup-shared-value": {
-        if (!d) break;
-        const selected = sharedValue(d, g.reference);
-        const want = selected.found ? "found" : "not-found";
-        if (e.outcome !== want) err(`${label}: expected ${e.outcome}, but shared-value lookup says ${want} (section 7.6)`);
-        else if (selected.found && (!own(e, "value") || !isDeepStrictEqual(e.value, selected.value))) {
-          err(`${label}: expected value differs from the unchanged selected value (section 7.6)`);
         }
         break;
       }

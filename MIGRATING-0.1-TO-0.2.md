@@ -40,11 +40,8 @@ no longer part of the document model.
 6. **Preserve reference context.** An absolute `$id` keeps a standalone schema's
    internal references scoped to its schema resource. When migrating an
    artifact, follow the kind's rules for its root, base, and references.
-   Shared-value lookup supplies no artifact base or guarantee that inline and
-   shared representations have equivalent interpretation.
 
-A shared-value reference in binding content never adds a schema to the
-document.
+Nothing binding content refers to becomes one of the document's schemas.
 
 ## From the intermediate draft that stored schemas in `resources`
 
@@ -67,7 +64,7 @@ separate question.
 | 0.1 shape | Current 0.2 draft |
 | --- | --- |
 | Source `format` | Exact `kind` on each binding |
-| Source `location` / `content`, binding `ref` | Kind-defined binding `content`, optionally referencing shared values |
+| Source `location` / `content`, binding `ref` | Kind-defined binding `content`, referring to shared values as its kind defines |
 | Root `schemas` | Root `schemas`, unchanged; other shared values in `resources` |
 | Source/binding `priority`, lower preferred | Binding-only `preference`, higher preferred; no selection algorithm |
 | Operation-level `idempotent` | Binding-level repetition claim |

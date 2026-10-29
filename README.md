@@ -22,14 +22,14 @@
 
 OpenBindings describes operations, their author-declared realizations,
 and named consumption points independently of protocols. Operations state what
-a component does. Each binding carries the kind that interprets its content.
+a component does. Each binding carries the kind of its content.
 Dependencies state which operations the software described by the OBI consumes.
 
 An OBI can be as small as `openbindings`, `operations`, and `bindings`. A document
 that only declares operations needs only `openbindings` and `operations`.
 Schemas and binding content can be inline. An optional `schemas` map holds
 shared schemas, and an optional `resources` map holds other shared values that
-kinds use, such as an API description.
+binding content refers to, such as an API description.
 
 ```json
 {
@@ -60,8 +60,9 @@ behavior.
   keys, optionally constrained to acceptable kinds.
 - **Schemas** are optional named JSON Schema 2020-12 schemas that operation
   schemas share. Every entry is one of the document's schemas, used or not.
-- **Resources** are optional named JSON values that kinds use: embedded
-  artifacts, graphs, configuration. OpenBindings never reads them as schemas.
+- **Resources** are optional named JSON values that binding content refers to:
+  embedded artifacts, graphs, configuration. OpenBindings never reads them as
+  schemas.
 - **Aliases** give an operation additional names, including names adopted
   from published sets of operations. Correspondence is an author claim, with no
   trust or compatibility proof attached.
@@ -71,13 +72,13 @@ behavior.
 An operation schema uses a shared schema with `{"$ref":"#/schemas/Task"}`.
 Where a value sits decides how OpenBindings reads it: a schema reference cannot
 reach into `resources`, so an embedded artifact's own schemas, identifiers, and
-references are never read as the document's. A kind may adopt the same-document
-shared-value reference form at designated content positions to use an entry of
-`resources` or `schemas`. OpenBindings never recursively expands arbitrary `$ref`
-objects in stored artifacts.
+references are never read as the document's. What binding content refers to,
+such as an entry of `resources` or `schemas`, is its kind's to define.
+OpenBindings never scans content or stored artifacts for references, and never
+expands them.
 
 The [reference chapter](openbindings.md#7-reference-resolution) defines the
-document's schemas, resource boundaries, and shared-value lookup. The
+document's schemas and resource boundaries. The
 [embedded-artifact example](examples/shared-resources.obi.json) stores one
 OpenAPI document for two bindings and a copy of its `Task` schema for the
 operations. The
@@ -97,7 +98,7 @@ credential handling are outside it.
 | [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md) | This revision's decisions, validation, and migration boundaries |
 | [MIGRATING-0.1-TO-0.2.md](MIGRATING-0.1-TO-0.2.md) | Migration from 0.1 and the earlier 0.2 source model |
 | [examples/](examples/) | Illustrative documents using the current draft |
-| [conformance/resource-model-draft/](conformance/resource-model-draft/README.md) | Focused structural, schema-inventory, and lookup cases for this revision |
+| [conformance/resource-model-draft/](conformance/resource-model-draft/README.md) | Focused structural and schema-inventory cases for this revision |
 | [binding-specs/](binding-specs/README.md) | Separately scoped kind candidates |
 | [versions/](versions/) | Immutable released snapshots |
 
@@ -105,15 +106,15 @@ credential handling are outside it.
 
 The current specification is the **unreleased 0.2.0 binding/resources draft**;
 0.1.0 remains the latest release. This revision removes the preceding draft's
-`sources` map, adds `resources` for values that kinds use, keeps `schemas`, and
-moves `kind` onto bindings.
+`sources` map, adds `resources` for values that binding content refers to, keeps
+`schemas`, and moves `kind` onto bindings.
 
 The [core conformance corpus](conformance/README.md) now tests this document
-model, including binding kinds, resources, contained schema references, OBI-14
-and shared-value lookup. No SDK qualification result is asserted for this
-baseline. The Go adapter and its recorded failures describe the historical
-source model; family candidates and SDK adapters still require migration.
-The focused draft checks remain a design aid. See
+model, including binding kinds, resources, contained schema references and
+OBI-14. No SDK qualification result is asserted for this baseline. The Go
+adapter and its recorded failures describe the historical source model; family
+candidates and SDK adapters still require migration. The focused draft checks
+remain a design aid. See
 [the draft status](RESOURCE-MODEL-DRAFT.md) for implementation boundaries.
 
 ## Contributing

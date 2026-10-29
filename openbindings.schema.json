@@ -66,7 +66,7 @@
     },
     "resources": {
       "type": "object",
-      "description": "Named shared JSON values that kinds use; never read as schemas (§5.4).",
+      "description": "Named shared JSON values that binding content refers to; never read as schemas (§5.4).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -202,7 +202,7 @@
         "kind": {
           "type": "string",
           "minLength": 1,
-          "description": "Exact, opaque kind interpreting this binding (§6)."
+          "description": "Exact, opaque name of how this binding's content is read (§6)."
         },
         "content": {
           "description": "Content read under the binding's kind (§5.3)."

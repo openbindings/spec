@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
-import { fragmentPointer, select, sharedValue, schemaInventory } from "./resource-model-draft.mjs";
+import { fragmentPointer, select, schemaInventory } from "./resource-model-draft.mjs";
 
 const require = createRequire(new URL("../.github/package.json", import.meta.url));
 const Ajv2020 = require("ajv/dist/2020.js");
@@ -29,7 +29,7 @@ for (const content of [null, false, 3, "text", [], {}, { operation: "kind-owned"
   const document = base();
   document.bindings.local.content = content;
   document.resources = { value: content };
-  shape(document, true, "arbitrary content and shared values");
+  shape(document, true, "arbitrary content and resource values");
 }
 shape({ ...base(), sources: {} }, false, "removed sources");
 shape({ ...base(), schemas: {} }, true, "empty schemas map");
@@ -63,27 +63,7 @@ for (const test of cases) {
   assert.deepEqual(schemaInventory(reordered), expected, `${test.name}: order independence`);
 }
 
-const stored = JSON.parse(`{"schemas":{"Task":{"type":"object","properties":{"id":{"$ref":"#/schemas/Id"}}}},"resources":{"data":{"a/b":{"~key":null},"array":[false,{"ok":true}],"":"empty","%2F":"percent","é":"unicode","__proto__":"own"},"literal":{"$ref":"#/resources/other"},"artifact":{"openapi":"3.1.0","nested":{"$ref":"#/components/schemas/Task"}},"other":42}}`);
-const original = JSON.stringify(stored);
-const found = [
-  ["#/resources/data/a~1b/~0key", null],
-  ["#/resources/data/array/0", false],
-  ["#/resources/data/array/1/ok", true],
-  ["#/resources/data/", "empty"],
-  ["#/resources/data/%252F", "percent"],
-  ["#/resources/data/%C3%A9", "unicode"],
-  ["#/resources/data/__proto__", "own"],
-  ["#/resources/literal", { $ref: "#/resources/other" }],
-  ["#/resources/artifact", stored.resources.artifact],
-  ["#/schemas/Task", stored.schemas.Task],
-  ["#/schemas/Task/properties/id", { $ref: "#/schemas/Id" }],
-];
-for (const [reference, value] of found) assert.deepEqual(sharedValue(stored, { $ref: reference }), { found: true, value }, reference);
-const missing = ["", "#", "#name", "#/resources", "#/resources/missing", "#/schemas", "#/schemas/Missing", "#/operations", "#/operations/run", "other.json#/resources/data", "https://example.com/#/resources/data", "#/resources/data/array/01", "#/resources/data/array/-", "#/resources/data/array/2", "#/resources/data/array/1.0", "#/resources/data/array/length", "#/resources/data/toString", "#/resources/data/a~2b", "#/resources/data/%FF", "#/resources/data/%ZZ", "#/resources/data/%", "#/resources/data/a b", "#/resources/data/é", "#/resources/data/a#b"];
-for (const reference of missing) assert.deepEqual(sharedValue(stored, { $ref: reference }), { found: false }, reference);
-for (const reference of [null, "#/resources/other", {}, { $ref: 42 }, { $ref: "#/resources/other", description: "sibling" }]) assert.deepEqual(sharedValue(stored, reference), { found: false });
-assert.deepEqual(fragmentPointer("#/resources/data/%7E01"), ["resources", "data", "~1"], "tilde decoding occurs once");
-assert.equal(JSON.stringify(stored), original, "lookup never rewrites artifact or literal references");
+assert.deepEqual(fragmentPointer("#/schemas/Task/%7E01"), ["schemas", "Task", "~1"], "percent and tilde decoding each occur once (§7.3)");
 
 let checked = 0;
 function example(document, name) {
@@ -101,4 +81,4 @@ for (const file of ["openbindings.md", "README.md", "MIGRATING-0.1-TO-0.2.md"]) 
     if (document !== null && typeof document === "object" && Object.hasOwn(document, "openbindings")) example(document, `${file}: JSON example`);
   }
 }
-console.log(`Draft checks passed: structural cases, ${cases.length} inventory cases (both orders), ${found.length + missing.length + 5} lookup cases, ${checked} example documents. This is not a full conformance validator.`);
+console.log(`Draft checks passed: structural cases, ${cases.length} inventory cases (both orders), ${checked} example documents. This is not a full conformance validator.`);

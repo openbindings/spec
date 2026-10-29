@@ -6,11 +6,11 @@
   ],
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 23,
+    "files": 22,
     "fixtureFiles": 17,
-    "scenarioFiles": 6,
+    "scenarioFiles": 5,
     "tests": 363,
-    "scenarios": 180,
+    "scenarios": 131,
     "positives": 149,
     "negatives": 214,
     "rulesCoveredDocument": 14,
@@ -21,7 +21,6 @@
       "5.2",
       "5.4",
       "6",
-      "7.6",
       "10",
       "12"
     ]
@@ -29,7 +28,6 @@
   "actions": {
     "check-dependency-kind": 17,
     "check-examples": 7,
-    "lookup-shared-value": 49,
     "resolve-operation": 21,
     "validate-document": 11,
     "validate-operation-values": 75,
@@ -215,15 +213,6 @@
       "scenarios": 17,
       "actions": {
         "check-dependency-kind": 17
-      }
-    },
-    {
-      "path": "scenarios/7.6-shared-values.json",
-      "section": "7.6",
-      "format": "openbindings.core-scenarios@4",
-      "scenarios": 49,
-      "actions": {
-        "lookup-shared-value": 49
       }
     }
   ]

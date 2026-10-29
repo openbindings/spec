@@ -6,26 +6,29 @@ implementation work still needed. It is not a new released version.
 
 ## Decisions in this draft
 
-- Each binding carries `operation`, `kind`, and optional `content`. Keeping
-  content nested gives the kind its own namespace and preserves room for future
-  fields on the binding. Content can be any JSON value, including `null`.
+- Each binding carries `operation`, `kind`, and optional `content`. A kind is
+  the kind of the binding's content: it names how `content` is read, and the
+  binding declares its realization through that content. Keeping content nested
+  gives the kind its own namespace and preserves room for future fields on the
+  binding. Content can be any JSON value, including `null`.
 - `sources` and `bindings[*].source` are removed. A kind decides whether its
   binding needs an artifact, a target selector, both, or neither.
 - The `schemas` map stays, and optional `resources` replaces shared source
   storage. Every `schemas` entry is one of the document's schemas, used or not.
   `resources` entries are arbitrary JSON values with no required wrapper or type
   tag, and OpenBindings never reads them as schemas.
-- A kind can adopt the shared-value reference form
-  `{"$ref":"#/resources/name"}` or `{"$ref":"#/schemas/name"}` at specified
-  content positions. Lookup returns the selected value unchanged. There is no
-  global reference expansion, automatic merging, or scanning of unfamiliar
-  content. Each kind determines how inline and referenced material are
-  interpreted; the draft no longer requires those interpretations to be
-  equivalent. A kind that reads a `schemas` entry as JSON Schema reads the
-  document's schema.
-- Operation schemas use JSON Schema references. A kind's shared-value reference
-  and a schema's `$ref` have different semantics even when their spelling is
-  identical. Artifact reference roots and bases remain the kind's responsibility.
+- The specification makes no claim about what binding content may refer to, or
+  how; that is its kind's to define. Content is read in its document, so a
+  binding copied into another document resolves its references there. There is
+  no global reference expansion, automatic merging, or scanning of unfamiliar
+  content. An earlier form of this draft defined a shared-value reference form
+  and lookup (former §7.6) that kinds could adopt. It is removed: a kind that
+  uses JSON Pointer references cites RFC 6901 itself, and any house style the
+  project's own kinds share belongs in `binding-specs/PROJECT-POLICY.md`.
+- Operation schemas use JSON Schema references. Whatever references a kind
+  defines in content are separate from a schema's `$ref`, even when their
+  spelling is identical. Artifact reference roots and bases remain the kind's
+  responsibility.
 - Dependencies compare their `kinds` constraints directly with `binding.kind`.
 
 [inline.obi.json](examples/inline.obi.json) demonstrates the three-field shape:
@@ -78,17 +81,17 @@ unfinished or untranslated material waits in `resources`.
 | --- | --- |
 | Specification text and derived structural schema | Updated |
 | Top-level examples, overview, changelog, migration guide | Updated |
-| Focused structural, schema-inventory, and shared-value lookup checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
-| Core document corpus, scenarios and manifest | Migrated to binding-owned kinds, resource data, current OBI-12 and OBI-14, with §7.6 lookup scenarios; see [core coverage](conformance/README.md#coverage) |
+| Focused structural and schema-inventory checks | Added; see [draft checks](conformance/resource-model-draft/README.md) |
+| Core document corpus, scenarios and manifest | Migrated to binding-owned kinds, resource data, current OBI-12 and OBI-14; the former §7.6 lookup scenarios are removed; see [core coverage](conformance/README.md#coverage) |
 | Binding family candidates and their corpora | Still require individual content, reference, and base-preservation designs |
 | SDKs and conformance runner adapters | No current qualification run recorded; the Go adapter and failures are historical, and its manual workflow uses a pinned historical corpus |
 | Released snapshots and published binding bundles | Unchanged |
 
 The core corpus now exercises OBI-07's binding-kind rule, pointers into identified
-resources, OBI-12's contained-resource requirements and OBI-14. Its §7.6 action
-checks lookup without giving core any interpretation of kind content. Corpus
-verification checks fixture consistency; it does not establish SDK support.
-The focused checks remain an executable design aid.
+resources, OBI-12's contained-resource requirements and OBI-14. It gives core no
+interpretation of kind content. Corpus verification checks fixture consistency;
+it does not establish SDK support. The focused checks remain an executable
+design aid.
 
 Before releasing this revision, migrate implementations, resolve each candidate
 kind's new content shape, test its reference and interpretation rules, and run

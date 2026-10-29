@@ -14,10 +14,9 @@ node scripts/check-canonical-order.mjs examples/*.obi.json
 
 The checks cover the derived structural schema, the document's schemas as §7
 defines them, their validity against the pinned 2020-12 meta-schemas, the
-same-document references OBI-12 covers in the document resource, the
-`$dynamicAnchor` placement OBI-14 excludes, and the shared-value lookup in §7.6.
-They also check the example files and complete OBIs in the core, overview, and
-migration guide's JSON blocks.
+same-document references OBI-12 covers in the document resource, and the
+`$dynamicAnchor` placement OBI-14 excludes. They also check the example files
+and complete OBIs in the core, overview, and migration guide's JSON blocks.
 
 [inventory.json](inventory.json) supplies documents and expected inventories.
 Its paths are decoded JSON Pointers, not URI fragments. `entries` lists each
@@ -34,10 +33,8 @@ to non-schema locations from pointers that reach schemas, including inside a
 schema that declares `$id`; and copies of standalone schemas with and without
 their `$id`.
 
-[The runner](../../scripts/test-resource-model-draft.mjs) adds shared-value lookup
-cases into `resources` and `schemas` for escaped tokens, arrays, null, malformed
-references, literal `$ref` values, and unchanged artifact contents. It checks
-each case with operations and map entries in both orders.
+[The runner](../../scripts/test-resource-model-draft.mjs) checks each inventory
+case with operations and map entries in both orders.
 
 [The helper](../../scripts/resource-model-draft.mjs) is informative draft code.
 It is not a general JSON Schema implementation or a full OBI validator. These
