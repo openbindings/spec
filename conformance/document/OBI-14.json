@@ -183,17 +183,22 @@
       "valid": true
     },
     {
-      "description": "$dynamicAnchor in binding content is data (§5.3, §7).",
+      "description": "$dynamicAnchor in binding data is data (§5.3, §7).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "op": {}
         },
+        "sources": {
+          "local": {
+            "kind": "example.test@1"
+          }
+        },
         "bindings": {
           "b": {
             "operation": "op",
-            "kind": "example.test@1",
-            "content": {
+            "source": "local",
+            "data": {
               "$dynamicAnchor": "n"
             }
           }
@@ -202,13 +207,16 @@
       "valid": true
     },
     {
-      "description": "$dynamicAnchor in resources is data (§5.4, §7).",
+      "description": "$dynamicAnchor in a source's data is data (§5.4, §7).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": {
-            "$dynamicAnchor": "n"
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$dynamicAnchor": "n"
+            }
           }
         }
       },

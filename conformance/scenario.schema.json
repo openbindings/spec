@@ -43,9 +43,6 @@
           },
           {
             "$ref": "#/$defs/validateDocument"
-          },
-          {
-            "$ref": "#/$defs/lookupSharedValue"
           }
         ]
       }
@@ -513,69 +510,6 @@
                   "outcome": {
                     "const": "non-conformant"
                   }
-                }
-              }
-            }
-          ]
-        }
-      }
-    },
-    "lookupSharedValue": {
-      "description": "Lookup at a position a kind designates for shared-value references (§7.6). No discovery or expansion of binding content is implied.",
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/common"
-        }
-      ],
-      "unevaluatedProperties": false,
-      "properties": {
-        "action": {
-          "const": "lookup-shared-value"
-        },
-        "given": {
-          "type": "object",
-          "required": [
-            "document",
-            "reference"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "document": {
-              "$ref": "#/$defs/obiDocument"
-            },
-            "reference": {
-              "description": "The JSON value at the designated position. Only an object with exactly one string-valued $ref member can identify a shared value."
-            }
-          }
-        },
-        "expected": {
-          "oneOf": [
-            {
-              "type": "object",
-              "required": [
-                "outcome",
-                "value"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "outcome": {
-                  "const": "found"
-                },
-                "value": {
-                  "description": "The selected JSON value, unchanged; null is a successful selection."
-                }
-              }
-            },
-            {
-              "type": "object",
-              "required": [
-                "outcome"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "outcome": {
-                  "const": "not-found"
                 }
               }
             }

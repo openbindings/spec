@@ -64,13 +64,15 @@
         "$ref": "#/$defs/JSONSchema"
       }
     },
-    "resources": {
+    "sources": {
       "type": "object",
-      "description": "Named shared JSON values that kinds use; never read as schemas (§5.4).",
+      "description": "Map of source keys to source objects (§5.4).",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
-      "additionalProperties": true
+      "additionalProperties": {
+        "$ref": "#/$defs/SourceEntry"
+      }
     }
   },
   "patternProperties": { "^x-": true },
@@ -192,20 +194,20 @@
     },
     "BindingEntry": {
       "type": "object",
-      "required": ["operation", "kind"],
+      "required": ["operation", "source"],
       "properties": {
         "operation": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
           "description": "Key into the document's operations map (§5.3)."
         },
-        "kind": {
+        "source": {
           "type": "string",
-          "minLength": 1,
-          "description": "Exact, opaque kind interpreting this binding (§6)."
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
+          "description": "Key into the document's sources map (§5.3)."
         },
-        "content": {
-          "description": "Content read under the binding's kind (§5.3)."
+        "data": {
+          "description": "Binding data, read under the source's kind (§5.3)."
         },
         "idempotent": {
           "type": "boolean",
@@ -224,6 +226,26 @@
         "deprecated": {
           "type": "boolean",
           "description": "Author recommends migration away from this binding (§5.3)."
+        }
+      },
+      "patternProperties": { "^x-": true },
+      "additionalProperties": false
+    },
+    "SourceEntry": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact, opaque name of how this source's data and its bindings' data are read (§6)."
+        },
+        "data": {
+          "description": "Source data, read under the source's kind (§5.4)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description (§5.4)."
         }
       },
       "patternProperties": { "^x-": true },

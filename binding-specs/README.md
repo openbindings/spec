@@ -1,11 +1,12 @@
 # Binding specifications
 
-**Binding/resources revision pending.** All family candidates below were written
-against earlier core shapes. The current working core puts `kind` on bindings
-and replaces `sources`/`schemas` with `resources`. These candidates require an
-explicit content-contract migration before claiming that revised model. Their
-publication records and earlier evidence are unchanged; see
-[the draft status](../RESOURCE-MODEL-DRAFT.md).
+**Sources revision pending.** All family candidates below were written against
+earlier core shapes. The current working core returns `sources`: each source
+carries `kind` and optional `data`, each binding names its source and carries
+optional `data`, and both are read under the source's kind. These candidates
+require an explicit data-contract migration before claiming that revised model.
+Their publication records and earlier evidence are unchanged; see
+[the draft status](../SOURCE-MODEL-DRAFT.md).
 
 Project transform policy: published binding specifications use JSONata when they
 provide transform expressions ([PB-04](PROJECT-POLICY.md#pb-04-transform-language)).

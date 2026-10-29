@@ -1,7 +1,7 @@
 {
   "rule": "OBI-04",
   "section": "10",
-  "description": "Has every map key this specification defines (operation, dependency, binding, schema, resource, and example keys) and every entry of an operation's aliases array a string matching ^[A-Za-z0-9_][A-Za-z0-9_.-]*$. The pattern is an ECMA-262 regular expression matched against the whole name. Property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.",
+  "description": "Has every map key this specification defines (operation, source, binding, dependency, schema, and example keys) and every entry of an operation's aliases array a string matching ^[A-Za-z0-9_][A-Za-z0-9_.-]*$. The pattern is an ECMA-262 regular expression matched against the whole name. Property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.",
   "notes": "The grammar permits a leading digit (2fa.verify): names are opaque data labels, not host-language identifiers. Only the start character is constrained to an alphanumeric or underscore; a leading dot or hyphen, embedded whitespace, slashes, non-ASCII characters, and the empty string remain rejected.",
   "tests": [
     {
@@ -51,10 +51,15 @@
         "operations": {
           "createTask": {}
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
-            "kind": "example.openapi@1"
+            "source": "tasksApi"
           }
         }
       },
@@ -163,12 +168,15 @@
       "valid": true
     },
     {
-      "description": "Resource keys follow the name grammar; whitespace is forbidden (§5.4, OBI-04).",
+      "description": "Source keys follow the name grammar; whitespace is forbidden (§5.4, OBI-04).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "http api": {}
+        "sources": {
+          "http api": {
+            "kind": "example.openapi@1",
+            "data": {}
+          }
         }
       },
       "valid": false,
@@ -251,10 +259,15 @@
         "operations": {
           "-badKey": {}
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
-            "kind": "example.openapi@1"
+            "source": "tasksApi"
           }
         }
       },
@@ -351,10 +364,15 @@
         "operations": {
           "createTask": {}
         },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
         "bindings": {
           "createTask http": {
             "operation": "createTask",
-            "kind": "example.openapi@1"
+            "source": "tasksApi"
           }
         }
       },
@@ -399,34 +417,43 @@
       ]
     },
     {
-      "description": "Resource key \"x-data\" is an ordinary entry name, including x- names (§5.4, §12).",
+      "description": "Source key \"x-data\" is an ordinary entry name, including x- names (§5.4, §12).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "x-data": null
+        "sources": {
+          "x-data": {
+            "kind": "example.local@1",
+            "data": null
+          }
         }
       },
       "valid": true
     },
     {
-      "description": "Resource key \"x-\" is an ordinary entry name, including x- names (§5.4, §12).",
+      "description": "Source key \"x-\" is an ordinary entry name, including x- names (§5.4, §12).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "x-": null
+        "sources": {
+          "x-": {
+            "kind": "example.local@1",
+            "data": null
+          }
         }
       },
       "valid": true
     },
     {
-      "description": "Resource key \"x-/data\" is an ordinary entry name, including x- names (§5.4, §12).",
+      "description": "Source key \"x-/data\" is an ordinary entry name, including x- names, and fails the grammar like any other (§5.4, §12, OBI-04).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "x-/data": null
+        "sources": {
+          "x-/data": {
+            "kind": "example.local@1",
+            "data": null
+          }
         }
       },
       "valid": false,
@@ -436,12 +463,15 @@
       ]
     },
     {
-      "description": "Resource key \"tail\\n\" is an ordinary entry name, including x- names (§5.4, §12).",
+      "description": "Source key \"tail\\n\" is an ordinary entry name, and fails the grammar like any other (§5.4, OBI-04).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "tail\n": null
+        "sources": {
+          "tail\n": {
+            "kind": "example.local@1",
+            "data": null
+          }
         }
       },
       "valid": false,
@@ -451,17 +481,20 @@
       ]
     },
     {
-      "description": "Member names inside resource values are unconstrained (§5.4).",
+      "description": "Member names inside a source's data are unconstrained (§5.4).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": {
-            "bad/name": {
-              "": true,
-              "with space": null,
-              "é": 1,
-              "x-/bad": []
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "bad/name": {
+                "": true,
+                "with space": null,
+                "é": 1,
+                "x-/bad": []
+              }
             }
           }
         }

@@ -6,7 +6,7 @@ and corpus/spec commit `30416ef1ca626e58eb8c383a0c71422a68f9243f`.
 They are retained for reproduction and are not qualification evidence for the
 current corpus. No current SDK run has been recorded. The executable refuses a
 manifest other than that historical baseline. It does not implement
-`lookup-shared-value` or binding-owned kinds.
+binding-owned kinds.
 
 Use the historical checkout of both the runner and corpus to reproduce those
 results. A new adapter must execute the current manifest and publish observed

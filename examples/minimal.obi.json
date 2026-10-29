@@ -2,7 +2,7 @@
   "openbindings": "0.2.0",
   "name": "Echo Service",
   "version": "1.0.0",
-  "description": "A minimal OpenBindings interface with a single operation and one binding.",
+  "description": "A minimal OpenBindings interface with a single operation, one source, and one binding.",
   "operations": {
     "echo": {
       "description": "Echo a message back unchanged.",
@@ -21,14 +21,17 @@
       }
     }
   },
+  "sources": {
+    "restApi": {
+      "kind": "example.openapi@1",
+      "data": {"location": "https://api.example.com/openapi.json"}
+    }
+  },
   "bindings": {
     "echo.restApi": {
       "operation": "echo",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"location": "https://api.example.com/openapi.json"},
-        "target": "#/paths/~1echo/post"
-      },
+      "source": "restApi",
+      "data": {"target": "#/paths/~1echo/post"},
       "idempotent": true
     }
   }

@@ -1,208 +1,165 @@
 {
   "rule": "OBI-07",
   "section": "10",
-  "description": "Has every bindings[*].kind value a non-empty string, compared exactly as §6 defines (OBI-07, §10).",
+  "description": "Has every bindings[*].source value present as a key in the document's sources map.",
   "tests": [
     {
-      "description": "A binding carries its own non-empty kind (§5.3, OBI-07).",
+      "description": "binding references an existing source key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "op": {}
+          "createTask": {}
+        },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
         },
         "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": "example.test@1"
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "tasksApi"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "A missing binding kind violates the required field constraint of OBI-02 (§5.3); OBI-07 checks present values (§10).",
+      "description": "binding references a non-existent source key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "op": {}
+          "createTask": {}
+        },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
         },
         "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "nonexistentSource"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-07"
+      ]
+    },
+    {
+      "description": "binding references source \"constructor\", a valid OBI-04 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "constructor"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-07"
+      ]
+    },
+    {
+      "description": "binding references a source when the document has no sources map",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "tasksApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-07"
+      ]
+    },
+    {
+      "description": "binding source value differs from a source key only in case: names are equal only as exact strings (section 5)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "tasksapi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-07"
+      ]
+    },
+    {
+      "description": "two bindings reference one source, and a source no binding references is permitted (section 5.3, section 5.4)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {},
+          "listTasks": {}
+        },
+        "sources": {
+          "tasksApi": {
+            "kind": "example.openapi@1"
+          },
+          "adminApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "tasksApi"
+          },
+          "listTasks.http": {
+            "operation": "listTasks",
+            "source": "tasksApi"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "document may genuinely define and reference a source named constructor",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
           "constructor": {
-            "operation": "op"
+            "kind": "example.openapi@1"
           }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02"
-      ],
-      "notViolated": [
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "A numeric binding kind violates OBI-07 and OBI-02 (§5.3).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
         },
         "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": 42
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "An empty binding kind violates OBI-07 and OBI-02 (§5.3).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": ""
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "A null kind is not a non-empty string (§5.3); OBI-02 overlaps.",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": null
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "A false kind is not a non-empty string (§5.3); OBI-02 overlaps.",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": false
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "A [] kind is not a non-empty string (§5.3); OBI-02 overlaps.",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": []
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "A {} kind is not a non-empty string (§5.3); OBI-02 overlaps.",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": {}
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-02",
-        "OBI-07"
-      ]
-    },
-    {
-      "description": "The non-empty kind \" \" is an opaque string, without a name grammar (§6).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": " "
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "The non-empty kind \"constructor\" is an opaque string, without a name grammar (§6).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": "constructor"
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "The non-empty kind \"https://EXAMPLE.test/kind@1\" is an opaque string, without a name grammar (§6).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "op": {}
-        },
-        "bindings": {
-          "b": {
-            "operation": "op",
-            "kind": "https://EXAMPLE.test/kind@1"
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "constructor"
           }
         }
       },

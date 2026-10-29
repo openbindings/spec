@@ -2,7 +2,7 @@
   "openbindings": "0.2.0",
   "name": "User Service",
   "version": "2.0.0",
-  "description": "A user service available through two OpenAPI-described APIs, a public API and an internal admin API, unified under one interface.",
+  "description": "A user service available through two OpenAPI-described APIs, a public API and an internal admin API, unified under one interface. The two sources share a kind.",
   "operations": {
     "getUser": {
       "description": "Retrieve a user by ID.",
@@ -20,54 +20,46 @@
       "output": {"$ref": "#/schemas/ListUsersOutput"}
     }
   },
+  "sources": {
+    "publicApi": {
+      "kind": "example.openapi@1",
+      "data": {"location": "https://api.example.com/openapi.json"},
+      "description": "Public-facing REST API"
+    },
+    "adminApi": {
+      "kind": "example.openapi@1",
+      "data": {"location": "https://admin.example.com/openapi.json"},
+      "description": "Internal admin REST API"
+    }
+  },
   "bindings": {
     "getUser.publicApi": {
       "operation": "getUser",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"$ref": "#/resources/publicApi"},
-        "target": "#/paths/~1users~1%7BuserId%7D/get"
-      },
-      "idempotent": true,
-      "description": "Public-facing REST API"
+      "source": "publicApi",
+      "data": {"target": "#/paths/~1users~1%7BuserId%7D/get"},
+      "idempotent": true
     },
     "getUser.adminApi": {
       "operation": "getUser",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"$ref": "#/resources/adminApi"},
-        "target": "#/paths/~1admin~1users~1%7BuserId%7D/get"
-      },
-      "idempotent": true,
-      "description": "Internal admin REST API"
+      "source": "adminApi",
+      "data": {"target": "#/paths/~1admin~1users~1%7BuserId%7D/get"},
+      "idempotent": true
     },
     "createUser.publicApi": {
       "operation": "createUser",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"$ref": "#/resources/publicApi"},
-        "target": "#/paths/~1users/post"
-      },
-      "description": "Public-facing REST API"
+      "source": "publicApi",
+      "data": {"target": "#/paths/~1users/post"}
     },
     "createUser.adminApi": {
       "operation": "createUser",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"$ref": "#/resources/adminApi"},
-        "target": "#/paths/~1admin~1users/post"
-      },
-      "description": "Internal admin REST API"
+      "source": "adminApi",
+      "data": {"target": "#/paths/~1admin~1users/post"}
     },
     "listUsers.adminApi": {
       "operation": "listUsers",
-      "kind": "example.openapi@1",
-      "content": {
-        "document": {"$ref": "#/resources/adminApi"},
-        "target": "#/paths/~1admin~1users/get"
-      },
-      "idempotent": true,
-      "description": "Internal admin REST API"
+      "source": "adminApi",
+      "data": {"target": "#/paths/~1admin~1users/get"},
+      "idempotent": true
     }
   },
   "schemas": {
@@ -113,9 +105,5 @@
         }
       }
     }
-  },
-  "resources": {
-    "publicApi": {"location": "https://api.example.com/openapi.json"},
-    "adminApi": {"location": "https://admin.example.com/openapi.json"}
   }
 }

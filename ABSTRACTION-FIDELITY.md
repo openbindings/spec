@@ -141,8 +141,8 @@ Where a source does not contain enough information to derive a useful
 protocol-independent operation contract, synthesis reports the limitation or
 excludes the smallest affected unit. It does not buy apparent coverage by
 emitting a protocol-shaped operation schema. A hand-authored OBI may provide
-an application contract, and binding content that adapts values as its binding
-specification defines, that the brownfield artifact alone could not establish.
+an application contract, and binding data that adapts values as its source's
+kind defines, that the brownfield artifact alone could not establish.
 
 An error-like application object crosses `output` only when it is already an
 ordinary successful value under the governed interaction or an OBI author has

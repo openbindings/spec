@@ -3,11 +3,10 @@
   "operations": {
     "echo": {}
   },
+  "sources": {
+    "local": {"kind": "example.echo@1"}
+  },
   "bindings": {
-    "echo.local": {
-      "operation": "echo",
-      "kind": "example.echo@1",
-      "content": {}
-    }
+    "echo.local": {"operation": "echo", "source": "local"}
   }
 }

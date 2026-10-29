@@ -1,5 +1,5 @@
-// Informative design aid for core §7 and §7.6; not a conformance validator.
-// See conformance/resource-model-draft/README.md for the deliberate limits.
+// Informative design aid for core §7; not a conformance validator.
+// See conformance/draft-checks/README.md for the deliberate limits.
 
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const schema = value => typeof value === "boolean" || object(value);
@@ -30,14 +30,6 @@ export function select(document, tokens) {
     value = value[token];
   }
   return { found: true, value };
-}
-
-// §7.6: a shared-value reference names an entry of `resources` or `schemas`, or a location within one.
-export function sharedValue(document, reference) {
-  if (!object(reference) || Object.keys(reference).length !== 1 || !own(reference, "$ref")) return { found: false };
-  const tokens = fragmentPointer(reference.$ref);
-  if (!tokens || tokens.length < 2 || (tokens[0] !== "resources" && tokens[0] !== "schemas")) return { found: false };
-  return select(document, tokens);
 }
 
 const maps = ["$defs", "properties", "patternProperties", "dependentSchemas", "definitions", "dependencies"];

@@ -53,7 +53,6 @@ const EXAMPLES = "conformance/scenarios/5.1-examples.json";
 const VALUES = "conformance/scenarios/5.2-values.json";
 const KINDS = "conformance/scenarios/6-kinds.json";
 const CONFORMANCE = "conformance/scenarios/10-conformance.json";
-const SHARED = "conformance/scenarios/7.6-shared-values.json";
 const OBI02 = "conformance/document/OBI-02.json";
 
 const NEGATIVE = [
@@ -154,28 +153,8 @@ const NEGATIVE = [
     editJSON(KINDS, (f) => { scenario(f, "KINDS-02").expected.outcome = "meets"; })],
   ["a named dependency the document lacks", "the named dependency or binding is not in the document",
     editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.dependency = "missing"; })],
-  ["dependency kinds read binding.kind directly", "but the document says does-not-meet",
-    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.document.bindings.b.kind = "different"; })],
-  ["a selected null is successful", "but shared-value lookup says found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-01").expected = { outcome: "not-found" }; })],
-  ["a selected value is unchanged", "expected value differs",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-01").expected.value = false; })],
-  ["a found result must carry its value, even null", "does not match scenario.schema.json",
-    editJSON(SHARED, (f) => { delete scenario(f, "SHARED-01").expected.value; })],
-  ["lookup never follows the selected reference", "expected value differs",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-11").expected.value = 42; })],
-  ["only resources and schemas are shared-value roots", "but shared-value lookup says not-found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-01").given.reference = { $ref: "#/operations/op" }; })],
-  ["percent encoding is decoded once", "but shared-value lookup says not-found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-05").given.reference.$ref = "#/resources/data/%2F"; })],
-  ["array indices cannot have leading zeros", "but shared-value lookup says not-found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-02").given.reference.$ref = "#/resources/data/array/00"; })],
-  ["reference siblings prevent shared-value lookup", "but shared-value lookup says not-found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-01").given.reference.extra = true; })],
-  ["a not-found result cannot carry a value", "does not match scenario.schema.json",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-16").expected.value = null; })],
-  ["a raw trailing newline is not a URI fragment", "but shared-value lookup says not-found",
-    editJSON(SHARED, (f) => { scenario(f, "SHARED-48").expected = { outcome: "found", value: "newline" }; })],
+  ["dependency kinds read the kind of the binding's source", "but the document says does-not-meet",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.document.sources.s.kind = "different"; })],
   // README coverage table
   ["a coverage row listing a file that does not cite it", "README coverage table: 5.1 lists",
     editText("conformance/README.md", (t) => t.replace("| 5.1 | `scenarios/5.1-names.json`, `scenarios/5.1-examples.json` |", "| 5.1 | `scenarios/5.1-names.json` |"))],
@@ -189,11 +168,6 @@ const NEGATIVE = [
 
 const POSITIVE = [
   ["the unmodified corpus passes", () => {}],
-  ["shared values compare as JSON objects regardless of member order", editJSON(SHARED, f => {
-    const test = scenario(f, "SHARED-13");
-    test.given.document.schemas.S = { type: "string", title: "Value" };
-    test.expected.value = { title: "Value", type: "string" };
-  })],
 ];
 
 function run(root) {

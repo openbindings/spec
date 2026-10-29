@@ -1,99 +1,54 @@
 {
   "section": "5.4",
-  "description": "Resources hold arbitrary JSON values that core never reads as schemas (§5.4).",
+  "description": "A source's data is arbitrary JSON that this specification never reads as schemas (§5.4).",
   "tests": [
     {
-      "description": "This specification never reads schema-shaped values with invalid schema keywords in resources as schemas (§5.4, §7.2).",
+      "description": "This specification never reads schema-shaped values with invalid schema keywords in a source's data as schemas (§5.4, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": {
-            "type": 42,
-            "items": []
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "This specification never reads $schema dialect declarations in resources as schemas (§5.4, §7.2).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {},
-        "resources": {
-          "data": {
-            "$schema": "http://json-schema.org/draft-07/schema#"
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "This specification never reads repeated $id declarations in resources as schemas (§5.4, §7.2).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {},
-        "resources": {
-          "data": [
-            {
-              "$id": "https://e.test/r"
-            },
-            {
-              "$id": "https://e.test/r"
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "type": 42,
+              "items": []
             }
-          ]
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "This specification never reads repeated anchors and dynamic anchors in resources as schemas (§5.4, §7.2).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {},
-        "resources": {
-          "data": [
-            {
-              "$anchor": "n"
-            },
-            {
-              "$anchor": "n"
-            },
-            {
-              "$dynamicAnchor": "n"
-            }
-          ]
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "This specification never reads dangling and malformed references in resources as schemas (§5.4, §7.2).",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {},
-        "resources": {
-          "data": {
-            "$ref": "#/missing",
-            "$dynamicRef": "#%ZZ"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "This specification never reads nested schema keywords in resources as schemas (§5.4, §7.2).",
+      "description": "This specification never reads $schema dialect declarations in a source's data as schemas (§5.4, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": {
-            "allOf": [
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "This specification never reads repeated $id declarations in a source's data as schemas (§5.4, §7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": [
               {
-                "$id": "relative.json",
-                "$dynamicAnchor": null,
-                "$ref": "#missing"
+                "$id": "https://e.test/r"
+              },
+              {
+                "$id": "https://e.test/r"
               }
             ]
           }
@@ -102,17 +57,83 @@
       "valid": true
     },
     {
-      "description": "This specification never reads a nested OBI document in resources as schemas (§5.4, §7.2).",
+      "description": "This specification never reads repeated anchors and dynamic anchors in a source's data as schemas (§5.4, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": {
-            "openbindings": "0.2.0",
-            "operations": {
-              "op": {
-                "input": {
-                  "$ref": "#/schemas/Missing"
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": [
+              {
+                "$anchor": "n"
+              },
+              {
+                "$anchor": "n"
+              },
+              {
+                "$dynamicAnchor": "n"
+              }
+            ]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "This specification never reads dangling and malformed references in a source's data as schemas (§5.4, §7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$ref": "#/missing",
+              "$dynamicRef": "#%ZZ"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "This specification never reads nested schema keywords in a source's data as schemas (§5.4, §7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "allOf": [
+                {
+                  "$id": "relative.json",
+                  "$dynamicAnchor": null,
+                  "$ref": "#missing"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "This specification never reads a nested OBI document in a source's data as schemas (§5.4, §7.2).",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "openbindings": "0.2.0",
+              "operations": {
+                "op": {
+                  "input": {
+                    "$ref": "#/schemas/Missing"
+                  }
                 }
               }
             }
@@ -122,41 +143,47 @@
       "valid": true
     },
     {
-      "description": "This specification never reads every JSON value in resources as schemas (§5.4, §7.2).",
+      "description": "This specification never reads any JSON value in a source's data as a schema (§5.4, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
-        "resources": {
-          "data": [
-            null,
-            false,
-            1,
-            "value",
-            [],
-            {}
-          ]
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": [
+              null,
+              false,
+              1,
+              "value",
+              [],
+              {}
+            ]
+          }
         }
       },
       "valid": true
     },
     {
-      "description": "Resource declarations cannot collide with real schema declarations (§5.4, §7.2).",
+      "description": "Declarations in a source's data cannot collide with the document's schema declarations (§5.4, §7.2).",
       "document": {
         "openbindings": "0.2.0",
         "operations": {},
+        "sources": {
+          "artifact": {
+            "kind": "example.local@1",
+            "data": {
+              "$id": "https://e.test/r.json",
+              "$anchor": "n",
+              "$dynamicAnchor": "n",
+              "$ref": "#missing"
+            }
+          }
+        },
         "schemas": {
           "R": {
             "$id": "https://e.test/r.json",
             "$anchor": "n",
             "$dynamicAnchor": "n"
-          }
-        },
-        "resources": {
-          "data": {
-            "$id": "https://e.test/r.json",
-            "$anchor": "n",
-            "$dynamicAnchor": "n",
-            "$ref": "#missing"
           }
         }
       },

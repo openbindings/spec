@@ -6,13 +6,13 @@
   ],
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 23,
+    "files": 22,
     "fixtureFiles": 17,
-    "scenarioFiles": 6,
-    "tests": 363,
-    "scenarios": 180,
+    "scenarioFiles": 5,
+    "tests": 372,
+    "scenarios": 133,
     "positives": 149,
-    "negatives": 214,
+    "negatives": 223,
     "rulesCoveredDocument": 14,
     "rulesPartialDocument": 0,
     "sectionsCited": [
@@ -21,19 +21,17 @@
       "5.2",
       "5.4",
       "6",
-      "7.6",
       "10",
       "12"
     ]
   },
   "actions": {
-    "check-dependency-kind": 17,
+    "check-dependency-kind": 19,
     "check-examples": 7,
-    "lookup-shared-value": 49,
     "resolve-operation": 21,
     "validate-document": 11,
     "validate-operation-values": 75,
-    "validity fixture": 363
+    "validity fixture": 372
   },
   "files": [
     {
@@ -48,9 +46,9 @@
       "path": "document/OBI-02.json",
       "rule": "OBI-02",
       "section": "10",
-      "tests": 71,
-      "positives": 13,
-      "negatives": 58
+      "tests": 84,
+      "positives": 14,
+      "negatives": 70
     },
     {
       "path": "document/OBI-03.json",
@@ -88,9 +86,9 @@
       "path": "document/OBI-07.json",
       "rule": "OBI-07",
       "section": "10",
-      "tests": 11,
-      "positives": 4,
-      "negatives": 7
+      "tests": 7,
+      "positives": 3,
+      "negatives": 4
     },
     {
       "path": "document/OBI-08.json",
@@ -212,18 +210,9 @@
       "path": "scenarios/6-kinds.json",
       "section": "6",
       "format": "openbindings.core-scenarios@4",
-      "scenarios": 17,
+      "scenarios": 19,
       "actions": {
-        "check-dependency-kind": 17
-      }
-    },
-    {
-      "path": "scenarios/7.6-shared-values.json",
-      "section": "7.6",
-      "format": "openbindings.core-scenarios@4",
-      "scenarios": 49,
-      "actions": {
-        "lookup-shared-value": 49
+        "check-dependency-kind": 19
       }
     }
   ]

@@ -15,30 +15,45 @@ transforms, and HTTP discovery leave this specification; kinds, dependencies,
 per-value schemas, location-independent references, and numbered conformance rules
 arrive. The specification specifies the document model only.
 
-### Binding/resources revision (2026-10-26)
+### Sources revision (2026-10-29)
+
+This unreleased revision returns `sources` to the document and removes
+`resources` and the binding `kind` (breaking relative to the preceding working
+draft). A source carries `kind` and optional `data`; a binding carries
+`operation`, `source`, and optional `data`; both data values are read under the
+source's kind, which also defines how they combine (§§5.3, 5.4, 6). `content`
+becomes `data` on both. OBI-07 is again the binding's `source` reference, and a
+source's kind being a non-empty string is structural under OBI-02. The
+specification still reads no data and makes no claim about what data refers to
+(invariant 4), and nothing in `sources` or in binding data is one of the
+document's schemas (§7). Of the preceding revision, described below, the typed
+`schemas` map and the removal of §7.6 stand; its binding-owned kinds and
+`resources` do not. The core corpus, examples, and the focused draft checks
+follow. [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) records the decisions
+and migration status.
+
+### Binding/resources revision (2026-10-26, superseded)
 
 This unreleased revision replaces the preceding 0.2 source model. Bindings
 carry their own required `kind`; `sources` and `bindings[*].source` are removed.
-Optional `resources` stores any JSON value a kind uses, without a wrapper, and
-the `schemas` map stays: where a value sits decides how OpenBindings reads it.
-Every `schemas` entry is one of the document's schemas; nothing in `resources`
-is, and a schema reference into `resources` identifies no schema the document
-contains, which violates OBI-12.
-OpenBindings §7.6 provides opt-in shared-value lookup into either map for kinds,
-without scanning or expanding arbitrary content. OBI-07 now constrains binding
-kinds. OBI-12 also covers references that resolve into a schema resource the
-document contains, and the new OBI-14 excludes `$dynamicAnchor` from the document
-resource. No released snapshot is changed. Earlier corpus and kind
-migrations are tracked separately in [RESOURCE-MODEL-DRAFT.md](RESOURCE-MODEL-DRAFT.md).
+Optional `resources` stores any JSON value binding content refers to, without a
+wrapper, and the `schemas` map stays: where a value sits decides how
+OpenBindings reads it. Every `schemas` entry is one of the document's schemas;
+nothing in `resources` is, and a schema reference into `resources` identifies
+no schema the document contains, which violates OBI-12. OBI-07 now constrains
+binding kinds. OBI-12 also covers references that resolve into a schema
+resource the document contains, and the new OBI-14 excludes `$dynamicAnchor`
+from the document resource. No released snapshot is changed. Its draft note,
+`RESOURCE-MODEL-DRAFT.md`, is replaced by
+[SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md).
 
 The glossary omits ordinary-language terms and duplicate definitions. Undefined
 results, plain names, and version declarations are defined in §§5.2, 7.3, and
 8.1. Schema references in the document resource are named directly.
 
 **Kind interpretation boundary (breaking relative to the preceding working
-draft).** Shared-value lookup returns unchanged JSON and establishes no artifact
-base; it no longer requires equivalent interpretation of inline and referenced
-material. Each kind defines that interpretation (§7.6). Bindings declare
+draft).** Equivalent interpretation of inline and referenced material is no
+longer required; each kind defines how its content is read (§6). Bindings declare
 realizations without requiring a separate target concept. The empty-object
 prescription for operations with no meaningful input or output and the advice
 that callers must distinguish errors through schemas are removed. The draft
@@ -54,6 +69,22 @@ gave failed or wrong readings. Restoring the `schemas` map removes that
 recognition procedure: a pointer into `resources` identifies no schema the
 document contains, and an `$id` there identifies nothing to the document's schemas. A pointer may reach a
 schema inside a schema that declares `$id` (§7.3).
+
+**Content kinds; shared-value lookup removed (2026-10-28, breaking relative to
+the preceding working draft).** A kind is the kind of a binding's content: it
+names how `content` is read, and through the meaning it gives that content the
+binding declares its realization (§§3, 6). The fields keep their names, `kind`
+stays required, and what absent content means stays the kind's to define. The
+specification makes no claim about what content may refer to, or how. Content
+is read in its document and refers to shared resources as its kind defines
+(§§5.4, 6). Shared-value references and their lookup (§7.6) are removed. Lookup
+was one of §8.1's guarantees for kinds, so its removal is breaking; §8.1 keeps
+storage in the `resources` map. A kind that used the form defines its own
+references, citing RFC 6901 for JSON Pointer. The core corpus drops
+`scenarios/7.6-shared-values.json` and the `lookup-shared-value` scenario action.
+Where the text says kinds and extensions leave its meaning unchanged, it now
+covers any meaning it gives the document, not only the meaning of fields, which
+§3 defines narrowly to exclude map keys and schema internals.
 
 ### Added
 
@@ -113,19 +144,21 @@ schema inside a schema that declares `$id` (§7.3).
 
 ### Changed
 
-- **Bindings carry their own `kind` and `content`.** Kind strings are exact,
-  opaque, non-empty names, with no normalization, version algebra, or address
-  meaning (§6). `operation` and `kind` are required; `content` is optional and
-  can be any JSON value. Source objects and the binding `source` member leave
-  the document model. Target identification, value adaptation, and interaction
-  mechanics are interpreted under each binding's kind (§5.3).
-- **Shared values use `resources`.** A name-to-value map replaces optional
-  source-content factoring and holds whatever kinds use, such as an embedded API
-  description. OpenBindings never reads it as schemas: a schema reference into it
-  identifies no schema the document contains, and identifiers in it are not
-  registered. Kinds may adopt
-  shared-value lookup into `resources` or `schemas` at explicit content positions
-  (§§5.4, 7.6); internal artifact references retain their own context.
+- **Sources carry kinds; bindings name their sources.** Each source carries a
+  required `kind`, an exact, opaque, non-empty name with no normalization,
+  version algebra, or address meaning (§6), and optional `data`. Each binding
+  carries `operation`, `source`, naming a key in `sources` (OBI-07), and
+  optional `data`. A binding has no kind of its own. The source's kind names how
+  its data and the data of the bindings naming it are read, and how they
+  combine; through that meaning each binding declares its realization (§§5.3,
+  5.4). Target identification, value adaptation, and interaction mechanics are
+  declared through source and binding data, read under the kind.
+- **`data` replaces `location`, `content`, and `ref`.** Source data holds
+  whatever the kind reads from the source: an embedded artifact, an address, a
+  descriptor, or nothing, where the kind needs only the source's name. Binding
+  data holds what the kind reads from the binding. OpenBindings never reads
+  either as schemas: a schema reference into `sources` identifies no schema the
+  document contains, and identifiers in data are not registered (§§5.4, 7).
 - **`priority` becomes `preference`.** The binding's `priority` (a number,
   lower preferred, with a source-level default) is replaced by `preference`,
   an integer from -9007199254740991 to 9007199254740991 where higher means
@@ -159,7 +192,7 @@ schema inside a schema that declares `$id` (§7.3).
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
   compatibility. The order of `aliases` carries no meaning, nor does that of
   `tags`, where a repeated tag adds nothing.
-- **Names have a grammar.** Operation, dependency, binding, schema, resource,
+- **Names have a grammar.** Operation, dependency, binding, schema, source,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
   compare as exact strings (OBI-04); strings are equal when their UTF-16 code
   units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.
@@ -168,8 +201,8 @@ schema inside a schema that declares `$id` (§7.3).
   other field violates OBI-02 ([§12](openbindings.md#12-extensions)), so a
   removed 0.1 member left in place makes a 0.2 document non-conformant. Keys
   inside the document's maps are entry names, not fields. Presence is
-  distinct from value, and an `x-` field, an extension, never changes the
-  meaning that OpenBindings assigns to a field.
+  distinct from value, and an `x-` field, an extension, never changes any
+  meaning that OpenBindings gives the document.
 - **An OBI is UTF-8 JSON.** Invalid UTF-8, malformed JSON, duplicate object
   keys, a leading byte-order mark, and an escape that denotes an unpaired
   surrogate (such as `"\ud800"`) make a document non-conformant (OBI-01).
@@ -247,8 +280,8 @@ schema inside a schema that declares `$id` (§7.3).
   Correspondence through keys and aliases replaces `roles` and `satisfies`.
 - **Security methods**: the `bearer`, `oauth2`, `basic`, and `apiKey` types.
 - **Transforms**: transform objects, named transforms, and the JSONata
-  requirement. Value adaptation is read under the binding's kind, typically
-  from binding `content`; OpenBindings defines no transform or expression
+  requirement. Value adaptation is read under the source's kind, typically
+  from binding `data`; OpenBindings defines no transform or expression
   language.
 - **Source addressing rules**: the requirement of exactly one of `location`
   or `content`, and resolution of a relative `location` against the
@@ -279,9 +312,9 @@ schema inside a schema that declares `$id` (§7.3).
   `openbindings.core-scenarios@4` (`scenario.schema.json`), grouped by the
   section that answers them: which operation a string identifies, whether
   values satisfy a schema, whether a binding meets a dependency's `kinds`,
-  what examples claim, what a shared-value reference selects, and whether a
-  document conforms. `runners/go` keeps the historical runner for the preceding
-  source-model corpus. The corpus is reference material; the prose governs.
+  what examples claim, and whether a document conforms. `runners/go` keeps the
+  historical runner for the preceding source-model corpus. The corpus is
+  reference material; the prose governs.
 - **Binding-specification candidates.** [`binding-specs/`](binding-specs/)
   holds unreleased first-revision candidates: one OpenAPI kind per OAS line
   (`openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`,
