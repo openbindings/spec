@@ -38,7 +38,7 @@ implementation work still needed. It is not a new released version.
   holds or addresses; the kind is neither one's format. A source may hold an
   OpenAPI 3.1 document while its kind is `example.openapi@1`.
 
-[inline.obi.json](examples/inline.obi.json) shows a source carrying only a
+[kind-only.obi.json](examples/kind-only.obi.json) shows a source carrying only a
 kind, and a binding carrying only `operation` and `source`.
 [embedded-source.obi.json](examples/embedded-source.obi.json) carries one
 OpenAPI document as source data shared by two bindings, with operation schemas
