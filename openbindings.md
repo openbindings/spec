@@ -140,20 +140,22 @@ The model rests on six invariants, cited elsewhere by number. Most of their term
 
 ## 3. Terminology
 
+The model's core nouns are identified here and defined in the sections cited. Three terms this specification uses in a sense a reader might not assume are defined here in full: caller-facing, field, and absolute URI.
+
 - **OBI**: an OpenBindings interface document.
-- **Operation**: a named, protocol-independent capability declared under a key in `operations`. Its identifiers name the capability, its description conveys what it does, and its optional input and output schemas govern each caller-facing value ([§5.1](#51-operations)).
-- **Alias**: an additional name under which an operation is recognized. A string equal to it identifies the operation exactly as its key does ([§5.1](#51-operations)).
-- **Correspondence**: an operation that carries a published name as its key or an alias **claims correspondence with** the operation that name identifies. The claim is read against each published set of operations a reader holds that includes the name. The claim is the author's alone ([§5.1](#51-operations)).
-- **Caller-facing**: said of the values an operation is about. A caller sends them to it and receives them from it on the operation's side of a binding. The operation's input and output schemas govern them where present.
+- **Operation**: a named, protocol-independent capability, under a key in `operations` ([§5.1](#51-operations)).
+- **Alias**: an additional name under which an operation is recognized ([§5.1](#51-operations)).
+- **Correspondence**: the claim an operation makes by carrying a published name as its key or an alias ([§5.1](#51-operations)).
+- **Caller-facing**: said of the values an operation is about. A caller sends them to it and receives them from it on the operation's side of a binding. The operation's input and output schemas govern them where present. Whatever else a realization needs, such as a credential, is not caller-facing.
 - **Author claim**: one of the claims [§5](#5-document-model) lists, which a document makes and whose truth is outside conformance.
-- **Binding**: an author-declared realization of an operation, under a key in `bindings`. The realization is declared by the binding's data and its source's data, read under the source's kind ([§5.3](#53-bindings)).
-- **Data**: the JSON value a source or a binding carries in `data`, read under the source's kind. A binding declares its realization through its data and its source's ([§6](#6-kinds)).
-- **Realization**: a concrete way of carrying out an operation. A binding declares one ([§5.3](#53-bindings)) and a dependency consumes one ([§5.5](#55-dependencies)), each as an author claim.
-- **Source**: a named entry in `sources` carrying a kind and optional data. What it holds or refers to, such as an API description, a running service, or nothing at all, is read under its kind ([§5.4](#54-sources)). This specification never reads a source's data, or anything in it, as a schema.
-- **Kind**: the exact, opaque, non-empty string a source carries in `kind` and a dependency may list in `kinds`. It names how the source's data and the data of the bindings naming the source are read ([§6](#6-kinds)).
-- **Dependency**: a named point where the software described by the OBI consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
-- **OBI position**: a place where the document model puts a schema. The **schemas the document contains** extend these through the resources declared there, nested resources included ([§7](#7-reference-resolution) defines both).
-- **Document resource**: the schema resource every schema at an OBI position that declares no `$id` belongs to ([§7.2](#72-the-document-as-embedding)).
+- **Source**: a named entry in `sources`, carrying a kind and optional data read under that kind ([§5.4](#54-sources)).
+- **Binding**: an author-declared realization of an operation, under a key in `bindings`, naming its source and carrying optional data read under the source's kind ([§5.3](#53-bindings)).
+- **Realization**: a concrete way of carrying out an operation. A binding declares one and a dependency consumes one ([§5.3](#53-bindings), [§5.5](#55-dependencies)).
+- **Kind**: the exact, opaque, non-empty string a source carries in `kind` and a dependency may list in `kinds`; it names how data is read ([§6](#6-kinds)).
+- **Dependency**: a named point, under a key in `dependencies`, where the software described by the OBI consumes a realization of an operation ([§5.5](#55-dependencies)).
+- **Schema**: a JSON Schema 2020-12 schema, in object or boolean form, at an operation's `input` or `output` or in the `schemas` map, with its subschemas ([§5.2](#52-schemas); [§7](#7-reference-resolution) defines exactly which schemas the document contains).
+- **OBI position**: a place where the document model puts a schema ([§7](#7-reference-resolution)).
+- **Document resource**: the schema resource that the schemas at OBI positions declaring no `$id` belong to ([§7.2](#72-the-document-as-embedding)).
 - **Field**: a member of an OBI-defined object (the document root, and operation, dependency, binding, source and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
 - **Absolute URI**: a URI with a scheme (RFC 3986 §3), fragment permitted; not RFC 3986's `absolute-URI` production, which excludes fragments.
 
@@ -548,7 +550,7 @@ Nothing else in the document is a schema it contains: no value in `sources`, in 
 
 ### 7.1. Reference forms
 
-The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#72-the-document-as-embedding). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
 
 ### 7.2. The document as embedding
 
@@ -795,9 +797,9 @@ A conformant OBI document:
 - **OBI-06**: Has every `bindings[*].operation` value present as a key in the document's `operations` map.
 - **OBI-07**: Has every `bindings[*].source` value present as a key in the document's `sources` map.
 - **OBI-08**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
-- **OBI-09**: Has every `$schema` keyword in a schema the document contains ([§3](#3-terminology)) equal to `https://json-schema.org/draft/2020-12/schema` or `https://json-schema.org/draft/2020-12/schema#`.
+- **OBI-09**: Has every `$schema` keyword in a schema the document contains ([§7](#7-reference-resolution)) equal to `https://json-schema.org/draft/2020-12/schema` or `https://json-schema.org/draft/2020-12/schema#`.
 - **OBI-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). They also apply with their `pattern` values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
-- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§3](#3-terminology)) an absolute URI or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
+- **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§7.2](#72-the-document-as-embedding)) an absolute URI ([§3](#3-terminology)) or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
 - **OBI-12**: Has every same-document schema `$ref` and `$dynamicRef` in the document resource identifying a schema the document contains ([§7.3](#73-same-document-references)). Has every `$ref` and `$dynamicRef`, in any schema the document contains, that resolves into a schema resource the document contains identify a schema the document contains when its fragment is resolved in that resource as JSON Schema defines ([§7.4](#74-other-references)). A reference resolves into such a resource when its value, resolved against its base URI and without its fragment, equals that resource's `$id` as OBI-13 compares `$id`s; for `$dynamicRef` this is its initial resolution, before any dynamic-scope replacement.
 - **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two schemas the document contains. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and at least one of these holds:
   - it is an absolute URI;
