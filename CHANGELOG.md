@@ -30,7 +30,10 @@ document's schemas (§7). Of the preceding revision, described below, the typed
 `schemas` map and the removal of §7.6 stand; its binding-owned kinds and
 `resources` do not. The core corpus, examples, and the focused draft checks
 follow. [SOURCE-MODEL-DRAFT.md](SOURCE-MODEL-DRAFT.md) records the decisions
-and migration status.
+and migration status. §3 identifies the model's core nouns in one line each,
+with the definitions in their sections, gains a Schema entry, and defines in
+full only the three terms no other section defines: caller-facing, field, and
+absolute URI.
 
 ### Binding/resources revision (2026-10-26, superseded)
 
