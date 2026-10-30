@@ -45,7 +45,12 @@ supports (§6), and renamed `examples/inline.obi.json` to
 its own, with the line URL serving the latest (OBI-02, §10); noted that an
 implementation may mint a private base URI for the document's schemas
 (§7.2); and noted that anchors inside an `$id` resource follow JSON Schema
-(OBI-13).
+(OBI-13). A second review pass stated the domain of a dependency's `kinds`
+constraint (the kind under which a candidate realization is described,
+wherever that description lives, §5.4), split the undefined-result rules into
+their two cases (§5.5), made §7.4's restatement of OBI-12 descriptive, spelled
+§7.5's cross-document examples with their document part, and tightened
+wording in §1.1, §3, §5, §7.2, §8.1, §9 and OBI-13.
 
 ### Binding/resources revision (2026-10-26, superseded)
 
