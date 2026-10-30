@@ -1,7 +1,7 @@
 {
   "rule": "OBI-07",
   "section": "10",
-  "description": "Has every bindings[*].source value present as a key in the document's sources map.",
+  "description": "Has every bindings[*].source value present as a key in the document's sources map; an absent sources holds no key.",
   "tests": [
     {
       "description": "binding references an existing source key",
