@@ -50,7 +50,15 @@ constraint (the kind under which a candidate realization is described,
 wherever that description lives, §5.4), split the undefined-result rules into
 their two cases (§5.5), made §7.4's restatement of OBI-12 descriptive, spelled
 §7.5's cross-document examples with their document part, and tightened
-wording in §1.1, §3, §5, §7.2, §8.1, §9 and OBI-13.
+wording in §1.1, §3, §5, §7.2, §8.1, §9 and OBI-13. A third pass stated in
+§5 that a document's members mean what §§5 to 8 say only for a conformant
+document, made §8.1's patch guarantee a constraint on what a patch release may
+change, had §3's Schema entry cover invalid schemas as §7 does, noted in §7.2
+that a pointer may reach data without that data becoming a schema, said what
+happens to a text declaring a version no published text governs (§10), gave
+OBI-07 its absent-`sources` case, restated OBI-13's relative-`$id` condition
+as a predicate, noted the fragment-identifier departure from RFC 6839 (§11),
+and moved §1's scope sentence out of §1.1.
 
 ### Binding/resources revision (2026-10-26, superseded)
 
