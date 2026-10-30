@@ -1,7 +1,7 @@
 {
   "rule": "OBI-12",
   "section": "10",
-  "description": "Has every same-document schema $ref and $dynamicRef in the document resource identify a schema the document contains (§7.3), and every reference resolving into a contained schema resource identify a schema there (§7.4). For $dynamicRef this uses initial resolution; resource identity uses OBI-13's exact comparison.",
+  "description": "Has every same-document schema $ref and $dynamicRef in the document resource identify a schema the document contains (§7.3), and every reference resolving into a contained schema resource identify a schema there (§7.4). For $dynamicRef this uses initial resolution; resource identity uses OBI-13's exact comparison; a reference within a resource whose $id OBI-13 leaves out of its comparison is not assessed by the second sentence.",
   "notes": "Pointers may enter schemas that declare $id, preserving the target resource's base. Source data, binding data, examples, extensions, const and unknown keywords never add schemas. Malformed references within identified resources have undefined results rather than violating OBI-12 (§7.4).",
   "tests": [
     {

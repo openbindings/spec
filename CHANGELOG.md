@@ -58,7 +58,12 @@ that a pointer may reach data without that data becoming a schema, said what
 happens to a text declaring a version no published text governs (§10), gave
 OBI-07 its absent-`sources` case, restated OBI-13's relative-`$id` condition
 as a predicate, noted the fragment-identifier departure from RFC 6839 (§11),
-and moved §1's scope sentence out of §1.1.
+and moved §1's scope sentence out of §1.1. A fourth pass defined "resolves
+into" at its first use (§7.2), said that OBI-12's second sentence does not
+assess a reference within a resource whose `$id` OBI-13 leaves out of its
+comparison, stated once that every pattern a rule reads is read with Unicode
+semantics (§10), named what idempotency's "same input" leaves aside (§5.3),
+and corrected wording in the abstract, §4, §5.5, §6, §7.4, §8.1 and §11.
 
 ### Binding/resources revision (2026-10-26, superseded)
 
